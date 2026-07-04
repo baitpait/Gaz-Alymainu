@@ -6,6 +6,15 @@ use App\Models\Client;
 use App\Models\User;
 use Livewire\Livewire;
 
+test('invoice form add line survives whole lines array sync', function () {
+    $accountant = User::factory()->create(['role' => 'accountant', 'is_active' => true]);
+
+    Livewire::actingAs($accountant)
+        ->test(InvoiceForm::class)
+        ->call('addLine')
+        ->assertCount('lines', 2);
+});
+
 test('invoice form filters clients by search text', function () {
     $accountant = User::factory()->create(['role' => 'accountant', 'is_active' => true]);
 

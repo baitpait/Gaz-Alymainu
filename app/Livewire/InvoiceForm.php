@@ -128,8 +128,12 @@ class InvoiceForm extends Component
         $this->refreshProductAutocompleteForLine($lineIndex);
     }
 
-    public function updatedLines(mixed $value, string $key): void
+    public function updatedLines(mixed $value, ?string $key = null): void
     {
+        if ($key === null || $key === '') {
+            return;
+        }
+
         $parts = explode('.', $key);
         if (count($parts) === 2 && $parts[1] === 'product_search') {
             $i = (int) $parts[0];

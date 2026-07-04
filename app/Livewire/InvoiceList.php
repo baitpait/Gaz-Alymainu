@@ -92,8 +92,12 @@ class InvoiceList extends Component
     }
 
     /* ── عند تغيير سعر أو كمية أي بند ── */
-    public function updatedLines(mixed $value, string $key): void
+    public function updatedLines(mixed $value, ?string $key = null): void
     {
+        if ($key === null || $key === '') {
+            return;
+        }
+
         $parts = explode('.', $key);
         if (count($parts) === 2 && in_array($parts[1], ['unit_price', 'quantity'])) {
             $i = (int) $parts[0];

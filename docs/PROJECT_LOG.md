@@ -175,3 +175,12 @@
 - **تنبيه:** بعد كل نشر كـ root: `chown -R baitpait:baitpait storage bootstrap/cache`. لا تفترض أن `webuzo` = مستخدم الموقع.
 
 ---
+
+## [2026-07-04] - إصلاح تعديل الفاتورة: updatedLines + APP_DEBUG
+- **الهدف:** إغلاق خطأ 500 على `/invoices/{id}/edit` — ظهور كود PHP للزبون عند تعديل البنود.
+- **السبب:** Livewire يمرّر `$key = null` عند تحديث مصفوفة `$lines` كاملة؛ `updatedLines(string $key)` → TypeError. `APP_DEBUG=true` على الإنتاج يعرض مقتطف الكود.
+- **التغييرات:** `?string $key` + early return في `InvoiceForm`, `PurchaseOrderForm`, `InvoiceList`. اختبار `addLine`. تحديث `docs/08`.
+- **Commit:** (pending)
+- **تنبيه:** على السيرفر: `APP_DEBUG=false` في `.env` + `git pull` + `php artisan config:cache`.
+
+---

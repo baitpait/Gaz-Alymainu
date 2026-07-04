@@ -214,6 +214,8 @@ MAIL_MAILER=log              # log أثناء التشغيل التجريبي، 
 | `تعذّر إنشاء PDF من قالب الطباعة` (500 على `/pdf`) | Chromium غير محمّل، Node غير متاح لـ PHP، أو صلاحيات `root` على `node_modules` | راجع **§11.2**: `PUPPETEER_CACHE_DIR`، `npm run browsershot:install`، `BROWSERSHOT_NODE`، `chown` لمستخدم PHP، ثم `php artisan browsershot:check` |
 | `Route [invoices.pdf] not defined` (أو أي مسار PDF جديد) بعد `git pull` | **كاش المسارات قديم** — نفّذت `config:cache` دون `route:cache` | `php artisan route:clear && php artisan route:cache` (أو `php artisan optimize:clear` ثم أعد الكاش). تحقق: `php artisan route:list --name=invoices.pdf` |
 | `tempnam(): file created in the system's temporary directory` (500 على `/invoices` وغيرها) | `storage` مملوك لـ `root`/`webuzo` بينما PHP للموقع = **`baitpait`** | `chown -R baitpait:baitpait storage bootstrap/cache` ثم `php artisan optimize:clear` وإعادة الكاش. راجع `INCIDENT-004` |
+| `APP_DEBUG=true` على الإنتاج | أخطاء Livewire تظهر كود PHP للزبون | في `.env`: `APP_DEBUG=false` ثم `php artisan config:cache` |
+| `updatedLines(): Argument #2 ($key) must be of type string, null given` | Livewire يحدّث `$lines` كاملة عند إضافة بند | اسحب آخر `main` (إصلاح nullable `$key` في InvoiceForm) |
 
 ---
 
