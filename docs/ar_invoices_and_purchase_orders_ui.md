@@ -43,6 +43,9 @@
 | **التهيئة** | `mount(?Invoice $invoice = null)` — يتطلب محاسباً؛ `Gate::authorize` للإنشاء/التعديل. |
 | **فاتورة جديدة** | تاريخ المستند = اليوم؛ يُضاف سطر بند فارغ تلقائياً إن لم تُحمَّل بنود. |
 | **البنود** | جدول داخل إطار بحدود؛ `line_total` من السعر × الكمية؛ مزامنة عند الحفظ. |
+| **بحث الصنف** | `wire:model.live` على `lines.{i}.product_search` + `onProductSearchFocus` + `refreshProductAutocompleteForLine`. |
+| **Livewire `updatedLines`** | يجب أن يقبل `$key = null` عند مزامنة `$lines` كاملة (مثلاً `addLine`) — راجع `INCIDENT-005`. |
+| **طباعة / PDF** | من القائمة: `<x-document-export-buttons>`؛ من صفحة الطباعة: `<x-print-page-actions>`. |
 | **الإجمالي** | إن وُجدت بنود بعناوين غير فارغة يُحسب الإجمالي من البنود والخصم؛ وإلا يُعرض حقل **إجمالي كلي** يدوي (`$hasTitledLines`). |
 | **بعد الحفظ** | `session()->flash('toast', …)` ثم `redirect` إلى `invoices.index` مع `navigate: true`. |
 
@@ -52,7 +55,7 @@
 |--------|--------|
 | **الملف** | `app/Livewire/InvoiceList.php` |
 | **العرض** | `resources/views/livewire/invoice-list.blade.php` |
-| **السلوك** | فلاتر، عرض منبثق سريع، روابط لإنشاء/تعديل/طباعة؛ نافذة إنشاء/تعديل كاملة في القائمة معطّلة (`@if(false)`) لصالح الصفحات المنفصلة. |
+| **السلوك** | فلاتر، عرض منبثق سريع، روابط لإنشاء/تعديل/**طباعة/PDF**؛ نافذة إنشاء/تعديل كاملة في القائمة معطّلة (`@if(false)`) لصالح الصفحات المنفصلة. |
 
 ### 3.3 فاتورة مشتريات — `PurchaseOrderForm`
 

@@ -155,7 +155,8 @@
 |---|--------|------|
 | — | `Route [invoices.pdf] not defined` | `php artisan route:cache` بعد `git pull` |
 | — | PDF 500 — مكتبات Chrome ناقصة | `apt-get install` حزم t64 + `browsershot:install` |
-| INCIDENT-004 | `tempnam()` 500 على `/invoices` | `chown -R baitpait:baitpait storage bootstrap/cache` (ليس webuzo) + `config/view.php` + `App\Filesystem\Filesystem` |
+| INCIDENT-004 | `tempnam()` 500 على `/invoices` | `chown baitpait` + `config/view.php` + `App\Filesystem\Filesystem` |
+| INCIDENT-005 | `updatedLines` + APP_DEBUG على تعديل الفاتورة | `44be136`, `APP_DEBUG=false` |
 
 ### أوامر تشخيص جديدة
 - `php artisan browsershot:check`
@@ -166,21 +167,34 @@
 - `0f09fa6` — تشديد Linux + browsershot:check
 - `c298f37` — view config + storage:doctor
 - `76073fb` — tempnam PHP 8.4
+- `6af30ed` — توثيق PDF + INCIDENT-004
+- `44be136` — updatedLines nullable + APP_DEBUG
 
 ### توثيق
 - `docs/13_DOCUMENT_PDF_BROWSERSHOT_AR.md` (دليل شامل)
 - `docs/troubleshooting/INCIDENT-004-tempnam-storage-ownership-php84.md`
+- `docs/troubleshooting/INCIDENT-005-invoice-edit-updatedlines-app-debug.md`
 - تحديث `docs/08_DEPLOYMENT_AND_OPERATIONS_AR.md` §11 و§8
 
 - **تنبيه:** بعد كل نشر كـ root: `chown -R baitpait:baitpait storage bootstrap/cache`. لا تفترض أن `webuzo` = مستخدم الموقع.
 
 ---
 
-## [2026-07-04] - إصلاح تعديل الفاتورة: updatedLines + APP_DEBUG
-- **الهدف:** إغلاق خطأ 500 على `/invoices/{id}/edit` — ظهور كود PHP للزبون عند تعديل البنود.
-- **السبب:** Livewire يمرّر `$key = null` عند تحديث مصفوفة `$lines` كاملة؛ `updatedLines(string $key)` → TypeError. `APP_DEBUG=true` على الإنتاج يعرض مقتطف الكود.
-- **التغييرات:** `?string $key` + early return في `InvoiceForm`, `PurchaseOrderForm`, `InvoiceList`. اختبار `addLine`. تحديث `docs/08`.
-- **Commit:** (pending)
-- **تنبيه:** على السيرفر: `APP_DEBUG=false` في `.env` + `git pull` + `php artisan config:cache`.
+## [2026-07-04] - إصلاح تعديل الفاتورة: updatedLines + APP_DEBUG (مكتمل ✅)
+- **الهدف:** إغلاق خطأ 500 على `/invoices/{id}/edit` — ظهور كود PHP للزبون (تقرير فاتورة #758).
+- **السبب:**
+  - Livewire يمرّر `$key = null` عند مزامنة مصفوفة `$lines` كاملة (مثلاً `addLine()`).
+  - `updatedLines(string $key)` → **TypeError** في `InvoiceForm.php:131`.
+  - **`APP_DEBUG=true`** على الإنتاج يعرض مقتطف الكود للزبون بدل رسالة عامة.
+- **التغييرات:**
+  - `?string $key = null` + early return في `InvoiceForm`, `PurchaseOrderForm`, `InvoiceList`.
+  - اختبار: `invoice form add line survives whole lines array sync`.
+  - توثيق: `INCIDENT-005`, تحديث `docs/08` §8.
+- **نشر الإنتاج:**
+  - `git pull` → `44be136`
+  - `APP_DEBUG=false` + `php artisan config:cache`
+  - `chown -R baitpait:baitpait storage bootstrap/cache`
+- **Commit:** `44be136`
+- **تنبيه:** **دائماً** `APP_DEBUG=false` على الإنتاج. أي `updated{ArrayProperty}` في Livewire يجب أن يقبل `$key` nullable.
 
 ---

@@ -192,6 +192,8 @@ MAIL_MAILER=log              # log أثناء التشغيل التجريبي، 
 
 **تحذير:** لا تشارك `.env` ولا ترفعه إلى Git. غيّر كلمة مرور قاعدة البيانات من لوحة الاستضافة بعد أول نشر ناجح.
 
+**⚠️ `APP_DEBUG`:** يجب **`false`** على الإنتاج. إن كان `true`، أي خطأ Livewire (مثل تعديل الفاتورة) يعرض **كود PHP للزبون** — راجع `INCIDENT-005`. بعد التغيير: `php artisan config:cache`.
+
 ---
 
 ## 8) استكشاف الأخطاء الشائعة
@@ -215,7 +217,7 @@ MAIL_MAILER=log              # log أثناء التشغيل التجريبي، 
 | `Route [invoices.pdf] not defined` (أو أي مسار PDF جديد) بعد `git pull` | **كاش المسارات قديم** — نفّذت `config:cache` دون `route:cache` | `php artisan route:clear && php artisan route:cache` (أو `php artisan optimize:clear` ثم أعد الكاش). تحقق: `php artisan route:list --name=invoices.pdf` |
 | `tempnam(): file created in the system's temporary directory` (500 على `/invoices` وغيرها) | `storage` مملوك لـ `root`/`webuzo` بينما PHP للموقع = **`baitpait`** | `chown -R baitpait:baitpait storage bootstrap/cache` ثم `php artisan optimize:clear` وإعادة الكاش. راجع `INCIDENT-004` |
 | `APP_DEBUG=true` على الإنتاج | أخطاء Livewire تظهر كود PHP للزبون | في `.env`: `APP_DEBUG=false` ثم `php artisan config:cache` |
-| `updatedLines(): Argument #2 ($key) must be of type string, null given` | Livewire يحدّث `$lines` كاملة عند إضافة بند | اسحب آخر `main` (إصلاح nullable `$key` في InvoiceForm) |
+| `updatedLines(): Argument #2 ($key) must be of type string, null given` | Livewire يحدّث `$lines` كاملة عند إضافة بند | اسحب `44be136+` (nullable `$key`). راجع `INCIDENT-005` |
 
 ---
 
@@ -358,3 +360,4 @@ php artisan browsershot:check
 - `docs/troubleshooting/INCIDENT-002-payment-method-invalid-on-edit.md` — RCA: طريقة دفع غير معيارية عند التعديل.
 - `docs/troubleshooting/INCIDENT-003-select-white-text-dark-mode.md` — RCA: select أبيض في Dark Mode.
 - `docs/troubleshooting/INCIDENT-004-tempnam-storage-ownership-php84.md` — RCA: tempnam + ملكية storage على Webuzo.
+- `docs/troubleshooting/INCIDENT-005-invoice-edit-updatedlines-app-debug.md` — RCA: كود PHP ظاهر على تعديل الفاتورة + APP_DEBUG.
