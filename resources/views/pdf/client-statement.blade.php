@@ -244,7 +244,7 @@ body {
         @if($logoExists)
             <img src="{{ $logoPath }}" class="header-logo" alt="Logo">
         @endif
-        <div class="header-company">Profile Media Production</div>
+        <div class="header-company">Gaz Alymainu</div>
         <div class="header-date">Date: {{ $printDate }}</div>
     </div>
     <div style="clear:both;"></div>
@@ -369,7 +369,7 @@ body {
 {{-- ===== FOOTER ===== --}}
 <div class="footer">
     @if($logoExists)
-        <img src="{{ $logoPath }}" alt="Profile Media Production">
+        <img src="{{ $logoPath }}" alt="Gaz Alymainu">
     @endif
 </div>
 

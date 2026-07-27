@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Laravel'),
+    'name' => env('APP_NAME', 'غاز اليمين'),
 
     /*
     |--------------------------------------------------------------------------
@@ -35,7 +35,7 @@ return [
     | Company Display Name (PDF / print letterhead)
     |--------------------------------------------------------------------------
     */
-    'company_display_name' => env('COMPANY_DISPLAY_NAME', 'Profile Media Production'),
+    'company_display_name' => env('COMPANY_DISPLAY_NAME', 'Gaz Alymainu'),
 
     /*
     |--------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-# بروفايل ميدا — Profile Media
+# غاز اليمين — Gaz Alymainu
 
 منصة تقارير وواجهات شاملة لإدارة الأعمال الإعلامية (عملاء، موردون، فواتير، دفعات، مصروفات).
 
@@ -96,6 +96,8 @@ php artisan export:mysql-data
 - **نسخة قديمة من `database.sqlite`:**  
   `php artisan export:mysql-data --sqlite=/المسار/الكامل/database.sqlite --output=/path/to/import.sql`
 
+**نظام السائقين والمخزون ونقطة البيع:** `docs/14_GAS_DRIVER_INVENTORY_SYSTEM_AR.md`  
+**تتبّع مواقع السائقين (خريطة):** `docs/15_DRIVER_LOCATION_TRACKING_AR.md`  
 **النسخ الاحتياطي والاسترجاع:** `docs/DATABASE_BACKUP_AND_RESTORE_AR.md`  
 **النشر والتشغيل (إنتاج):** `docs/08_DEPLOYMENT_AND_OPERATIONS_AR.md`  
 **PDF المستندات (Browsershot):** `docs/13_DOCUMENT_PDF_BROWSERSHOT_AR.md`  

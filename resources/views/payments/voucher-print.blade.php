@@ -251,7 +251,7 @@
       <div class="header-side-brand">
         <div class="brand-text">
           <div class="brand-name">{{ $companyName }}</div>
-          <div class="brand-sub">شركة إنتاج إعلامي وتسويق رقمي</div>
+          <div class="brand-sub">شركة توزيع غاز</div>
         </div>
       </div>
     </div>

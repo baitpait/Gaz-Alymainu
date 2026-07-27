@@ -329,7 +329,7 @@
 <div class="fixed inset-0 z-[70] flex items-center justify-center p-4" style="background:rgba(0,0,0,.45);" wire:click.self="closeQuickAddProductModal">
     <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto" wire:click.stop role="dialog" aria-modal="true" aria-labelledby="quick-add-title">
         <h3 id="quick-add-title" class="text-lg font-bold text-[#3D3D3D] mb-1">إضافة خدمة سريعة</h3>
-        <p class="text-xs text-gray-500 mb-4">يُحفظ في كتالوج الخدمات. التسعير لعملة الفاتورة الحالية: <span class="font-mono" dir="ltr">{{ $currency_code }}</span></p>
+        <p class="text-xs text-gray-500 mb-4">يُحفظ في كتالوج المنتجات. التسعير لعملة الفاتورة الحالية: <span class="font-mono" dir="ltr">{{ $currency_code }}</span></p>
 
         <div class="space-y-3">
             <div>

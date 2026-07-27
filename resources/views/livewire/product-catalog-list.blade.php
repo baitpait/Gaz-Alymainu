@@ -2,7 +2,7 @@
 
 <div class="flex items-center justify-between mb-6">
     <div>
-        <h1 class="text-xl font-bold text-[#3D3D3D]">كتالوج الخدمات</h1>
+        <h1 class="text-xl font-bold text-[#3D3D3D]">كتالوج المنتجات</h1>
         <p class="text-sm text-gray-400 mt-0.5">{{ $rows->total() }} عنصر في الأرشيف</p>
     </div>
 </div>

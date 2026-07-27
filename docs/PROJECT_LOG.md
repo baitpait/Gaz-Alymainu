@@ -1,4 +1,4 @@
-# سجل المشروع — بروفايل ميدا
+# سجل المشروع — غاز اليمين
 
 <!-- الصيغة الموحّدة عند كل تحديث مهم:
 
@@ -11,7 +11,7 @@
 -->
 
 ## [2026-05-10] - تهيئة حزمة المشروع والدستور
-- **الهدف:** تأسيس مجلد مستقل باسم بروفايل ميدا مع دستور معاد صياغته وتقارير ووثائق وبرومبت مبرمج.
+- **الهدف:** تأسيس مجلد مستقل باسم غاز اليمين مع دستور معاد صياغته وتقارير ووثائق وبرومبت مبرمج.
 - **التغييرات:** إضافة `.cursorrules` ومجلد `docs/` و`database/README.md`.
 - **الأدوات:** لا شيء (وثائق فقط).
 - **تنبيه:** اختيار الباكند/الفرونت مؤجل إلى ADR.
@@ -75,7 +75,7 @@
 
 ## [2026-05-13] - ربط APP_NAME بالقوالب
 - **الهدف:** جعل اسم التطبيق في الشريط العلوي + عنوان النافذة + صفحة الدخول قابلاً للتغيير من `.env` بدل النص الثابت.
-- **التغييرات:** `resources/views/components/layouts/app.blade.php` و`resources/views/auth/login.blade.php` يقرآن `config('app.name', 'بروفايل ميديا')`.
+- **التغييرات:** `resources/views/components/layouts/app.blade.php` و`resources/views/auth/login.blade.php` يقرآن `config('app.name', 'غاز اليمين')`.
 - **الأدوات:** Blade.
 - **تنبيه:** أي قالب جديد يجب أن يستخدم `config('app.name')` لا نصاً ثابتاً. بعد تغيير `APP_NAME` في الإنتاج: `php artisan config:clear && config:cache && view:clear && view:cache`.
 
@@ -196,5 +196,49 @@
   - `chown -R baitpait:baitpait storage bootstrap/cache`
 - **Commit:** `44be136`
 - **تنبيه:** **دائماً** `APP_DEBUG=false` على الإنتاج. أي `updated{ArrayProperty}` في Livewire يجب أن يقبل `$key` nullable.
+
+---
+
+## [2026-07-20 18:19] - نظام السائقين والمخزون ونقطة البيع (Phase 1 + Phase 2) (مكتمل ✅)
+- **الهدف:** إعادة توجيه المشروع إلى «غاز اليمين» — توزيع أسطوانات الغاز عبر سائقين بسيارات كمخازن متنقلة، تحميل من المخازن الثابتة، تسعير يومي مرن، مبيعات نقدية/على الحساب، تحصيل، سحب كاش، ومصروفات سائق.
+- **التغييرات:**
+  - **Phase 1 (مخازن/تحميل/تسعير):** جداول `warehouses`, `warehouse_product`, `stock_balances`, `stock_movements`, `product_daily_prices` + دور `driver` + حقول الغاز على `products`. Enums `WarehouseType`, `StockMovementType`. خدمات `InventoryService` (transfer/saleOut داخل transaction) و`DailyPriceService`.
+  - **Phase 2 (بيع/مالية):** جداول `sales`, `cash_handovers` (+method/cheque_number), `collections`, `driver_expenses`. Enums `SalePaymentType`, `CollectionMethod`, `DriverExpenseCategory`. خدمات `SalesService` (سعر قابل للتعديل) و`CashBoxService` (رصيد نقدي/شيكات، سحب كاش، مصروفات).
+  - **الواجهة:** POS موبايل أولاً (دوائر إحصائية بألوان الهوية، سعر قابل للتعديل، عدّاد `+/−`، تصفير الكمية بعد البيع)، صفحات مستقلة للتحصيل والمصروفات، **شريط تنقّل سفلي** (المبيعات/التحصيل/المصروفات)، حصر السائق في صفحات البيع فقط (بلا قائمة جانبية).
+  - **الصلاحيات/الوسائط:** Gates (`record-sales`, `manage-cash-handover`, `manage-driver-expenses`, `manage-drivers`, `manage-inventory`, `manage-daily-prices`)؛ Middleware `RestrictDriverToSales` (`driver.sales`) و`BlockSalesModule` (`block.sales`).
+  - **التقارير:** 6 تقارير غاز (مبيعات/تحصيلات/صندوق السائق/أرصدة/حركات/أداء) بفلترة تواريخ وتصدير CSV؛ إعادة بناء `/financial-summary` للتدفّق النقدي الفعلي.
+  - **العلامة التجارية:** إزالة كل بقايا «إنتاج إعلامي وتقارير تشغيلية» وإعادة التسمية إلى «غاز اليمين» + الشعار.
+  - **توثيق:** `docs/14_GAS_DRIVER_INVENTORY_SYSTEM_AR.md`.
+- **الأدوات:** Laravel 12، Livewire 3، Alpine.js، Tailwind، MySQL، Vite.
+- **تنبيه:** أي أصناف Tailwind جديدة (قيم تعسّفية / تموضع `fixed`) تتطلّب `npm run build && php artisan view:cache` وإلا لا تظهر (حادثة الشريط السفلي المخفي). بيانات المخزون التجريبية تُنظّف قبل الإنتاج، وكلمة مرور المدير الافتراضية `password` تُغيَّر قبل النشر.
+
+---
+
+## [2026-07-27 11:19] - نمط الأجر اليومي للموظفين (مكتمل ✅)
+- **الهدف:** دعم موظف على «يومية» — أجرة يوم ثابتة، وآخر الشهر يُدخل عدد أيام العمل فيُحسب الأساسي = أجرة اليوم × الأيام.
+- **التغييرات:**
+  - `Employee`: ثابت جديد `PAY_FREQUENCY_DAILY = 'daily'` بعنوان «يومية» + `isDailyWage()`.
+  - ترحيل `2026_07_27_100001_add_daily_wage_fields_to_salary_payments`: عمودان `worked_days` (tinyint) و`daily_rate` (decimal 15,4) — nullable (توافق خلفي كامل).
+  - `SalaryPayment`: إضافة الحقلين للـ`fillable`/`casts`.
+  - `SalaryPaymentForm`: كشف الموظف اليومي، إظهار حقلي أجرة اليوم/عدد الأيام، حساب الأساسي **مقفلاً** (`recomputeDailyBase`)، وتحقّق مشروط (`worked_days` مطلوب 0–31 لليومي).
+  - العرض: عمود «أيام العمل × أجرة اليوم» في تقرير الرواتب، ملف الموظف، CSV، و PDF.
+  - توثيق: تحديث `docs/10_EMPLOYEES_AND_PAYROLL_AR.md`.
+- **قرارات المستخدم:** أجرة اليوم = نفس حقل الراتب الأساسي (لا حقل جديد على الموظف)؛ أيام صحيحة فقط؛ الأساسي مقفل؛ إظهار الأعمدة في التقارير.
+- **الأدوات:** Laravel migrations، Livewire، Blade.
+- **تنبيه:** الترحيل يضيف أعمدة فقط (آمن) — `php artisan migrate` كافٍ، لا حاجة لإعادة بناء الأصول (لا أصناف Tailwind جديدة). `daily_rate` لقطة تاريخية لا تتأثر بتغيير أجرة الموظف لاحقاً.
+
+---
+
+## [2026-07-27 11:45] - تتبّع مواقع السائقين على الخريطة (مرحلة 1 ويب) (مكتمل ✅)
+- **الهدف:** عرض مواقع السائقين للإدارة على خريطة Google أثناء الوردية، بدون APK.
+- **التغييرات:**
+  - جدول `driver_locations` + نموذج `DriverLocation` + خدمة `DriverLocationService`.
+  - صفحة السائق `/my-location` (بدء/إيقاف مشاركة + إرسال GPS كل ~30ث عبر Geolocation API).
+  - صفحة الإدارة `/drivers/map` (Google Maps + قائمة السائقين + تحديث كل 10ث).
+  - Gates: `share-location`, `view-driver-locations`؛ السماح بـ `location.share` في middleware السائق؛ تبويب «موقعي» في الشريط السفلي؛ رابط «خريطة السائقين» في القائمة وصفحة السائقين.
+  - إعداد: `GOOGLE_MAPS_API_KEY` في `.env` عبر `config/services.php`.
+  - توثيق: `docs/15_DRIVER_LOCATION_TRACKING_AR.md`.
+- **الأدوات:** Laravel, Livewire 3, Alpine.js, Google Maps JavaScript API.
+- **تنبيه:** قيّد مفتاح Google بنطاقات HTTP فوراً (المفتاح ظهر في المحادثة). المرحلة 1 تتطلب بقاء صفحة السائق مفتوحة. APK/مسار تاريخي مؤجّل.
 
 ---

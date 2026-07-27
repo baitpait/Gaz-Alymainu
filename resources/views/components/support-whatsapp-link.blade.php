@@ -2,7 +2,7 @@
 
 @php
     $phone = preg_replace('/\D+/', '', (string) config('app.support_whatsapp', '970599814758'));
-    $message = rawurlencode('مرحباً، أحتاج دعماً فنياً لنظام '.config('app.name', 'بروفايل ميديا'));
+    $message = rawurlencode('مرحباً، أحتاج دعماً فنياً لنظام '.config('app.name', 'غاز اليمين'));
     $href = 'https://wa.me/'.$phone.'?text='.$message;
 @endphp
 

@@ -39,6 +39,36 @@
     </div>
 </div>
 
+<div class="card p-5 space-y-4 mb-6">
+    <div>
+        <p class="text-sm font-bold text-[#3D3D3D]">مخزون الغاز</p>
+        <p class="text-xs text-gray-500 mt-1">فعّل التتبّع لأصناف جرات الغاز لتظهر في المخازن والتسعير اليومي والتحميل.</p>
+    </div>
+    <label class="flex items-center gap-2 cursor-pointer">
+        <input wire:model.live="is_stock_tracked" type="checkbox" class="rounded border-[#E2E4E9]">
+        <span class="text-sm text-[#3D3D3D]">تتبّع المخزون (صنف غاز)</span>
+    </label>
+    @if($is_stock_tracked)
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div>
+            <label class="label">الوحدة</label>
+            <input wire:model="unit" type="text" class="input" maxlength="32" placeholder="مثال: جرة">
+            @error('unit')<p class="field-error">{{ $message }}</p>@enderror
+        </div>
+        <div>
+            <label class="label">السعة (كغ)</label>
+            <input wire:model="capacity_kg" type="number" step="0.01" min="0" dir="ltr" class="input font-mono" placeholder="مثال: 12">
+            @error('capacity_kg')<p class="field-error">{{ $message }}</p>@enderror
+        </div>
+        <div>
+            <label class="label">التصنيف</label>
+            <input wire:model="category" type="text" class="input" maxlength="64" placeholder="اختياري">
+            @error('category')<p class="field-error">{{ $message }}</p>@enderror
+        </div>
+    </div>
+    @endif
+</div>
+
 <div class="card overflow-hidden mb-6">
     <div class="px-5 py-3 border-b border-[#E2E4E9] bg-[#F9F9FB]">
         <p class="text-sm font-bold text-[#3D3D3D]">الأسعار حسب العملة</p>

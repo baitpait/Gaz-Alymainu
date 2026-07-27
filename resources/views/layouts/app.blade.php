@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $title ?? 'بروفايل ميديا' }}</title>
+    <title>{{ $title ?? 'غاز اليمين' }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -16,9 +16,9 @@
     {{-- الشريط العلوي --}}
     <nav class="bg-white border-b border-[#E0E0E0] px-6 py-3 flex items-center justify-between">
         <div class="flex items-center gap-3">
-            <img src="{{ asset('branding/logo.png') }}" alt="بروفايل ميديا" class="h-9 w-auto" onerror="this.style.display='none'">
-            <span class="text-lg font-bold text-[#3D3D3D]">بروفايل ميديا</span>
-            <span class="text-xs text-[#C9A227] font-medium">إنتاج إعلامي وتقارير تشغيلية</span>
+            <img src="{{ asset('branding/logo.png') }}" alt="غاز اليمين" class="h-9 w-auto" onerror="this.style.display='none'">
+            <span class="text-lg font-bold text-[#3D3D3D]">غاز اليمين</span>
+            <span class="text-xs text-[#C9A227] font-medium">توزيع الغاز</span>
         </div>
         <div class="flex items-center gap-4 text-sm">
             @auth

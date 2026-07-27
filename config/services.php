@@ -35,4 +35,11 @@ return [
         ],
     ],
 
+    'google_maps' => [
+        'key' => env('GOOGLE_MAPS_API_KEY'),
+        // مركز افتراضي للخريطة عند عدم وجود علامات (رام الله تقريباً — عدّله حسب منطقة التشغيل).
+        'default_lat' => env('GOOGLE_MAPS_DEFAULT_LAT', 31.9038),
+        'default_lng' => env('GOOGLE_MAPS_DEFAULT_LNG', 35.2034),
+    ],
+
 ];

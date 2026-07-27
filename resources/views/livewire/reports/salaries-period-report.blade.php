@@ -30,6 +30,7 @@
                     <th>الموظف</th>
                     <th>القسم</th>
                     <th class="w-24" dir="ltr">الشهر</th>
+                    <th class="w-20 text-center">أيام العمل</th>
                     <th class="w-28 text-left" dir="ltr">أساسي</th>
                     <th class="w-24 text-left" dir="ltr">مكافأة</th>
                     <th class="w-24 text-left" dir="ltr">خصم</th>
@@ -44,6 +45,14 @@
                     <td>{{ $row['employee_name'] }}</td>
                     <td class="text-sm text-gray-500">{{ $row['department'] ?? '—' }}</td>
                     <td dir="ltr">{{ $row['period_label'] }}</td>
+                    <td class="text-center text-sm">
+                        @if($row['worked_days'] !== null)
+                            <span class="font-semibold">{{ $row['worked_days'] }}</span>
+                            <span class="text-gray-400 text-xs block" dir="ltr">× {{ number_format($row['daily_rate'] ?? 0, 2) }}</span>
+                        @else
+                            <span class="text-gray-300">—</span>
+                        @endif
+                    </td>
                     <td class="font-mono text-sm text-left" dir="ltr">{{ number_format($row['base_amount'], 2) }}</td>
                     <td class="font-mono text-sm text-left" dir="ltr">{{ number_format($row['bonus_amount'], 2) }}</td>
                     <td class="font-mono text-sm text-left" dir="ltr">{{ number_format($row['deduction_amount'], 2) }}</td>

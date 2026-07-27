@@ -51,6 +51,8 @@ class SalaryPeriodReportService
                 'period_month' => $pay->period_month,
                 'period_label' => $pay->periodLabel(),
                 'base_amount' => (float) $pay->base_amount,
+                'worked_days' => $pay->worked_days,
+                'daily_rate' => $pay->daily_rate !== null ? (float) $pay->daily_rate : null,
                 'bonus_amount' => (float) $pay->bonus_amount,
                 'deduction_amount' => (float) $pay->deduction_amount,
                 'net_amount' => (float) $pay->net_amount,

@@ -19,6 +19,14 @@ class ProductForm extends Component
 
     public string $description = '';
 
+    public bool $is_stock_tracked = false;
+
+    public string $unit = '';
+
+    public string $capacity_kg = '';
+
+    public string $category = '';
+
     /**
      * لكل عملة: تكلفة الخدمة، الحد الأدنى للبيع، سعر البيع (نصوص عشرية للنموذج).
      *
@@ -42,6 +50,10 @@ class ProductForm extends Component
             $this->name = $product->name;
             $this->product_code = $product->product_code ?? '';
             $this->description = $product->description ?? '';
+            $this->is_stock_tracked = (bool) $product->is_stock_tracked;
+            $this->unit = $product->unit ?? '';
+            $this->capacity_kg = $product->capacity_kg !== null ? (string) $product->capacity_kg : '';
+            $this->category = $product->category ?? '';
             $product->load('currencyPrices');
             foreach ($product->currencyPrices as $row) {
                 $cc = $row->currency_code;
@@ -89,10 +101,17 @@ class ProductForm extends Component
                 Rule::unique('products', 'product_code')->ignore($this->productId),
             ],
             'description' => 'nullable|string|max:5000',
+            'is_stock_tracked' => 'boolean',
+            'unit' => 'nullable|string|max:32',
+            'capacity_kg' => 'nullable|numeric|min:0',
+            'category' => 'nullable|string|max:64',
         ], [], [
             'name' => 'اسم المنتج',
             'product_code' => 'رمز المنتج',
             'description' => 'الوصف',
+            'unit' => 'الوحدة',
+            'capacity_kg' => 'السعة (كغ)',
+            'category' => 'التصنيف',
         ]);
 
         foreach (Product::billingCurrencies() as $cc) {
@@ -129,6 +148,10 @@ class ProductForm extends Component
                 'name' => $this->name,
                 'product_code' => trim($this->product_code) !== '' ? trim($this->product_code) : null,
                 'description' => trim($this->description) !== '' ? trim($this->description) : null,
+                'is_stock_tracked' => $this->is_stock_tracked,
+                'unit' => trim($this->unit) !== '' ? trim($this->unit) : null,
+                'capacity_kg' => trim($this->capacity_kg) !== '' ? (float) $this->capacity_kg : null,
+                'category' => trim($this->category) !== '' ? trim($this->category) : null,
             ];
 
             if ($wasEditing) {

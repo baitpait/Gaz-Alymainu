@@ -102,8 +102,8 @@ tfoot td { background: #F5F5F5; font-weight: bold; }
 
 <div class="header">
     <div class="header-brand">
-        بروفايل ميديا
-        <small>إنتاج إعلامي وتقارير تشغيلية</small>
+        غاز اليمين
+        <small>توزيع الغاز</small>
     </div>
     <div class="header-meta">
         تاريخ الإصدار: {{ now()->format('Y-m-d') }}<br>
@@ -222,7 +222,7 @@ tfoot td { background: #F5F5F5; font-weight: bold; }
 @endforeach
 
 <div class="footer">
-    <p>وثيقة داخلية — بروفايل ميديا للإنتاج الإعلامي &bull; صدر بتاريخ {{ now()->format('Y-m-d H:i') }} UTC</p>
+    <p>وثيقة داخلية — غاز اليمين لتوزيع الغاز &bull; صدر بتاريخ {{ now()->format('Y-m-d H:i') }} UTC</p>
 </div>
 
 </body>

@@ -1,105 +1,206 @@
 @php
-    $invoicedByC = \App\Models\Invoice::where('status', 'issued')
-        ->selectRaw('currency_code, sum(total_amount) as total')
-        ->groupBy('currency_code')->pluck('total', 'currency_code');
+    /**
+     * صناديق النقد (نشاط توزيع الغاز):
+     * - الصندوق الرئيسي حسب العملة = كل ما سُحب من السائقين (كاش + شيكات).
+     * - صندوق كل سائق = النقد/الشيكات المحصّلة ولم تُسحب بعد.
+     * - الشيكات تظهر كحركات مالية منفصلة (حسب آلية الدفع + ملاحظات).
+     */
+    $svc = app(\App\Services\CashBoxService::class);
 
-    $paidByC = \App\Models\ClientPayment::selectRaw('currency_code, sum(amount) as total')
-        ->groupBy('currency_code')->pluck('total', 'currency_code');
+    $mainByCur = $svc->mainBoxByCurrency();
 
-    $expenseByC = \App\Models\Expense::selectRaw('currency_code, sum(amount) as total')
-        ->groupBy('currency_code')->pluck('total', 'currency_code');
+    $boxCurrencies = collect(array_keys($mainByCur))
+        ->merge(\App\Models\Sale::query()->distinct()->pluck('currency_code')->all())
+        ->merge(\App\Models\Collection::query()->distinct()->pluck('currency_code')->all())
+        ->filter()
+        ->unique()
+        ->sort()
+        ->values();
 
-    $poSupByC = \App\Models\PurchaseOrder::where('status', 'issued')->whereNull('deleted_at')
-        ->selectRaw('currency_code, sum(total_amount) as total')
-        ->groupBy('currency_code')->pluck('total', 'currency_code');
+    $activeDrivers = \App\Models\User::query()
+        ->where('role', 'driver')
+        ->where('is_active', true)
+        ->orderBy('full_name')
+        ->get(['id', 'full_name']);
 
-    $paidSupByC = \App\Models\SupplierPayment::whereNull('deleted_at')
-        ->selectRaw('currency_code, sum(amount) as total')
-        ->groupBy('currency_code')->pluck('total', 'currency_code');
+    $driverBoxes = $activeDrivers->map(fn ($d) => [
+        'name'   => $d->full_name,
+        'cash'   => $svc->balance($d->id),
+        'cheque' => $svc->chequeBalance($d->id),
+    ]);
 
-    $finCurrencies = collect(array_keys(array_merge(
-        $invoicedByC->toArray(),
-        $paidByC->toArray(),
-        $expenseByC->toArray(),
-        $poSupByC->toArray(),
-        $paidSupByC->toArray(),
-    )))->unique()->sort()->values();
+    $driversCashHeld   = $driverBoxes->sum('cash');
+    $driversChequeHeld = $driverBoxes->sum('cheque');
+
+    // حركات الشيكات: تحصيل شيك + سحب شيك (موحّدة)
+    $chequeMoves = collect();
+
+    foreach (\App\Models\Collection::query()->where('method', 'cheque')->with('driver')->latest('collected_at')->limit(50)->get() as $c) {
+        $chequeMoves->push([
+            'at'      => $c->collected_at,
+            'driver'  => $c->driver?->full_name ?? '—',
+            'type'    => 'تحصيل شيك',
+            'badge'   => 'badge-green',
+            'amount'  => (float) $c->amount,
+            'cheque'  => $c->cheque_number,
+            'notes'   => $c->notes,
+        ]);
+    }
+
+    foreach (\App\Models\CashHandover::query()->where('method', 'cheque')->with('driver')->latest('handed_at')->limit(50)->get() as $h) {
+        $chequeMoves->push([
+            'at'      => $h->handed_at,
+            'driver'  => $h->driver?->full_name ?? '—',
+            'type'    => 'سحب شيك',
+            'badge'   => 'badge-blue',
+            'amount'  => (float) $h->amount,
+            'cheque'  => $h->cheque_number,
+            'notes'   => $h->notes,
+        ]);
+    }
+
+    $chequeMoves = $chequeMoves->sortByDesc('at')->values();
+
+    $recentExpenses = \App\Models\DriverExpense::query()
+        ->with('driver')
+        ->latest('spent_at')
+        ->limit(30)
+        ->get();
 @endphp
 
-@if($finCurrencies->isEmpty())
-    <div class="card p-6 text-center text-sm text-gray-300">لا توجد بيانات مالية مسجّلة بعد</div>
+@if($boxCurrencies->isEmpty() && $activeDrivers->isEmpty())
+    <div class="card p-6 text-center text-sm text-gray-300">لا توجد حركات نقدية مسجّلة بعد</div>
 @else
-    <div class="grid grid-cols-1 lg:grid-cols-{{ min($finCurrencies->count(), 3) }} gap-4">
-        @foreach($finCurrencies as $cur)
+
+    {{-- الصناديق الرئيسية حسب العملة --}}
+    <div class="grid grid-cols-1 lg:grid-cols-{{ max(1, min($boxCurrencies->count(), 3)) }} gap-4 mb-6">
+        @forelse($boxCurrencies as $cur)
             @php
-                $invoiced = (float) ($invoicedByC[$cur] ?? 0);
-                $paid = (float) ($paidByC[$cur] ?? 0);
-                $expense = (float) ($expenseByC[$cur] ?? 0);
-                $balance = $invoiced - $paid;
-                $net = $paid - $expense;
-                $pct = $invoiced > 0 ? min(100, round($paid / $invoiced * 100)) : 0;
-                $supplierOwed = (float) ($poSupByC[$cur] ?? 0) - (float) ($paidSupByC[$cur] ?? 0);
+                $mainCash   = (float) ($mainByCur[$cur]['cash'] ?? 0);
+                $mainCheque = (float) ($mainByCur[$cur]['cheque'] ?? 0);
             @endphp
-            <div class="card p-5">
-
+            <div class="card p-5 border-r-4 border-[#C9A227]">
                 <div class="flex items-center justify-between mb-4">
+                    <span class="text-sm font-bold text-[#3D3D3D]">الصندوق الرئيسي</span>
                     <span class="text-xs font-bold text-gray-400 uppercase tracking-widest" dir="ltr">{{ $cur }}</span>
-                    <span class="badge {{ $balance <= 0 ? 'badge-green' : 'badge-yellow' }}">
-                        {{ $balance <= 0 ? 'محصّل بالكامل' : 'رصيد مستحق' }}
-                    </span>
                 </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
-                    <div class="bg-blue-50 rounded-xl p-3">
-                        <p class="text-[10px] font-bold text-blue-400 mb-1">الفواتير الصادرة</p>
-                        <p class="text-lg font-bold text-blue-700 leading-none" dir="ltr">{{ number_format($invoiced, 2) }}</p>
-                    </div>
+                <div class="grid grid-cols-2 gap-3">
                     <div class="bg-green-50 rounded-xl p-3">
-                        <p class="text-[10px] font-bold text-green-400 mb-1">دفعات العملاء</p>
-                        <p class="text-lg font-bold text-green-700 leading-none" dir="ltr">{{ number_format($paid, 2) }}</p>
+                        <p class="text-[10px] font-bold text-green-500 mb-1">نقد الصندوق</p>
+                        <p class="text-xl font-black text-green-700 leading-none" dir="ltr">{{ number_format($mainCash, 2) }}</p>
                     </div>
-                    <div class="bg-red-50 rounded-xl p-3">
-                        <p class="text-[10px] font-bold text-red-400 mb-1">المصروفات</p>
-                        <p class="text-lg font-bold text-red-700 leading-none" dir="ltr">{{ number_format($expense, 2) }}</p>
+                    <div class="bg-blue-50 rounded-xl p-3">
+                        <p class="text-[10px] font-bold text-blue-500 mb-1">شيكات الصندوق</p>
+                        <p class="text-xl font-black text-blue-700 leading-none" dir="ltr">{{ number_format($mainCheque, 2) }}</p>
                     </div>
-                </div>
-
-                @if($invoiced > 0)
-                    <div class="mb-3">
-                        <div class="flex justify-between text-[10px] text-gray-400 mb-1">
-                            <span>نسبة التحصيل</span>
-                            <span dir="ltr">{{ $pct }}%</span>
-                        </div>
-                        <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
-                            <div class="h-full rounded-full {{ $pct >= 100 ? 'bg-green-500' : ($pct >= 50 ? 'bg-[#C9A227]' : 'bg-red-400') }} transition-all"
-                                 style="width: {{ $pct }}%"></div>
-                        </div>
-                    </div>
-                @endif
-
-                <div class="flex items-center justify-between pt-3 border-t border-[#E2E4E9]">
-                    <div>
-                        <p class="text-[10px] text-gray-400">رصيد مستحق من العملاء</p>
-                        <p class="text-base font-bold {{ $balance > 0 ? 'text-red-500' : 'text-green-600' }}" dir="ltr">
-                            {{ number_format(abs($balance), 2) }}
-                            @if($balance < 0)<span class="text-xs font-normal text-green-500"> زيادة</span>@endif
-                        </p>
-                    </div>
-                    <div class="text-left">
-                        <p class="text-[10px] text-gray-400">صافي (دفعات العملاء − مصروفات)</p>
-                        <p class="text-base font-bold {{ $net >= 0 ? 'text-[#C9A227]' : 'text-red-500' }}" dir="ltr">
-                            {{ $net >= 0 ? '+' : '-' }}{{ number_format(abs($net), 2) }}
-                        </p>
-                    </div>
-                </div>
-
-                <div class="mt-3 pt-3 border-t border-dashed border-[#E2E4E9]">
-                    <p class="text-[10px] text-gray-400 mb-0.5">التزام تجاه الموردين (أوامر شراء − دفعات)</p>
-                    <p class="text-sm font-bold {{ $supplierOwed > 0 ? 'text-purple-600' : 'text-green-600' }}" dir="ltr">
-                        {{ number_format($supplierOwed, 2) }} {{ $cur }}
-                    </p>
                 </div>
             </div>
-        @endforeach
+        @empty
+            <div class="card p-5 border-r-4 border-[#C9A227]">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-sm font-bold text-[#3D3D3D]">الصندوق الرئيسي</span>
+                    <span class="text-xs font-bold text-gray-400 uppercase tracking-widest" dir="ltr">ILS</span>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-green-50 rounded-xl p-3">
+                        <p class="text-[10px] font-bold text-green-500 mb-1">نقد الصندوق</p>
+                        <p class="text-xl font-black text-green-700 leading-none" dir="ltr">0.00</p>
+                    </div>
+                    <div class="bg-blue-50 rounded-xl p-3">
+                        <p class="text-[10px] font-bold text-blue-500 mb-1">شيكات الصندوق</p>
+                        <p class="text-xl font-black text-blue-700 leading-none" dir="ltr">0.00</p>
+                    </div>
+                </div>
+            </div>
+        @endforelse
     </div>
+
+    {{-- صناديق السائقين (لم يُسحب بعد) --}}
+    <div class="card overflow-hidden mb-6">
+        <div class="flex items-center justify-between px-5 py-3 border-b border-[#E2E4E9] bg-[#F9F9FB]">
+            <p class="text-sm font-bold text-[#3D3D3D]">صناديق السائقين (لم يُسحب بعد)</p>
+            <p class="text-xs text-gray-400" dir="ltr">
+                نقد: {{ number_format($driversCashHeld, 2) }} · شيكات: {{ number_format($driversChequeHeld, 2) }}
+            </p>
+        </div>
+        <table class="data-table">
+            <thead><tr>
+                <th>السائق</th>
+                <th class="text-left" dir="ltr">الرصيد النقدي</th>
+                <th class="text-left" dir="ltr">رصيد الشيكات</th>
+            </tr></thead>
+            <tbody>
+                @forelse($driverBoxes as $box)
+                <tr>
+                    <td class="font-medium">{{ $box['name'] }}</td>
+                    <td class="text-left font-mono text-sm font-semibold {{ $box['cash'] > 0 ? 'text-green-600' : 'text-gray-400' }}" dir="ltr">{{ number_format($box['cash'], 2) }}</td>
+                    <td class="text-left font-mono text-sm font-semibold {{ $box['cheque'] > 0 ? 'text-blue-600' : 'text-gray-400' }}" dir="ltr">{{ number_format($box['cheque'], 2) }}</td>
+                </tr>
+                @empty
+                <tr><td colspan="3"><div class="text-center py-10 text-gray-300 text-sm">لا يوجد سائقون نشطون</div></td></tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+
+    {{-- الحركات المالية — الشيكات --}}
+    <div class="card overflow-hidden">
+        <div class="px-5 py-3 border-b border-[#E2E4E9] bg-[#F9F9FB]">
+            <p class="text-sm font-bold text-[#3D3D3D]">الحركات المالية — الشيكات</p>
+        </div>
+        <table class="data-table">
+            <thead><tr>
+                <th>الوقت</th>
+                <th>السائق</th>
+                <th>النوع</th>
+                <th class="text-left" dir="ltr">المبلغ</th>
+                <th>رقم الشيك</th>
+                <th>ملاحظات</th>
+            </tr></thead>
+            <tbody>
+                @forelse($chequeMoves as $m)
+                <tr>
+                    <td class="text-sm text-gray-500" dir="ltr">{{ $m['at']?->format('Y-m-d H:i') }}</td>
+                    <td class="text-sm">{{ $m['driver'] }}</td>
+                    <td><span class="badge {{ $m['badge'] }}">{{ $m['type'] }}</span></td>
+                    <td class="text-left font-mono text-sm font-semibold" dir="ltr">{{ number_format($m['amount'], 2) }}</td>
+                    <td class="text-sm text-gray-500 font-mono" dir="ltr">{{ $m['cheque'] ?? '—' }}</td>
+                    <td class="text-sm text-gray-500">{{ $m['notes'] ?? '—' }}</td>
+                </tr>
+                @empty
+                <tr><td colspan="6"><div class="text-center py-10 text-gray-300 text-sm">لا توجد حركات شيكات</div></td></tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+
+    {{-- مصروفات السائقين (تُخصم من الصندوق النقدي) --}}
+    <div class="card overflow-hidden mt-6">
+        <div class="px-5 py-3 border-b border-[#E2E4E9] bg-[#F9F9FB]">
+            <p class="text-sm font-bold text-[#3D3D3D]">مصروفات السائقين</p>
+        </div>
+        <table class="data-table">
+            <thead><tr>
+                <th>الوقت</th>
+                <th>السائق</th>
+                <th>التصنيف</th>
+                <th class="text-left" dir="ltr">المبلغ</th>
+                <th>ملاحظات</th>
+            </tr></thead>
+            <tbody>
+                @forelse($recentExpenses as $ex)
+                <tr>
+                    <td class="text-sm text-gray-500" dir="ltr">{{ $ex->spent_at?->format('Y-m-d H:i') }}</td>
+                    <td class="text-sm">{{ $ex->driver?->full_name ?? '—' }}</td>
+                    <td><span class="badge badge-yellow">{{ $ex->category?->label() ?? '—' }}</span></td>
+                    <td class="text-left font-mono text-sm font-semibold text-red-600" dir="ltr">{{ number_format((float) $ex->amount, 2) }}</td>
+                    <td class="text-sm text-gray-500">{{ $ex->notes ?? '—' }}</td>
+                </tr>
+                @empty
+                <tr><td colspan="5"><div class="text-center py-10 text-gray-300 text-sm">لا توجد مصروفات</div></td></tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+
 @endif

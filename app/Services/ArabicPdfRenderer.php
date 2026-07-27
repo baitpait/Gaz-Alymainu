@@ -68,7 +68,7 @@ class ArabicPdfRenderer
             $mpdf->SetTitle($documentTitle);
         }
 
-        $author = $documentAuthor ?? config('app.company_display_name', 'Profile Media Production');
+        $author = $documentAuthor ?? config('app.company_display_name', 'Gaz Alymainu');
         $mpdf->SetAuthor($author);
         $mpdf->SetCreator($author);
 

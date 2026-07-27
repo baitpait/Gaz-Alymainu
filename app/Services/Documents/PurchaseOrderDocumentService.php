@@ -29,7 +29,7 @@ class PurchaseOrderDocumentService
             'supplier' => $supplier,
             'amountInWords' => $this->amountInWords->format((float) $purchaseOrder->total_amount, $currencyCode),
             'supplierBalanceDue' => $this->supplierBalanceDue($supplier, $currencyCode, $purchaseOrder),
-            'companyName' => config('app.company_display_name', config('app.name', 'بروفايل ميديا')),
+            'companyName' => config('app.company_display_name', config('app.name', 'غاز اليمين')),
             'logoPath' => public_path('branding/logo.png'),
             'pdfUrl' => route('purchase-orders.pdf', $purchaseOrder),
         ];

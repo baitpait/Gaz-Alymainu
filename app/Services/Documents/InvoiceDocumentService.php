@@ -29,7 +29,7 @@ class InvoiceDocumentService
             'client' => $client,
             'amountInWords' => $this->amountInWords->format((float) $invoice->total_amount, $currencyCode),
             'clientBalanceDue' => $this->clientBalanceDue($client, $currencyCode, $invoice),
-            'companyName' => config('app.company_display_name', config('app.name', 'بروفايل ميديا')),
+            'companyName' => config('app.company_display_name', config('app.name', 'غاز اليمين')),
             'logoPath' => public_path('branding/logo.png'),
             'pdfUrl' => route('invoices.pdf', $invoice),
         ];

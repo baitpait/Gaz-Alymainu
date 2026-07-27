@@ -91,7 +91,7 @@ class ExportLocalDataToMysqlFileCommand extends Command
         $this->info('ملف الإخراج: '.$path);
 
         $lines = [];
-        $lines[] = '-- بروفايل ميدا — بيانات فقط (INSERT) — بدون CREATE / DROP / ALTER';
+        $lines[] = '-- غاز اليمين — بيانات فقط (INSERT) — بدون CREATE / DROP / ALTER';
         $lines[] = '-- للاستيراد على MySQL/MariaDB بعد أن تكون الجداول موجودة (php artisan migrate --force)';
         $lines[] = '-- افرغ الصفوف يدوياً أو بـ TRUNCATE إن أردت تجنب duplicate key قبل الاستيراد';
         if ($sqlitePath) {
@@ -154,7 +154,7 @@ class ExportLocalDataToMysqlFileCommand extends Command
     private function readmeArabic(): string
     {
         return <<<'TXT'
-بروفايل ميدا — استيراد بيانات فقط (INSERT) على السيرفر
+غاز اليمين — استيراد بيانات فقط (INSERT) على السيرفر
 ====================================================
 
 الملف لا يحتوي على CREATE TABLE — الجداول يجب أن تكون موجودة مسبقاً (migrate).

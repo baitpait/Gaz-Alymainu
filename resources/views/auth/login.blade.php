@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    @php $appName = config('app.name', 'بروفايل ميديا'); @endphp
+    @php $appName = config('app.name', 'غاز اليمين'); @endphp
     <title>تسجيل الدخول — {{ $appName }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -43,7 +43,7 @@
                      onerror="this.style.display='none'">
             </div>
             <h1 class="text-2xl font-black text-white tracking-tight">{{ $appName }}</h1>
-            <p class="text-sm mt-1" style="color:#C9A227;">Profile Media Production</p>
+            <p class="text-sm mt-1" style="color:#C9A227;">Gaz Alymainu</p>
         </div>
 
         {{-- البطاقة البيضاء --}}
@@ -123,7 +123,7 @@
 
         {{-- تذييل --}}
         <p class="text-center text-xs mt-6" style="color:rgba(255,255,255,0.2);">
-            © {{ date('Y') }} Profile Media Production — جميع الحقوق محفوظة
+            © {{ date('Y') }} Gaz Alymainu — جميع الحقوق محفوظة
         </p>
 
     </div>

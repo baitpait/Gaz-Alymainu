@@ -235,7 +235,7 @@
 
 @php
     $client = $payment->client;
-    $appName = config('app.name', 'بروفايل ميديا');
+    $appName = config('app.name', 'غاز اليمين');
 @endphp
 
 <div class="page">
@@ -252,7 +252,7 @@
       <div class="header-side-brand">
         <div class="brand-text">
           <div class="brand-name">{{ $appName }}</div>
-          <div class="brand-sub">شركة إنتاج إعلامي وتسويق رقمي</div>
+          <div class="brand-sub">شركة توزيع غاز</div>
         </div>
       </div>
     </div>

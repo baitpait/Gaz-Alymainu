@@ -16,13 +16,22 @@ class Employee extends Model
 
     public const PAY_FREQUENCY_PART_TIME = 'part_time';
 
+    public const PAY_FREQUENCY_DAILY = 'daily';
+
     /** @return array<string, string> */
     public static function employmentTypeOptions(): array
     {
         return [
             self::PAY_FREQUENCY_MONTHLY => 'شهري',
             self::PAY_FREQUENCY_PART_TIME => 'بارت تايم',
+            self::PAY_FREQUENCY_DAILY => 'يومية',
         ];
+    }
+
+    /** هل الموظف على نظام الأجر اليومي (الأساسي = أجرة اليوم × عدد أيام العمل)؟ */
+    public function isDailyWage(): bool
+    {
+        return $this->pay_frequency === self::PAY_FREQUENCY_DAILY;
     }
 
     public static function employmentTypeLabel(?string $type): string
@@ -32,6 +41,7 @@ class Employee extends Model
     }
 
     protected $fillable = [
+        'user_id',
         'employee_code',
         'full_name',
         'phone_primary',
@@ -72,5 +82,11 @@ class Employee extends Model
     public function recordedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'recorded_by_user_id');
+    }
+
+    /** حساب الدخول المرتبط بالموظف (للسائق). */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

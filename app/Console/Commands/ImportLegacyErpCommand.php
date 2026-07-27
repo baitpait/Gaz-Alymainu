@@ -12,7 +12,7 @@ class ImportLegacyErpCommand extends Command
                             {--dry-run : احتساب الصفوف في قاعدة ERP دون إدراج}
                             {--connection=legacy_erp : اسم اتصال قاعدة ERP في config/database.php}';
 
-    protected $description = 'ترحيل البيانات من قاعدة ERP القديمة (MySQL مثل Stocky/POS) إلى جداول بروفايل ميدا';
+    protected $description = 'ترحيل البيانات من قاعدة ERP القديمة (MySQL مثل Stocky/POS) إلى جداول غاز اليمين';
 
     public function handle(): int
     {

@@ -28,6 +28,7 @@
             <th>الموظف</th>
             <th>القسم</th>
             <th class="ltr">الشهر</th>
+            <th>أيام العمل</th>
             <th class="ltr">أساسي</th>
             <th class="ltr">صافي</th>
             <th class="ltr">عملة</th>
@@ -40,6 +41,7 @@
             <td>{{ $row['employee_name'] }}</td>
             <td>{{ $row['department'] ?? '—' }}</td>
             <td class="ltr">{{ $row['period_label'] }}</td>
+            <td class="ltr">{{ $row['worked_days'] !== null ? $row['worked_days'].' × '.number_format($row['daily_rate'] ?? 0, 2) : '—' }}</td>
             <td class="ltr">{{ number_format($row['base_amount'], 2) }}</td>
             <td class="ltr positive">{{ number_format($row['net_amount'], 2) }}</td>
             <td class="ltr">{{ $row['currency'] }}</td>

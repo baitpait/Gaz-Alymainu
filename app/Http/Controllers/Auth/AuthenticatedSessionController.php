@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Services\DriverLocationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Throwable;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -31,6 +33,17 @@ class AuthenticatedSessionController extends Controller
             }
             $request->session()->regenerate();
 
+            $user = Auth::user();
+            if ($user && $user->isDriver()) {
+                try {
+                    app(DriverLocationService::class)->startSharing((int) $user->id);
+                } catch (Throwable) {
+                    // لا نمنع الدخول إن فشل تفعيل المشاركة
+                }
+
+                return redirect()->intended(route('pos.index'));
+            }
+
             return redirect()->intended(route('dashboard'));
         }
 
@@ -41,6 +54,15 @@ class AuthenticatedSessionController extends Controller
 
     public function destroy(Request $request)
     {
+        $user = Auth::user();
+        if ($user && $user->isDriver()) {
+            try {
+                app(DriverLocationService::class)->stopSharing((int) $user->id);
+            } catch (Throwable) {
+                // تجاهل
+            }
+        }
+
         Auth::guard('web')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();

@@ -1,4 +1,4 @@
-# لغات البرمجة والمكدس — بروفايل ميدا (مُحدَّث)
+# لغات البرمجة والمكدس — غاز اليمين (مُحدَّث)
 
 > **تم الاعتماد:** **Laravel** للباكند.  
 > **الفرونت:** التوصية الافتراضية **Blade + Livewire 3 + Alpine.js + Tailwind CSS** — راجع `docs/decisions/ADR-001-backend-laravel-frontend-stack.md`.

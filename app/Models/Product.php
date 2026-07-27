@@ -23,6 +23,15 @@ class Product extends Model
         'name',
         'product_code',
         'description',
+        'is_stock_tracked',
+        'unit',
+        'capacity_kg',
+        'category',
+    ];
+
+    protected $casts = [
+        'is_stock_tracked' => 'boolean',
+        'capacity_kg' => 'decimal:2',
     ];
 
     /** @return list<string> */
@@ -34,6 +43,22 @@ class Product extends Model
     public function currencyPrices(): HasMany
     {
         return $this->hasMany(ProductCurrencyPrice::class);
+    }
+
+    public function dailyPrices(): HasMany
+    {
+        return $this->hasMany(ProductDailyPrice::class);
+    }
+
+    public function stockBalances(): HasMany
+    {
+        return $this->hasMany(StockBalance::class);
+    }
+
+    /** أصناف الغاز التي يُتتبَّع مخزونها. */
+    public function scopeStockTracked(Builder $query): Builder
+    {
+        return $query->where('is_stock_tracked', true);
     }
 
     public function priceRowForCurrency(string $currencyCode): ?ProductCurrencyPrice

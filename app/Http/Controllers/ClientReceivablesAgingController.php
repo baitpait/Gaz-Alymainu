@@ -30,7 +30,7 @@ class ClientReceivablesAgingController extends Controller
         $summary = $svc->summary($filters);
         $filterLabels = $filters->describeActive();
 
-        $companyName = config('app.company_display_name', 'Profile Media Production');
+        $companyName = config('app.company_display_name', 'Gaz Alymainu');
 
         $html = view('pdf.client-receivables-aging', [
             'rows' => $rows,

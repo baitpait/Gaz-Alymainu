@@ -15,6 +15,7 @@ use App\Models\Supplier;
 use App\Models\SupplierBalanceAdjustment;
 use App\Models\SupplierPayment;
 use App\Models\User;
+use App\Models\Warehouse;
 use App\Policies\ClientBalanceAdjustmentPolicy;
 use App\Policies\ClientPaymentPolicy;
 use App\Policies\ClientPolicy;
@@ -27,6 +28,7 @@ use App\Policies\SalaryPaymentPolicy;
 use App\Policies\SupplierBalanceAdjustmentPolicy;
 use App\Policies\SupplierPaymentPolicy;
 use App\Policies\SupplierPolicy;
+use App\Policies\WarehousePolicy;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
@@ -67,6 +69,21 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(SupplierBalanceAdjustment::class, SupplierBalanceAdjustmentPolicy::class);
         Gate::policy(Employee::class, EmployeePolicy::class);
         Gate::policy(SalaryPayment::class, SalaryPaymentPolicy::class);
+        Gate::policy(Warehouse::class, WarehousePolicy::class);
+
+        // إدارة المخزون والتسعير اليومي والسائقين — للمحاسب فأعلى.
+        Gate::define('manage-inventory', fn (User $user): bool => $user->is_active && $user->isAccountant());
+        Gate::define('view-inventory', fn (User $user): bool => (bool) $user->is_active);
+        Gate::define('manage-daily-prices', fn (User $user): bool => $user->is_active && $user->isAccountant());
+        Gate::define('manage-drivers', fn (User $user): bool => $user->is_active && $user->isManager());
+        Gate::define('view-driver-locations', fn (User $user): bool => $user->is_active && $user->isManager());
+        Gate::define('share-location', fn (User $user): bool => $user->is_active && $user->isDriver());
+
+        // المبيعات وصندوق السائق: السائق يبيع من سيارته، والمحاسب فأعلى أيضًا.
+        Gate::define('record-sales', fn (User $user): bool => $user->is_active && ($user->isDriver() || $user->isAccountant()));
+        Gate::define('view-sales', fn (User $user): bool => (bool) $user->is_active);
+        Gate::define('manage-cash-handover', fn (User $user): bool => $user->is_active && ($user->isDriver() || $user->isAccountant()));
+        Gate::define('manage-driver-expenses', fn (User $user): bool => $user->is_active && ($user->isDriver() || $user->isAccountant()));
 
         Gate::define('view-client-receivables-aging', fn (User $user): bool => (bool) $user->is_active);
         Gate::define('export-client-receivables-aging-csv', fn (User $user): bool => $user->isAccountant());

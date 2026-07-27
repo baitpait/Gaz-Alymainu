@@ -1,11 +1,6 @@
 <x-layouts.app title="لوحة التحكم">
 @php
-    $clientCount   = \App\Models\Client::count();
     $supplierCount = \App\Models\Supplier::count();
-    $invoiceOpen   = \App\Models\Invoice::where('status','issued')->count();
-    $invoiceTotal  = \App\Models\Invoice::count();
-    $expenseCount  = \App\Models\Expense::count();
-    $paymentCount  = \App\Models\ClientPayment::count();
 @endphp
 
 {{-- رأس الصفحة --}}
@@ -16,34 +11,6 @@
 
 {{-- بطاقات الإحصاء --}}
 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-
-    <a href="{{ route('clients.index') }}" class="card p-5 hover:shadow-md transition-shadow group">
-        <div class="flex items-center justify-between mb-3">
-            <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500 group-hover:bg-blue-100 transition">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
-                </svg>
-            </div>
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-300 group-hover:text-[#C9A227] transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-            </svg>
-        </div>
-        <div class="text-3xl font-bold text-[#3D3D3D]">{{ number_format($clientCount) }}</div>
-        <div class="text-sm text-gray-400 mt-0.5">إجمالي العملاء</div>
-    </a>
-
-    <a href="{{ route('invoices.index') }}" class="card p-5 hover:shadow-md transition-shadow group">
-        <div class="flex items-center justify-between mb-3">
-            <div class="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center text-amber-500 group-hover:bg-amber-100 transition">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                </svg>
-            </div>
-            <span class="badge badge-yellow">{{ $invoiceOpen }} مفتوحة</span>
-        </div>
-        <div class="text-3xl font-bold text-[#C9A227]">{{ number_format($invoiceTotal) }}</div>
-        <div class="text-sm text-gray-400 mt-0.5">إجمالي الفواتير</div>
-    </a>
 
     <a href="{{ route('suppliers.index') }}" class="card p-5 hover:shadow-md transition-shadow group">
         <div class="flex items-center justify-between mb-3">
@@ -60,31 +27,17 @@
         <div class="text-sm text-gray-400 mt-0.5">إجمالي الموردين</div>
     </a>
 
-    <a href="{{ route('payments.index') }}" class="card p-5 hover:shadow-md transition-shadow group">
-        <div class="flex items-center justify-between mb-3">
-            <div class="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center text-green-500 group-hover:bg-green-100 transition">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
-                </svg>
-            </div>
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-300 group-hover:text-[#C9A227] transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-            </svg>
-        </div>
-        <div class="text-3xl font-bold text-[#3D3D3D]">{{ number_format($paymentCount) }}</div>
-        <div class="text-sm text-gray-400 mt-0.5">دفعات العملاء</div>
-    </a>
 
 </div>
 
-{{-- ═══ الملخص المالي (مخفي افتراضياً) — الصفحة الكاملة: «صناديق العملات» ═══ --}}
+{{-- ═══ الملخص المالي (مخفي افتراضياً) — الصفحة الكاملة: «الصناديق النقدية» ═══ --}}
 <div x-data="{ open: false }" class="mb-8">
 
     <div class="flex items-center justify-between mb-3">
         <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-widest">الملخص المالي</h2>
         <div class="flex items-center gap-2">
             <a href="{{ route('financial-summary') }}"
-               class="text-xs font-semibold text-[#C9A227] hover:underline">صفحة صناديق العملات</a>
+               class="text-xs font-semibold text-[#C9A227] hover:underline">صفحة الصناديق النقدية</a>
             <button @click="open = !open"
                     type="button"
                     class="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border border-[#E2E4E9] bg-white text-gray-500 hover:border-[#C9A227] hover:text-[#C9A227] transition select-none">
@@ -109,45 +62,6 @@
          x-cloak>
         @include('partials.currency-boxes-full')
     </div>
-</div>
-
-{{-- آخر الفواتير --}}
-<div class="card overflow-hidden">
-    <div class="flex items-center justify-between px-5 py-4 border-b border-[#E2E4E9]">
-        <h2 class="text-base font-semibold text-[#3D3D3D]">آخر الفواتير</h2>
-        <a href="{{ route('invoices.index') }}" class="text-xs text-[#C9A227] hover:underline font-medium">عرض الكل</a>
-    </div>
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th>العميل</th>
-                <th>التاريخ</th>
-                <th>العملة</th>
-                <th>المبلغ</th>
-                <th>الحالة</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse(\App\Models\Invoice::with('client')->latest('document_date')->limit(8)->get() as $inv)
-            <tr>
-                <td class="font-medium">{{ $inv->client?->displayName() ?? '—' }}</td>
-                <td class="text-gray-500" dir="ltr">{{ $inv->document_date?->format('Y-m-d') }}</td>
-                <td class="text-gray-500 font-mono text-xs" dir="ltr">{{ $inv->currency_code }}</td>
-                <td class="font-mono font-medium text-xs" dir="ltr">{{ number_format((float)$inv->total_amount,2) }}</td>
-                <td>
-                    @php $s = $inv->status; @endphp
-                    <span class="badge {{ $s==='issued' ? 'badge-green' : ($s==='draft' ? 'badge-yellow' : 'badge-red') }}">
-                        {{ $s==='issued' ? 'صادرة' : ($s==='draft' ? 'مسودة' : 'ملغاة') }}
-                    </span>
-                </td>
-            </tr>
-            @empty
-            <tr>
-                <td colspan="5" class="text-center py-10 text-gray-300 text-sm">لا توجد فواتير بعد</td>
-            </tr>
-            @endforelse
-        </tbody>
-    </table>
 </div>
 
 </x-layouts.app>

@@ -28,11 +28,12 @@ use App\Models\Supplier;
 use App\Models\SupplierBalanceAdjustment;
 use App\Models\SupplierPayment;
 use App\Models\User;
+use App\Models\Warehouse;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => redirect()->route('dashboard'));
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'driver.sales', 'block.sales'])->group(function () {
     Route::get('/dashboard', fn () => view('dashboard'))->name('dashboard');
     Route::get('/financial-summary', fn () => view('financial-summary'))->name('financial-summary');
 
@@ -153,6 +154,19 @@ Route::middleware(['auth'])->group(function () {
         ->name('reports.client-receivables-aging.pdf');
 
     Route::get('/reports', [PeriodReportsController::class, 'index'])->name('reports.index');
+
+    // ═══ تقارير الغاز ═══
+    $gasReport = function (string $view) {
+        abort_unless(auth()->user()->can('view-period-reports'), 403);
+
+        return view($view);
+    };
+    Route::get('/reports/gas-sales', fn () => $gasReport('reports.gas.sales'))->name('reports.gas-sales');
+    Route::get('/reports/gas-collections', fn () => $gasReport('reports.gas.collections'))->name('reports.gas-collections');
+    Route::get('/reports/gas-driver-cash', fn () => $gasReport('reports.gas.driver-cash'))->name('reports.gas-driver-cash');
+    Route::get('/reports/gas-stock-balances', fn () => $gasReport('reports.gas.stock-balances'))->name('reports.gas-stock-balances');
+    Route::get('/reports/gas-stock-movements', fn () => $gasReport('reports.gas.stock-movements'))->name('reports.gas-stock-movements');
+    Route::get('/reports/gas-driver-performance', fn () => $gasReport('reports.gas.driver-performance'))->name('reports.gas-driver-performance');
     Route::get('/reports/cashflow', [PeriodReportsController::class, 'cashflow'])->name('reports.cashflow');
     Route::get('/reports/cashflow/pdf', [PeriodReportsController::class, 'cashflowPdf'])->name('reports.cashflow.pdf');
     Route::get('/reports/client-payments', [PeriodReportsController::class, 'clientPayments'])->name('reports.client-payments');
@@ -357,6 +371,106 @@ Route::middleware(['auth'])->group(function () {
 
         return view('salary-payments.show', compact('salaryPayment'));
     })->name('salary-payments.show');
+
+    // ═══ الغاز والمخزون ═══
+    Route::get('/warehouses', function () {
+        abort_unless(auth()->user()->can('viewAny', Warehouse::class), 403);
+
+        return view('warehouses.index');
+    })->name('warehouses.index');
+    Route::get('/warehouses/create', function () {
+        abort_unless(auth()->user()->can('create', Warehouse::class), 403);
+
+        return view('warehouses.create');
+    })->name('warehouses.create');
+    Route::get('/warehouses/{warehouse}/edit', function (Warehouse $warehouse) {
+        abort_unless(auth()->user()->can('update', $warehouse), 403);
+
+        return view('warehouses.edit', compact('warehouse'));
+    })->name('warehouses.edit');
+    Route::get('/warehouses/{warehouse}/stock', function (Warehouse $warehouse) {
+        abort_unless(auth()->user()->can('view', $warehouse), 403);
+
+        return view('warehouses.stock', compact('warehouse'));
+    })->name('warehouses.stock');
+    Route::delete('/warehouses/{warehouse}', function (Warehouse $warehouse) {
+        abort_unless(auth()->user()->can('delete', $warehouse), 403);
+        $warehouse->delete();
+
+        return redirect()->route('warehouses.index')->with('toast', 'تم حذف المخزن');
+    })->name('warehouses.destroy');
+
+    Route::get('/drivers', function () {
+        abort_unless(auth()->user()->can('manage-drivers'), 403);
+
+        return view('drivers.index');
+    })->name('drivers.index');
+    Route::get('/drivers/map', function () {
+        abort_unless(auth()->user()->can('view-driver-locations'), 403);
+
+        return view('drivers.map');
+    })->name('drivers.map');
+    Route::get('/drivers/create', function () {
+        abort_unless(auth()->user()->can('manage-drivers'), 403);
+
+        return view('drivers.create');
+    })->name('drivers.create');
+    Route::get('/drivers/{driver}/edit', function (User $driver) {
+        abort_unless(auth()->user()->can('manage-drivers'), 403);
+        abort_unless($driver->role === 'driver', 404);
+
+        return view('drivers.edit', compact('driver'));
+    })->name('drivers.edit');
+
+    Route::get('/daily-prices', function () {
+        abort_unless(auth()->user()->can('view-inventory'), 403);
+
+        return view('daily-prices.index');
+    })->name('daily-prices.index');
+
+    Route::get('/stock-movements', function () {
+        abort_unless(auth()->user()->can('view-inventory'), 403);
+
+        return view('stock-movements.index');
+    })->name('stock-movements.index');
+    Route::get('/stock-movements/create', function () {
+        abort_unless(auth()->user()->can('manage-inventory'), 403);
+
+        return view('stock-movements.create');
+    })->name('stock-movements.create');
+
+    // ═══ المبيعات وصندوق السائق ═══
+    Route::get('/pos', function () {
+        abort_unless(auth()->user()->can('record-sales'), 403);
+
+        return view('pos.index');
+    })->name('pos.index');
+    Route::get('/sales', function () {
+        abort_unless(auth()->user()->can('view-sales'), 403);
+
+        return view('sales.index');
+    })->name('sales.index');
+    Route::get('/cash-handovers', function () {
+        abort_unless(auth()->user()->can('manage-cash-handover'), 403);
+
+        return view('cash-handovers.index');
+    })->name('cash-handovers.index');
+    Route::get('/driver-expenses', function () {
+        abort_unless(auth()->user()->can('manage-driver-expenses'), 403);
+
+        return view('driver-expenses.index');
+    })->name('driver-expenses.index');
+    Route::get('/collections', function () {
+        abort_unless(auth()->user()->can('record-sales'), 403);
+
+        return view('collections.index');
+    })->name('collections.index');
+
+    Route::get('/my-location', function () {
+        abort_unless(auth()->user()->can('share-location'), 403);
+
+        return view('location.index');
+    })->name('location.share');
 
     Route::get('/users', function () {
         abort_unless(auth()->user()->isManager(), 403);

@@ -23,7 +23,7 @@
         </td>
         <td width="28%" align="right" style="vertical-align:middle;">
             <div class="brand-name">{{ $companyName }}</div>
-            <div class="brand-sub">شركة إنتاج إعلامي وتسويق رقمي</div>
+            <div class="brand-sub">شركة توزيع غاز</div>
         </td>
     </tr>
 </table>

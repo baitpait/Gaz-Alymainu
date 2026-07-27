@@ -66,12 +66,14 @@ class SalariesPeriodReport extends Component
         return response()->streamDownload(function () use ($rows, $filters): void {
             $handle = fopen('php://output', 'w');
             fprintf($handle, chr(0xEF).chr(0xBB).chr(0xBF));
-            fputcsv($handle, ['الموظف', 'القسم', 'الشهر', 'أساسي', 'مكافأة', 'خصم', 'صافي', 'عملة', 'تاريخ الدفع', 'الحالة']);
+            fputcsv($handle, ['الموظف', 'القسم', 'الشهر', 'أيام العمل', 'أجرة اليوم', 'أساسي', 'مكافأة', 'خصم', 'صافي', 'عملة', 'تاريخ الدفع', 'الحالة']);
             foreach ($rows as $r) {
                 fputcsv($handle, [
                     $r['employee_name'],
                     $r['department'] ?? '',
                     $r['period_label'],
+                    $r['worked_days'] ?? '',
+                    $r['daily_rate'] !== null ? number_format($r['daily_rate'], 2, '.', '') : '',
                     number_format($r['base_amount'], 2, '.', ''),
                     number_format($r['bonus_amount'], 2, '.', ''),
                     number_format($r['deduction_amount'], 2, '.', ''),

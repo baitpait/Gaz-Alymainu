@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    @php $appName = config('app.name', 'بروفايل ميديا'); @endphp
+    @php $appName = config('app.name', 'غاز اليمين'); @endphp
     <title>{{ ($title ?? '') ? $title . ' — ' . $appName : $appName }}</title>
     <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,7 +22,7 @@
         <img src="{{ asset('branding/logo.png') }}" alt="{{ $appName }}" class="h-8 w-auto" onerror="this.style.display='none'">
         <div class="flex flex-col leading-tight">
             <span class="text-sm font-bold text-[#3D3D3D]">{{ $appName }}</span>
-            <span class="text-[10px] text-[#C9A227] font-medium tracking-wide">إنتاج إعلامي وتقارير تشغيلية</span>
+            <span class="text-[10px] text-[#C9A227] font-medium tracking-wide">توزيع الغاز</span>
         </div>
     </div>
     @auth
@@ -30,7 +30,7 @@
         <div class="hidden sm:block text-left">
             <div class="text-xs font-semibold text-[#3D3D3D]">{{ auth()->user()->full_name }}</div>
             <div class="text-[10px] text-gray-400">
-                {{ match(auth()->user()->role) { 'manager' => 'مدير', 'accountant' => 'محاسب', default => 'مشاهد' } }}
+                {{ match(auth()->user()->role) { 'manager' => 'مدير', 'accountant' => 'محاسب', 'driver' => 'سائق', default => 'مشاهد' } }}
             </div>
         </div>
         <div class="w-8 h-8 rounded-full bg-[#C9A227]/15 flex items-center justify-center text-[#C9A227] font-bold text-sm">
@@ -53,7 +53,8 @@
 {{-- ═══ الهيكل الرئيسي ═══ --}}
 <div class="flex flex-1 min-h-0">
 
-    {{-- ═══ القائمة الجانبية ═══ --}}
+    {{-- ═══ القائمة الجانبية (مخفية للسائق) ═══ --}}
+    @unless(auth()->user()->isDriver())
     <aside class="w-56 bg-white border-l border-[#E2E4E9] hidden md:flex flex-col py-3 shrink-0">
         <nav class="flex-1 px-3 space-y-0.5 overflow-y-auto">
 
@@ -78,6 +79,109 @@
                 </x-slot>
             </x-nav-link>
 
+            <div class="pt-4 pb-1 px-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">الغاز والمخزون</div>
+
+            <x-nav-link :route="route('products.index')" label="المنتجات" :active="request()->routeIs('products.*')">
+                <x-slot name="icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                    </svg>
+                </x-slot>
+            </x-nav-link>
+
+            @can('record-sales')
+            <x-nav-link :route="route('pos.index')" label="نقطة البيع" :active="request()->routeIs('pos.*')">
+                <x-slot name="icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                </x-slot>
+            </x-nav-link>
+            @endcan
+
+            <x-nav-link :route="route('sales.index')" label="سجل المبيعات" :active="request()->routeIs('sales.*')">
+                <x-slot name="icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                </x-slot>
+            </x-nav-link>
+
+            @can('manage-cash-handover')
+            <x-nav-link :route="route('cash-handovers.index')" label="سحب الكاش" :active="request()->routeIs('cash-handovers.*')">
+                <x-slot name="icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                </x-slot>
+            </x-nav-link>
+            @endcan
+
+            @can('manage-driver-expenses')
+            <x-nav-link :route="route('driver-expenses.index')" label="مصروفات السائق" :active="request()->routeIs('driver-expenses.*')">
+                <x-slot name="icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M17 14l-5-5-5 5m10 0H7"/>
+                    </svg>
+                </x-slot>
+            </x-nav-link>
+            @endcan
+
+            <x-nav-link :route="route('warehouses.index')" label="المخازن والسيارات" :active="request()->routeIs('warehouses.*')">
+                <x-slot name="icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                    </svg>
+                </x-slot>
+            </x-nav-link>
+
+            <x-nav-link :route="route('stock-movements.index')" label="حركات المخزون" :active="request()->routeIs('stock-movements.*')">
+                <x-slot name="icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                    </svg>
+                </x-slot>
+            </x-nav-link>
+
+            <x-nav-link :route="route('daily-prices.index')" label="التسعير اليومي" :active="request()->routeIs('daily-prices.*')">
+                <x-slot name="icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M9 7h6m-6 4h6m-6 4h4M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z"/>
+                    </svg>
+                </x-slot>
+            </x-nav-link>
+
+            @if(auth()->user()->isManager())
+            <x-nav-link :route="route('drivers.index')" label="السائقون" :active="request()->routeIs('drivers.index', 'drivers.create', 'drivers.edit')">
+                <x-slot name="icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M8 7a4 4 0 118 0 4 4 0 01-8 0zM3 20a7 7 0 0114 0H3z"/>
+                    </svg>
+                </x-slot>
+            </x-nav-link>
+            <x-nav-link :route="route('drivers.map')" label="خريطة السائقين" :active="request()->routeIs('drivers.map')">
+                <x-slot name="icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                </x-slot>
+            </x-nav-link>
+            @endif
+
+            {{-- قسم "المبيعات" مُخفى بعد التحوّل إلى نشاط توزيع الغاز (المسارات محجوبة عبر middleware: block.sales) --}}
+            @if(false)
             <div class="pt-4 pb-1 px-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">المبيعات</div>
 
             <x-nav-link :route="route('clients.index')" label="العملاء" :active="request()->routeIs('clients.*')">
@@ -94,15 +198,6 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                               d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                    </svg>
-                </x-slot>
-            </x-nav-link>
-
-            <x-nav-link :route="route('products.index')" label="الخدمات" :active="request()->routeIs('products.*')">
-                <x-slot name="icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
                     </svg>
                 </x-slot>
             </x-nav-link>
@@ -126,6 +221,7 @@
                     </svg>
                 </x-slot>
             </x-nav-link>
+            @endif
             @endif
 
             <div class="pt-4 pb-1 px-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">المشتريات</div>
@@ -191,7 +287,7 @@
 
             <div class="pt-4 pb-1 px-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">المالية</div>
 
-            <x-nav-link :route="route('financial-summary')" label="صناديق العملات"
+            <x-nav-link :route="route('financial-summary')" label="الصناديق النقدية"
                         :active="request()->routeIs('financial-summary')">
                 <x-slot name="icon">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -253,6 +349,7 @@
                 </x-slot>
             </x-nav-link>
 
+            @if(false) {{-- تقرير مبيعات مُخفى (نشاط توزيع الغاز) --}}
             <x-nav-link :route="route('reports.client-payments')" label="دفعات العملاء"
                         :active="request()->routeIs('reports.client-payments')">
                 <x-slot name="icon">
@@ -262,6 +359,7 @@
                     </svg>
                 </x-slot>
             </x-nav-link>
+            @endif
 
             <x-nav-link :route="route('reports.supplier-payments')" label="دفعات الموردين"
                         :active="request()->routeIs('reports.supplier-payments')">
@@ -303,6 +401,7 @@
                 </x-slot>
             </x-nav-link>
 
+            @if(false) {{-- تقرير مبيعات مُخفى (نشاط توزيع الغاز) --}}
             <x-nav-link :route="route('reports.sales')" label="تقرير المبيعات"
                         :active="request()->routeIs('reports.sales')">
                 <x-slot name="icon">
@@ -312,6 +411,7 @@
                     </svg>
                 </x-slot>
             </x-nav-link>
+            @endif
 
             <x-nav-link :route="route('reports.purchase-orders')" label="تقرير المشتريات"
                         :active="request()->routeIs('reports.purchase-orders')">
@@ -323,6 +423,7 @@
                 </x-slot>
             </x-nav-link>
 
+            @if(false) {{-- تقرير مبيعات مُخفى (نشاط توزيع الغاز) --}}
             <x-nav-link :route="route('reports.client-receivables-aging')" label="أعمار ذمم العملاء"
                         :active="request()->routeIs('reports.client-receivables-aging')">
                 <x-slot name="icon">
@@ -332,6 +433,7 @@
                     </svg>
                 </x-slot>
             </x-nav-link>
+            @endif
 
             <x-nav-link :route="route('reports.supplier-receivables-aging')" label="أعمار ذمم الموردين"
                         :active="request()->routeIs('reports.supplier-receivables-aging')">
@@ -352,6 +454,7 @@
                     </svg>
                 </x-slot>
             </x-nav-link>
+            @if(false) {{-- تقرير مبيعات مُخفى (نشاط توزيع الغاز) --}}
             <x-nav-link :route="route('reports.client-receivables-summary')" label="ملخص ذمم العملاء"
                         :active="request()->routeIs('reports.client-receivables-summary')">
                 <x-slot name="icon">
@@ -361,7 +464,9 @@
                     </svg>
                 </x-slot>
             </x-nav-link>
+            @endif
 
+            @if(false) {{-- تقرير مبيعات مُخفى (نشاط توزيع الغاز) --}}
             <x-nav-link :route="route('reports.aggregated-client-statements')" label="كشوف العملاء"
                         :active="request()->routeIs('reports.aggregated-client-statements')">
                 <x-slot name="icon">
@@ -371,6 +476,7 @@
                     </svg>
                 </x-slot>
             </x-nav-link>
+            @endif
 
             <x-nav-link :route="route('reports.supplier-payables-summary')" label="ملخص ذمم الموردين"
                         :active="request()->routeIs('reports.supplier-payables-summary')">
@@ -392,6 +498,7 @@
                 </x-slot>
             </x-nav-link>
 
+            @if(false) {{-- تقرير مبيعات مُخفى (نشاط توزيع الغاز) --}}
             <x-nav-link :route="route('reports.client-adjustments')" label="تسويات العملاء"
                         :active="request()->routeIs('reports.client-adjustments')">
                 <x-slot name="icon">
@@ -401,6 +508,7 @@
                     </svg>
                 </x-slot>
             </x-nav-link>
+            @endif
             @endcan
 
             @if(auth()->user()->isManager())
@@ -428,12 +536,60 @@
 
         </nav>
     </aside>
+    @endunless
 
     {{-- ═══ المحتوى الرئيسي ═══ --}}
-    <main class="flex-1 p-6 min-w-0">
+    <main class="flex-1 p-6 min-w-0 @can('record-sales') pb-24 @endcan">
         {{ $slot }}
     </main>
 </div>
+
+@can('share-location')
+{{-- مشاركة موقع السائق تلقائية على كل الصفحات (بدون أزرار إيقاف) --}}
+<livewire:driver-location-beacon />
+@endcan
+
+@can('record-sales')
+{{-- ═══ شريط التنقل السفلي (موبايل) ═══ --}}
+<nav class="fixed bottom-0 inset-x-0 z-40 bg-white border-t border-[#E2E4E9] shadow-[0_-2px_10px_rgba(0,0,0,0.05)] flex items-stretch">
+    <a href="{{ route('pos.index') }}" wire:navigate
+       class="flex-1 flex flex-col items-center justify-center gap-1 py-2.5 transition {{ request()->routeIs('pos.*') ? 'text-[#C9A227]' : 'text-gray-400' }}">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+        </svg>
+        <span class="text-[11px] font-bold">المبيعات</span>
+    </a>
+
+    <a href="{{ route('collections.index') }}" wire:navigate
+       class="flex-1 flex flex-col items-center justify-center gap-1 py-2.5 transition {{ request()->routeIs('collections.*') ? 'text-[#C9A227]' : 'text-gray-400' }}">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+        </svg>
+        <span class="text-[11px] font-bold">التحصيل</span>
+    </a>
+
+    @can('manage-driver-expenses')
+    <a href="{{ route('driver-expenses.index') }}" wire:navigate
+       class="flex-1 flex flex-col items-center justify-center gap-1 py-2.5 transition {{ request()->routeIs('driver-expenses.*') ? 'text-[#C9A227]' : 'text-gray-400' }}">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M17 14l-5-5-5 5m10 0H7"/>
+        </svg>
+        <span class="text-[11px] font-bold">المصروفات</span>
+    </a>
+    @endcan
+
+    @can('share-location')
+    <a href="{{ route('location.share') }}" wire:navigate
+       class="flex-1 flex flex-col items-center justify-center gap-1 py-2.5 transition {{ request()->routeIs('location.*') ? 'text-[#C9A227]' : 'text-gray-400' }}">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+        <span class="text-[11px] font-bold">موقعي</span>
+    </a>
+    @endcan
+</nav>
+@endcan
 
 @include('components.layouts.footer')
 

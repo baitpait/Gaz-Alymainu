@@ -46,12 +46,37 @@
         </div>
     </div>
 
+    @if($isDaily)
+    <div class="grid sm:grid-cols-3 gap-4">
+        <div>
+            <label class="label">أجرة اليوم <span class="text-red-400">*</span></label>
+            <input wire:model.live="daily_rate" type="number" step="0.01" min="0" dir="ltr" class="input">
+            @error('daily_rate')<p class="field-error">{{ $message }}</p>@enderror
+        </div>
+        <div>
+            <label class="label">عدد أيام العمل <span class="text-red-400">*</span></label>
+            <input wire:model.live="worked_days" type="number" step="1" min="0" max="31" dir="ltr" class="input">
+            @error('worked_days')<p class="field-error">{{ $message }}</p>@enderror
+        </div>
+        <div>
+            <label class="label">الأساسي (محسوب)</label>
+            <input value="{{ number_format((float) $base_amount, 2) }}" type="text" dir="ltr" class="input bg-gray-100" readonly>
+            <p class="text-xs text-gray-400 mt-1">أجرة اليوم × عدد الأيام</p>
+        </div>
+    </div>
+    @else
     <div class="grid sm:grid-cols-3 gap-4">
         <div>
             <label class="label">الأساسي</label>
             <input wire:model.live="base_amount" type="number" step="0.01" min="0" dir="ltr" class="input">
             @error('base_amount')<p class="field-error">{{ $message }}</p>@enderror
         </div>
+        <div class="hidden sm:block"></div>
+        <div class="hidden sm:block"></div>
+    </div>
+    @endif
+
+    <div class="grid sm:grid-cols-2 gap-4">
         <div>
             <label class="label">مكافأة</label>
             <input wire:model.live="bonus_amount" type="number" step="0.01" min="0" dir="ltr" class="input">

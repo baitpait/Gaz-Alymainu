@@ -2,7 +2,7 @@
 
 <div class="flex items-center justify-between mb-6">
     <div>
-        <h1 class="text-xl font-bold text-[#3D3D3D]">الخدمات</h1>
+        <h1 class="text-xl font-bold text-[#3D3D3D]">المنتجات</h1>
         <p class="text-sm text-gray-400 mt-0.5">{{ $rows->total() }} خدمة</p>
     </div>
     @can('create', \App\Models\Product::class)

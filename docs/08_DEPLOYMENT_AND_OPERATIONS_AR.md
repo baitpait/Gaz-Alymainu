@@ -1,4 +1,4 @@
-# دليل النشر والتشغيل — بروفايل ميدا
+# دليل النشر والتشغيل — غاز اليمين
 
 > هذا الملف يجمع كل ما يخص نشر التطبيق على الإنتاج (profile.baitpait.com)، الاستيراد من ERP القديم، النسخ الاحتياطي، استكشاف الأخطاء الشائعة، وإدارة Git على السيرفر.
 
@@ -170,7 +170,7 @@ php artisan tinker --execute='\App\Models\User::where("email","admin@baitpait.co
 أهم المفاتيح للإنتاج:
 
 ```env
-APP_NAME="بروفايل ميدا"
+APP_NAME="غاز اليمين"
 APP_ENV=production
 APP_DEBUG=false
 APP_URL=https://profile.baitpait.com

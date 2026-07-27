@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -36,5 +37,23 @@ class User extends Authenticatable
     public function isManager(): bool
     {
         return $this->role === 'manager';
+    }
+
+    public function isDriver(): bool
+    {
+        return $this->role === 'driver';
+    }
+
+    /** ملف الموظف المرتبط بحساب الدخول (للسائقين). */
+    public function employee(): HasOne
+    {
+        return $this->hasOne(Employee::class, 'user_id');
+    }
+
+    /** السيارة (مخزن متحرك) المسندة لهذا المستخدم إن كان سائقًا. */
+    public function assignedVehicle(): HasOne
+    {
+        return $this->hasOne(Warehouse::class, 'assigned_user_id')
+            ->where('type', 'vehicle');
     }
 }

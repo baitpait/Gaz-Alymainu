@@ -303,8 +303,8 @@
       </div>
       <div class="header-side-brand">
         <div class="brand-text">
-          <div class="brand-name">Profile Media Prodution</div>
-          <div class="brand-sub">شركة إنتاج إعلامي وتسويق رقمي</div>
+          <div class="brand-name">Gaz Alymainu</div>
+          <div class="brand-sub">شركة توزيع غاز</div>
         </div>
       </div>
     </div>
@@ -409,7 +409,7 @@
   {{-- ── Footer ── --}}
   <div class="footer">
     <div class="footer-main">
-      <div class="footer-thanks">Profile Media Prodution — شكراً لثقتكم</div>
+      <div class="footer-thanks">Gaz Alymainu — شكراً لثقتكم</div>
     </div>
     <div class="footer-contact-block">
       <div class="footer-contact">لاستفساراتكم تواصل معنا على الرقم</div>

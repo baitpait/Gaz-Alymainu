@@ -21,6 +21,8 @@ class SalaryPayment extends Model
         'period_year',
         'period_month',
         'base_amount',
+        'worked_days',
+        'daily_rate',
         'bonus_amount',
         'deduction_amount',
         'net_amount',
@@ -35,6 +37,8 @@ class SalaryPayment extends Model
 
     protected $casts = [
         'base_amount' => 'decimal:4',
+        'worked_days' => 'integer',
+        'daily_rate' => 'decimal:4',
         'bonus_amount' => 'decimal:4',
         'deduction_amount' => 'decimal:4',
         'net_amount' => 'decimal:4',
