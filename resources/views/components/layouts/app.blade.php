@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    @php $appName = config('app.name', 'غاز اليمين'); @endphp
+    @php $appName = config('app.name', 'غاز اليمني'); @endphp
     <title>{{ ($title ?? '') ? $title . ' — ' . $appName : $appName }}</title>
     <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,7 +19,7 @@
 {{-- ═══ شريط التنقل العلوي ═══ --}}
 <header class="bg-white border-b border-[#E2E4E9] h-14 flex items-center px-5 sticky top-0 z-30 shadow-sm">
     <div class="flex items-center gap-3 flex-1">
-        <img src="{{ asset('branding/logo.png') }}" alt="{{ $appName }}" class="h-8 w-auto" onerror="this.style.display='none'">
+        <img src="{{ asset('branding/logo.png') }}" alt="{{ $appName }}" class="h-8 w-8 object-contain shrink-0" onerror="this.style.display='none'">
         <div class="flex flex-col leading-tight">
             <span class="text-sm font-bold text-[#3D3D3D]">{{ $appName }}</span>
             <span class="text-[10px] text-[#C9A227] font-medium tracking-wide">توزيع الغاز</span>

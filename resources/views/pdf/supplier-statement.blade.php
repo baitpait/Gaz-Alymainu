@@ -102,7 +102,7 @@ tfoot td { background: #F5F5F5; font-weight: bold; }
 
 <div class="header">
     <div class="header-brand">
-        غاز اليمين
+        {{ config('app.name', 'غاز اليمني') }}
         <small>توزيع الغاز</small>
     </div>
     <div class="header-meta">
@@ -222,7 +222,7 @@ tfoot td { background: #F5F5F5; font-weight: bold; }
 @endforeach
 
 <div class="footer">
-    <p>وثيقة داخلية — غاز اليمين لتوزيع الغاز &bull; صدر بتاريخ {{ now()->format('Y-m-d H:i') }} UTC</p>
+    <p>وثيقة داخلية — {{ config('app.name', 'غاز اليمني') }} · توزيع الغاز &bull; صدر بتاريخ {{ now()->format('Y-m-d H:i') }} UTC</p>
 </div>
 
 </body>

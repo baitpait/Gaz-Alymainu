@@ -299,7 +299,7 @@
         <div class="invoice-title">فاتورة</div>
       </div>
       <div class="header-logo">
-        <img src="{{ asset('branding/logo.png') }}" alt="Logo">
+        <img src="{{ asset('branding/logo-print.png') }}" alt="Logo">
       </div>
       <div class="header-side-brand">
         <div class="brand-text">

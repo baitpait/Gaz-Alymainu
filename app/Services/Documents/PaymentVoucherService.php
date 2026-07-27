@@ -30,8 +30,8 @@ class PaymentVoucherService
                 $payment->currency_code ?? 'ILS'
             ),
             'methodLabel' => PaymentMethod::label($payment->method),
-            'companyName' => config('app.company_display_name', config('app.name', 'غاز اليمين')),
-            'logoPath' => public_path('branding/logo.png'),
+            'companyName' => config('app.company_display_name', config('app.name', 'غاز اليمني')),
+            'logoPath' => public_path('branding/logo-print.png'),
             'pdfUrl' => route('payments.pdf', $payment),
         ];
     }
@@ -53,8 +53,8 @@ class PaymentVoucherService
                 $payment->currency_code ?? 'ILS'
             ),
             'methodLabel' => PaymentMethod::label($payment->method),
-            'companyName' => config('app.company_display_name', config('app.name', 'غاز اليمين')),
-            'logoPath' => public_path('branding/logo.png'),
+            'companyName' => config('app.company_display_name', config('app.name', 'غاز اليمني')),
+            'logoPath' => public_path('branding/logo-print.png'),
             'pdfUrl' => route('supplier-payments.pdf', $payment),
         ];
     }

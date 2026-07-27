@@ -223,7 +223,7 @@ body {
 <body>
 
 @php
-    $logoPath = public_path('branding/logo.png');
+    $logoPath = public_path('branding/logo-print.png');
     $logoExists = file_exists($logoPath);
 
     $printDate = $dateTo

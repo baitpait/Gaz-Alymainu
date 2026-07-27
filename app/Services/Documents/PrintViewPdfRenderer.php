@@ -81,7 +81,7 @@ class PrintViewPdfRenderer
      */
     private function inlineLocalPublicAssets(string $html): string
     {
-        $logoPath = public_path('branding/logo.png');
+        $logoPath = public_path('branding/logo-print.png');
         if (! is_readable($logoPath)) {
             return $html;
         }
@@ -89,7 +89,7 @@ class PrintViewPdfRenderer
         $dataUri = 'data:image/png;base64,'.base64_encode((string) file_get_contents($logoPath));
 
         $replaced = preg_replace(
-            '#src="[^"]*branding/logo\.png(?:\?[^"]*)?"#',
+            '#src="[^"]*branding/logo(?:-print)?\.png(?:\?[^"]*)?"#',
             'src="'.$dataUri.'"',
             $html
         );

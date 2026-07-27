@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    @php $appName = config('app.name', 'غاز اليمين'); @endphp
+    @php $appName = config('app.name', 'غاز اليمني'); @endphp
     <title>تسجيل الدخول — {{ $appName }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -38,12 +38,12 @@
         {{-- رأس الصفحة --}}
         <div class="text-center mb-8">
             <div class="flex items-center justify-center gap-3 mb-4">
-                <img src="{{ asset('branding/logo.png') }}" alt="{{ $appName }}"
+                <img src="{{ asset('branding/logo-mark-light.png') }}" alt="{{ $appName }}"
                      class="h-14 w-auto drop-shadow-lg"
-                     onerror="this.style.display='none'">
+                     onerror="this.src='{{ asset('branding/logo.png') }}';this.onerror=null;">
             </div>
             <h1 class="text-2xl font-black text-white tracking-tight">{{ $appName }}</h1>
-            <p class="text-sm mt-1" style="color:#C9A227;">Gaz Alymainu</p>
+            <p class="text-sm mt-1" style="color:#C9A227;">{{ config('app.company_display_name', 'Gaz Al-Yamani') }}</p>
         </div>
 
         {{-- البطاقة البيضاء --}}

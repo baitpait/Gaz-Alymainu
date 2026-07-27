@@ -173,7 +173,8 @@ php artisan tinker --execute='\App\Models\User::where("email","admin@baitpait.co
 أهم المفاتيح للإنتاج:
 
 ```env
-APP_NAME="غاز اليمين"
+APP_NAME="غاز اليمني"
+COMPANY_DISPLAY_NAME="Gaz Al-Yamani"
 APP_ENV=production
 APP_DEBUG=false
 APP_URL=https://gaz.baitpait.space

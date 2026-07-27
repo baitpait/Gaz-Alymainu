@@ -446,7 +446,7 @@ class PeriodReportsController extends Controller
     /** @param array<string, mixed> $data */
     private function streamPdf(ArabicPdfRenderer $pdfRenderer, string $view, array $data, string $filename, string $title)
     {
-        $companyName = config('app.company_display_name', 'Gaz Alymainu');
+        $companyName = config('app.company_display_name', 'Gaz Al-Yamani');
 
         $html = view($view, array_merge($data, [
             'companyName' => $companyName,

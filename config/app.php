@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'غاز اليمين'),
+    'name' => env('APP_NAME', 'غاز اليمني'),
 
     /*
     |--------------------------------------------------------------------------
@@ -35,7 +35,7 @@ return [
     | Company Display Name (PDF / print letterhead)
     |--------------------------------------------------------------------------
     */
-    'company_display_name' => env('COMPANY_DISPLAY_NAME', 'Gaz Alymainu'),
+    'company_display_name' => env('COMPANY_DISPLAY_NAME', 'Gaz Al-Yamani'),
 
     /*
     |--------------------------------------------------------------------------

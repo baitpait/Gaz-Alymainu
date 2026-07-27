@@ -246,7 +246,7 @@
         <div class="doc-subtitle">{{ $voucherSubtitle }}</div>
       </div>
       <div class="header-logo">
-        <img src="{{ asset('branding/logo.png') }}" alt="Logo" onerror="this.style.display='none'">
+        <img src="{{ asset('branding/logo-print.png') }}" alt="Logo" onerror="this.style.display='none'">
       </div>
       <div class="header-side-brand">
         <div class="brand-text">
