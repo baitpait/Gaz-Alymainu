@@ -10,7 +10,7 @@
 |--------|---------|
 | Backend | Laravel 12 / PHP 8.2 |
 | Frontend | Blade + Livewire 3 + Alpine.js + Tailwind CSS v4 |
-| قاعدة البيانات | SQLite (تطوير) — MySQL/PostgreSQL (إنتاج) |
+| قاعدة البيانات | MySQL (محلي + إنتاج) — SQLite اختياري للتطوير فقط |
 | PDF | barryvdh/laravel-dompdf |
 | اختبارات | Pest v3 |
 
@@ -38,7 +38,7 @@ composer install
 # 4. تثبيت تبعيات Node
 npm install
 
-# 5. تشغيل المايغريشن (SQLite افتراضياً)
+# 5. تشغيل المايغريشن (MySQL — أنشئ القاعدة أولاً وطابق DB_* في .env)
 php artisan migrate
 
 # 6. بناء الأصول
