@@ -1,7 +1,7 @@
 <div>
     <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
         <div>
-            <h1 class="text-2xl font-bold text-[#3D3D3D]">دفعات الموردين</h1>
+            <h1 class="text-2xl font-bold text-[#1E293B]">دفعات الموردين</h1>
             <p class="text-sm text-gray-500 mt-1">تفصيل كل دفعة مورد ضمن الفترة المحددة.</p>
         </div>
         @include('livewire.partials.period-report-export-actions', ['pdfExportUrl' => $pdfExportUrl])

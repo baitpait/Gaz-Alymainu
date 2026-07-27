@@ -2,13 +2,13 @@
 
 <div class="flex items-center justify-between mb-6">
     <div>
-        <h1 class="text-xl font-bold text-[#3D3D3D]">تسويات العملاء</h1>
+        <h1 class="text-xl font-bold text-[#1E293B]">تسويات العملاء</h1>
         <p class="text-sm text-gray-400 mt-0.5">خصم أو إعفاء على الذمة دون تعديل الفواتير — {{ $rows->total() }} تسوية</p>
     </div>
 </div>
 
 <div class="card p-4 mb-5">
-    <p class="text-sm font-semibold text-[#3D3D3D] mb-3">تسوية جديدة</p>
+    <p class="text-sm font-semibold text-[#1E293B] mb-3">تسوية جديدة</p>
     <div class="flex flex-wrap gap-3 items-end">
         <div class="flex-1 min-w-[200px]">
             @include('livewire.partials.client-select-with-search', ['clients' => $clients, 'placeholder' => '— اختر العميل —'])
@@ -46,7 +46,7 @@
                 <td class="font-mono font-semibold text-[#7C3AED]" dir="ltr">−{{ number_format((float) $adj->amount, 2) }} {{ $adj->currency_code }}</td>
                 <td>
                     <div class="flex items-center gap-1 justify-end">
-                        <a href="{{ route('clients.statement', $adj->client_id) }}" wire:navigate class="btn btn-ghost py-1 px-2 text-xs text-[#C9A227]" style="text-decoration:none;">كشف</a>
+                        <a href="{{ route('clients.statement', $adj->client_id) }}" wire:navigate class="btn btn-ghost py-1 px-2 text-xs text-[#1B6CA8]" style="text-decoration:none;">كشف</a>
                         <a href="{{ route('clients.adjustments.edit', [$adj->client_id, $adj]) }}" wire:navigate class="btn btn-ghost py-1 px-2 text-xs text-blue-600" style="text-decoration:none;">تعديل</a>
                         @if(auth()->user()->isManager())
                         <form method="POST" action="{{ route('clients.adjustments.destroy', [$adj->client_id, $adj]) }}" class="inline" onsubmit="return confirm('حذف هذه التسوية؟')">

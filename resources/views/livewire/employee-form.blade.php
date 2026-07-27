@@ -1,7 +1,7 @@
 <div>
 <div class="flex items-center justify-between mb-6">
     <div>
-        <h1 class="text-xl font-bold text-[#3D3D3D]">{{ $employeeId ? 'تعديل موظف' : 'إضافة موظف' }}</h1>
+        <h1 class="text-xl font-bold text-[#1E293B]">{{ $employeeId ? 'تعديل موظف' : 'إضافة موظف' }}</h1>
     </div>
     <div class="flex gap-2">
         <a href="{{ route('employees.index') }}" wire:navigate class="btn btn-secondary" style="text-decoration:none;">إلغاء</a>

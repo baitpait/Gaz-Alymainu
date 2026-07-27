@@ -3,13 +3,13 @@
 <div class="flex items-center justify-between mb-6">
     <div class="flex items-center gap-3">
         <a href="{{ route('products.index') }}" wire:navigate
-           class="w-9 h-9 flex items-center justify-center rounded-full border border-[#E2E4E9] bg-white text-[#6B7280] hover:bg-[#F3F4F6]">
+           class="w-9 h-9 flex items-center justify-center rounded-full border border-[#E2E8F0] bg-white text-[#6B7280] hover:bg-[#F3F4F6]">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
             </svg>
         </a>
         <div>
-            <h1 class="text-xl font-bold text-[#3D3D3D]">{{ $productId ? 'تعديل الخدمة' : 'خدمة جديدة' }}</h1>
+            <h1 class="text-xl font-bold text-[#1E293B]">{{ $productId ? 'تعديل الخدمة' : 'خدمة جديدة' }}</h1>
             @if($productId)
             <p class="text-xs text-gray-400 mt-0.5">رقم #{{ $productId }}</p>
             @endif
@@ -41,12 +41,12 @@
 
 <div class="card p-5 space-y-4 mb-6">
     <div>
-        <p class="text-sm font-bold text-[#3D3D3D]">مخزون الغاز</p>
+        <p class="text-sm font-bold text-[#1E293B]">مخزون الغاز</p>
         <p class="text-xs text-gray-500 mt-1">فعّل التتبّع لأصناف جرات الغاز لتظهر في المخازن والتسعير اليومي والتحميل.</p>
     </div>
     <label class="flex items-center gap-2 cursor-pointer">
-        <input wire:model.live="is_stock_tracked" type="checkbox" class="rounded border-[#E2E4E9]">
-        <span class="text-sm text-[#3D3D3D]">تتبّع المخزون (صنف غاز)</span>
+        <input wire:model.live="is_stock_tracked" type="checkbox" class="rounded border-[#E2E8F0]">
+        <span class="text-sm text-[#1E293B]">تتبّع المخزون (صنف غاز)</span>
     </label>
     @if($is_stock_tracked)
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -70,8 +70,8 @@
 </div>
 
 <div class="card overflow-hidden mb-6">
-    <div class="px-5 py-3 border-b border-[#E2E4E9] bg-[#F9F9FB]">
-        <p class="text-sm font-bold text-[#3D3D3D]">الأسعار حسب العملة</p>
+    <div class="px-5 py-3 border-b border-[#E2E8F0] bg-[#F9F9FB]">
+        <p class="text-sm font-bold text-[#1E293B]">الأسعار حسب العملة</p>
         <p class="text-xs text-gray-500 mt-1">لكل عملة: إما تترك الصف فارغًا بالكامل، أو تُدخل <strong>تكلفة الخدمة</strong> و<strong>الحد الأدنى للبيع</strong> و<strong>سعر البيع</strong> معًا. يجب أن يكون الحد الأدنى ≤ سعر البيع.</p>
     </div>
     <div class="overflow-x-auto">

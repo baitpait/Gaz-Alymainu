@@ -7,7 +7,7 @@
 
 body {
     font-family: xbriyaz, sans-serif;
-    color: #3D3D3D;
+    color: #1E293B;
     font-size: 10pt;
     direction: rtl;
 }
@@ -41,7 +41,7 @@ body {
 .header-company {
     font-size: 10pt;
     font-weight: bold;
-    color: #3D3D3D;
+    color: #1E293B;
     direction: ltr;
     text-align: center;
 }

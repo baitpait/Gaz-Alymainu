@@ -1,6 +1,6 @@
 <div class="max-w-md mx-auto">
     <div class="mb-5">
-        <h1 class="text-xl font-bold text-[#3D3D3D]">موقعي</h1>
+        <h1 class="text-xl font-bold text-[#1E293B]">موقعي</h1>
         <p class="text-sm text-gray-500 mt-1">المشاركة تلقائية — لا يمكن إيقافها من هنا.</p>
     </div>
 

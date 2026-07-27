@@ -34,7 +34,7 @@
     cursor: pointer;
     text-decoration: none;
     white-space: nowrap;
-    background: #C9A227;
+    background: #1B6CA8;
     color: #fff;
     box-shadow: 0 4px 16px rgba(201, 162, 39, 0.4);
   }
@@ -42,7 +42,7 @@
     background: #b08f20;
   }
   .print-actions .print-btn-pdf {
-    background: #3D3D3D;
+    background: #1E293B;
     box-shadow: 0 4px 16px rgba(61, 61, 61, 0.35);
   }
   .print-actions .print-btn-pdf:hover {

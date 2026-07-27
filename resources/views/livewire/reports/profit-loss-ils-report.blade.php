@@ -1,7 +1,7 @@
 <div>
     <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
         <div>
-            <h1 class="text-2xl font-bold text-[#3D3D3D]">الربح والخسارة بالشيكل</h1>
+            <h1 class="text-2xl font-bold text-[#1E293B]">الربح والخسارة بالشيكل</h1>
             <p class="text-sm text-gray-500 mt-1">تحويل بأسعار بنك إسرائيل الיציג — أساس الحساب: {{ $basisLabel }}.</p>
         </div>
         @include('livewire.partials.period-report-export-actions', ['pdfExportUrl' => $pdfExportUrl])
@@ -10,7 +10,7 @@
     <div class="flex flex-wrap gap-2 mb-4 text-sm">
         <a href="{{ route('reports.profit-loss') }}" wire:navigate class="px-3 py-1.5 rounded border bg-white border-[#E0E0E0] text-gray-600" style="text-decoration:none;">كامل (فواتير)</a>
         <a href="{{ route('reports.profit-loss-cash') }}" wire:navigate class="px-3 py-1.5 rounded border bg-white border-[#E0E0E0] text-gray-600" style="text-decoration:none;">بدون دين (نقدي)</a>
-        <a href="{{ route('reports.profit-loss-ils') }}" wire:navigate class="px-3 py-1.5 rounded border bg-[#3D3D3D] text-white border-[#3D3D3D]" style="text-decoration:none;">بالشيكل (FX)</a>
+        <a href="{{ route('reports.profit-loss-ils') }}" wire:navigate class="px-3 py-1.5 rounded border bg-[#1E293B] text-white border-[#1E293B]" style="text-decoration:none;">بالشيكل (FX)</a>
     </div>
 
     <div class="flex gap-2 mb-4 text-xs">

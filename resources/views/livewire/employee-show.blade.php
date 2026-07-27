@@ -1,7 +1,7 @@
 <div>
 <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
     <div>
-        <h1 class="text-2xl font-bold text-[#3D3D3D]">{{ $employee->displayName() }}</h1>
+        <h1 class="text-2xl font-bold text-[#1E293B]">{{ $employee->displayName() }}</h1>
         <p class="text-sm text-gray-500 mt-1">{{ $employee->job_title ?? '—' }} · {{ $employee->department ?? '—' }}</p>
     </div>
     <div class="flex gap-2">
@@ -21,7 +21,7 @@
     </div>
     <div class="card p-4">
         <p class="text-xs text-gray-400 mb-1">نوع التوظيف</p>
-        <p class="font-semibold text-[#3D3D3D]">{{ App\Models\Employee::employmentTypeLabel($employee->pay_frequency) }}</p>
+        <p class="font-semibold text-[#1E293B]">{{ App\Models\Employee::employmentTypeLabel($employee->pay_frequency) }}</p>
     </div>
     <div class="card p-4">
         <p class="text-xs text-gray-400 mb-1">الحالة</p>
@@ -35,7 +35,7 @@
 </div>
 
 <div class="card overflow-hidden">
-    <div class="px-4 py-3 border-b border-[#E2E4E9] font-bold text-sm">سجل الرواتب</div>
+    <div class="px-4 py-3 border-b border-[#E2E8F0] font-bold text-sm">سجل الرواتب</div>
     <table class="data-table">
         <thead>
             <tr>
@@ -59,7 +59,7 @@
                     @endif
                 </td>
                 <td class="font-mono text-sm" dir="ltr">{{ number_format((float)$pay->base_amount, 2) }} {{ $pay->currency_code }}</td>
-                <td class="font-mono font-semibold text-sm text-[#C9A227]" dir="ltr">{{ number_format((float)$pay->net_amount, 2) }}</td>
+                <td class="font-mono font-semibold text-sm text-[#1B6CA8]" dir="ltr">{{ number_format((float)$pay->net_amount, 2) }}</td>
                 <td>{{ App\Models\SalaryPayment::statusLabel($pay->status) }}</td>
                 <td>
                     @can('update', $pay)

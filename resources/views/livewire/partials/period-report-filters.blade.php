@@ -11,23 +11,23 @@
 
 <form wire:submit.prevent="{{ $applyMethod }}" class="bg-white border border-[#E0E0E0] rounded p-4 mb-6">
     <div class="flex flex-wrap items-end justify-between gap-3 mb-3">
-        <h2 class="text-sm font-bold text-[#3D3D3D]">فترة التقرير</h2>
+        <h2 class="text-sm font-bold text-[#1E293B]">فترة التقرير</h2>
     </div>
     <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         <div>
-            <label class="block text-xs font-medium text-[#3D3D3D] mb-1">من تاريخ</label>
+            <label class="block text-xs font-medium text-[#1E293B] mb-1">من تاريخ</label>
             <input type="date" wire:model="dateFrom" dir="ltr"
-                   class="border border-[#E0E0E0] rounded px-3 py-2 text-sm w-full focus:outline-none focus:border-[#C9A227]">
+                   class="border border-[#E0E0E0] rounded px-3 py-2 text-sm w-full focus:outline-none focus:border-[#1B6CA8]">
         </div>
         <div>
-            <label class="block text-xs font-medium text-[#3D3D3D] mb-1">إلى تاريخ</label>
+            <label class="block text-xs font-medium text-[#1E293B] mb-1">إلى تاريخ</label>
             <input type="date" wire:model="dateTo" dir="ltr"
-                   class="border border-[#E0E0E0] rounded px-3 py-2 text-sm w-full focus:outline-none focus:border-[#C9A227]">
+                   class="border border-[#E0E0E0] rounded px-3 py-2 text-sm w-full focus:outline-none focus:border-[#1B6CA8]">
         </div>
         <div>
-            <label class="block text-xs font-medium text-[#3D3D3D] mb-1">العملة</label>
+            <label class="block text-xs font-medium text-[#1E293B] mb-1">العملة</label>
             <select wire:model="currency"
-                    class="border border-[#E0E0E0] rounded px-3 py-2 text-sm w-full focus:outline-none focus:border-[#C9A227]">
+                    class="border border-[#E0E0E0] rounded px-3 py-2 text-sm w-full focus:outline-none focus:border-[#1B6CA8]">
                 <option value="">كل العملات</option>
                 @foreach($currencyOptions as $c)
                     <option value="{{ $c }}" dir="ltr">{{ $c }}</option>
@@ -36,9 +36,9 @@
         </div>
         @if($showMethod)
         <div>
-            <label class="block text-xs font-medium text-[#3D3D3D] mb-1">طريقة الدفع</label>
+            <label class="block text-xs font-medium text-[#1E293B] mb-1">طريقة الدفع</label>
             <select wire:model="method"
-                    class="border border-[#E0E0E0] rounded px-3 py-2 text-sm w-full focus:outline-none focus:border-[#C9A227]">
+                    class="border border-[#E0E0E0] rounded px-3 py-2 text-sm w-full focus:outline-none focus:border-[#1B6CA8]">
                 <option value="">الكل</option>
                 <option value="cash">نقداً</option>
                 <option value="bank">بنك</option>
@@ -49,9 +49,9 @@
         @endif
         @if($showClient)
         <div>
-            <label class="block text-xs font-medium text-[#3D3D3D] mb-1">العميل</label>
+            <label class="block text-xs font-medium text-[#1E293B] mb-1">العميل</label>
             <select wire:model="clientId"
-                    class="border border-[#E0E0E0] rounded px-3 py-2 text-sm w-full focus:outline-none focus:border-[#C9A227]">
+                    class="border border-[#E0E0E0] rounded px-3 py-2 text-sm w-full focus:outline-none focus:border-[#1B6CA8]">
                 <option value="">كل العملاء</option>
                 @foreach($clientOptions as $id => $name)
                     <option value="{{ $id }}">{{ $name }}</option>
@@ -61,9 +61,9 @@
         @endif
         @if($showSupplier)
         <div>
-            <label class="block text-xs font-medium text-[#3D3D3D] mb-1">المورد</label>
+            <label class="block text-xs font-medium text-[#1E293B] mb-1">المورد</label>
             <select wire:model="supplierId"
-                    class="border border-[#E0E0E0] rounded px-3 py-2 text-sm w-full focus:outline-none focus:border-[#C9A227]">
+                    class="border border-[#E0E0E0] rounded px-3 py-2 text-sm w-full focus:outline-none focus:border-[#1B6CA8]">
                 <option value="">كل الموردين</option>
                 @foreach($supplierOptions as $id => $name)
                     <option value="{{ $id }}">{{ $name }}</option>

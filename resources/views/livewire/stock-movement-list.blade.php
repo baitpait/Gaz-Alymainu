@@ -2,7 +2,7 @@
 
 <div class="flex items-center justify-between mb-6">
     <div>
-        <h1 class="text-xl font-bold text-[#3D3D3D]">حركات المخزون</h1>
+        <h1 class="text-xl font-bold text-[#1E293B]">حركات المخزون</h1>
         <p class="text-sm text-gray-400 mt-0.5">{{ $rows->total() }} حركة</p>
     </div>
     @can('manage-inventory')
@@ -29,7 +29,7 @@
             @forelse($rows as $m)
             <tr>
                 <td class="text-sm text-gray-500" dir="ltr">{{ $m->moved_at?->format('Y-m-d') }}</td>
-                <td><span class="rounded px-2 py-0.5 bg-[#F7F8FA] border border-[#E2E4E9] text-xs">{{ $m->type->label() }}</span></td>
+                <td><span class="rounded px-2 py-0.5 bg-[#F7F8FA] border border-[#E2E8F0] text-xs">{{ $m->type->label() }}</span></td>
                 <td class="font-semibold text-sm">{{ $m->product?->name ?? '—' }}</td>
                 <td class="text-sm text-gray-500">{{ $m->fromWarehouse?->name ?? '—' }}</td>
                 <td class="text-sm text-gray-500">{{ $m->toWarehouse?->name ?? '—' }}</td>

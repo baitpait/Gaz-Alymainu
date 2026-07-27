@@ -10,17 +10,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="min-h-screen font-sans flex flex-col" dir="rtl" style="background: #0f0f0f;">
+<body class="min-h-screen font-sans flex flex-col" dir="rtl" style="background: #0B1929;">
 
 {{-- خلفية ديناميكية --}}
 <div class="fixed inset-0 overflow-hidden pointer-events-none">
-    {{-- دائرة ذهبية ضبابية يمين أعلى --}}
+    {{-- دائرة زرقاء ضبابية يمين أعلى --}}
     <div style="position:absolute;top:-120px;right:-80px;width:500px;height:500px;
-                background:radial-gradient(circle, rgba(201,162,39,0.18) 0%, transparent 70%);
+                background:radial-gradient(circle, rgba(27,108,168,0.22) 0%, transparent 70%);
                 border-radius:50%;"></div>
-    {{-- دائرة أصغر يسار أسفل --}}
+    {{-- دائرة برتقالية يسار أسفل --}}
     <div style="position:absolute;bottom:-100px;left:-60px;width:350px;height:350px;
-                background:radial-gradient(circle, rgba(201,162,39,0.1) 0%, transparent 70%);
+                background:radial-gradient(circle, rgba(232,93,4,0.12) 0%, transparent 70%);
                 border-radius:50%;"></div>
     {{-- خطوط شبكة خفيفة --}}
     <div style="position:absolute;inset:0;
@@ -43,7 +43,7 @@
                      onerror="this.style.display='none'">
             </div>
             <h1 class="text-2xl font-black text-white tracking-tight">{{ $appName }}</h1>
-            <p class="text-sm mt-1" style="color:#C9A227;">{{ config('app.company_display_name', 'Gaz Al-Yamani') }}</p>
+            <p class="text-sm mt-1" style="color:#E85D04;">{{ config('app.company_display_name', 'Gaz Al-Yamani') }}</p>
         </div>
 
         {{-- البطاقة البيضاء --}}
@@ -72,7 +72,7 @@
                                   border-radius:10px;padding:0.65rem 0.875rem;font-size:0.875rem;color:#fff;
                                   outline:none;transition:border-color .2s,box-shadow .2s;
                                   {{ $errors->has('email') ? 'border-color:#ef4444;' : '' }}"
-                           onfocus="this.style.borderColor='#C9A227';this.style.boxShadow='0 0 0 3px rgba(201,162,39,0.15)'"
+                           onfocus="this.style.borderColor='#1B6CA8';this.style.boxShadow='0 0 0 3px rgba(27,108,168,0.15)'"
                            onblur="this.style.borderColor='rgba(255,255,255,0.1)';this.style.boxShadow='none'">
                     @error('email')
                         <p class="text-xs mt-1.5" style="color:#f87171;">{{ $message }}</p>
@@ -90,7 +90,7 @@
                            style="width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);
                                   border-radius:10px;padding:0.65rem 0.875rem;font-size:0.875rem;color:#fff;
                                   outline:none;transition:border-color .2s,box-shadow .2s;"
-                           onfocus="this.style.borderColor='#C9A227';this.style.boxShadow='0 0 0 3px rgba(201,162,39,0.15)'"
+                           onfocus="this.style.borderColor='#1B6CA8';this.style.boxShadow='0 0 0 3px rgba(27,108,168,0.15)'"
                            onblur="this.style.borderColor='rgba(255,255,255,0.1)';this.style.boxShadow='none'">
                     @error('password')
                         <p class="text-xs mt-1.5" style="color:#f87171;">{{ $message }}</p>
@@ -100,17 +100,17 @@
                 {{-- تذكّرني --}}
                 <div class="flex items-center gap-2 pt-1">
                     <input type="checkbox" name="remember" id="remember"
-                           style="width:15px;height:15px;accent-color:#C9A227;cursor:pointer;">
+                           style="width:15px;height:15px;accent-color:#1B6CA8;cursor:pointer;">
                     <label for="remember" class="text-sm cursor-pointer select-none"
                            style="color:rgba(255,255,255,0.45);">تذكّرني</label>
                 </div>
 
                 {{-- زر الدخول --}}
                 <button type="submit"
-                        style="width:100%;background:linear-gradient(135deg,#C9A227,#e0b93a);
+                        style="width:100%;background:linear-gradient(135deg,#1B6CA8,#2580C4);
                                color:#fff;font-weight:800;font-size:0.95rem;letter-spacing:0.02em;
                                padding:0.75rem;border-radius:10px;border:none;cursor:pointer;
-                               box-shadow:0 4px 20px rgba(201,162,39,0.35);
+                               box-shadow:0 4px 20px rgba(27,108,168,0.35);
                                transition:opacity .2s,transform .1s;margin-top:0.5rem;"
                         onmouseover="this.style.opacity='0.9'"
                         onmouseout="this.style.opacity='1'"

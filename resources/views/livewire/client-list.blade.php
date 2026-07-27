@@ -2,7 +2,7 @@
 
 <div class="flex items-center justify-between mb-6">
     <div>
-        <h1 class="text-xl font-bold text-[#3D3D3D]">العملاء</h1>
+        <h1 class="text-xl font-bold text-[#1E293B]">العملاء</h1>
         <p class="text-sm text-gray-400 mt-0.5">{{ $rows->total() }} عميل مسجّل</p>
     </div>
     @if(auth()->user()->isAccountant())
@@ -20,8 +20,8 @@
 ])
 
 <div class="card overflow-hidden">
-    <div wire:loading.delay class="h-0.5 bg-[#C9A227]/20 relative overflow-hidden">
-        <div class="absolute inset-y-0 right-0 w-1/3 bg-[#C9A227] animate-pulse"></div>
+    <div wire:loading.delay class="h-0.5 bg-[#1B6CA8]/20 relative overflow-hidden">
+        <div class="absolute inset-y-0 right-0 w-1/3 bg-[#1B6CA8] animate-pulse"></div>
     </div>
     <table class="data-table">
         <thead>
@@ -42,7 +42,7 @@
                 <td class="text-gray-500">{{ $client->city ?? '—' }}</td>
                 <td>
                     <div class="flex items-center gap-1 justify-end">
-                        <a href="{{ route('clients.statement', $client->id) }}" wire:navigate class="btn btn-ghost py-1 px-2 text-xs text-[#C9A227] hover:bg-amber-50" style="text-decoration:none;">كشف</a>
+                        <a href="{{ route('clients.statement', $client->id) }}" wire:navigate class="btn btn-ghost py-1 px-2 text-xs text-[#1B6CA8] hover:bg-amber-50" style="text-decoration:none;">كشف</a>
                         <a href="{{ route('clients.show', $client->id) }}" wire:navigate class="btn btn-ghost py-1 px-2 text-xs text-gray-500 hover:bg-gray-50" style="text-decoration:none;">عرض</a>
                         @if(auth()->user()->isAccountant())
                         <a href="{{ route('clients.edit', $client->id) }}" wire:navigate
@@ -85,7 +85,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
             </svg>
         </div>
-        <h3 class="text-base font-bold text-center text-[#3D3D3D] mb-1">حذف العميل</h3>
+        <h3 class="text-base font-bold text-center text-[#1E293B] mb-1">حذف العميل</h3>
         <p class="text-sm text-gray-400 text-center mb-5">هل أنت متأكد؟ يمكن استعادة السجل لاحقاً.</p>
         <form method="POST" :action="'{{ url('/clients') }}/' + deletingId">
             @csrf @method('DELETE')

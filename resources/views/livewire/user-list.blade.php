@@ -2,7 +2,7 @@
 
 <div class="flex items-center justify-between mb-6">
     <div>
-        <h1 class="text-xl font-bold text-[#3D3D3D]">المستخدمون</h1>
+        <h1 class="text-xl font-bold text-[#1E293B]">المستخدمون</h1>
         <p class="text-sm text-gray-400 mt-0.5">{{ $rows->total() }} مستخدم مسجّل</p>
     </div>
     <a href="{{ route('users.create') }}" wire:navigate class="btn btn-primary" style="text-decoration:none;">
@@ -18,8 +18,8 @@
 
 {{-- الجدول --}}
 <div class="card overflow-hidden">
-    <div wire:loading.delay class="h-0.5 bg-[#C9A227]/20 relative overflow-hidden">
-        <div class="absolute inset-y-0 right-0 w-1/3 bg-[#C9A227] animate-pulse"></div>
+    <div wire:loading.delay class="h-0.5 bg-[#1B6CA8]/20 relative overflow-hidden">
+        <div class="absolute inset-y-0 right-0 w-1/3 bg-[#1B6CA8] animate-pulse"></div>
     </div>
     <table class="data-table">
         <thead><tr>
@@ -35,13 +35,13 @@
                 <td>
                     <div class="flex items-center gap-2.5">
                         <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shrink-0
-                            {{ $user->role === 'manager' ? 'bg-[#C9A227]/15 text-[#C9A227]' : ($user->role === 'accountant' ? 'bg-blue-50 text-blue-600' : 'bg-gray-100 text-gray-500') }}">
+                            {{ $user->role === 'manager' ? 'bg-[#1B6CA8]/15 text-[#1B6CA8]' : ($user->role === 'accountant' ? 'bg-blue-50 text-blue-600' : 'bg-gray-100 text-gray-500') }}">
                             {{ mb_substr($user->full_name, 0, 1) }}
                         </div>
                         <div>
-                            <p class="font-semibold text-[#3D3D3D] text-sm">{{ $user->full_name }}</p>
+                            <p class="font-semibold text-[#1E293B] text-sm">{{ $user->full_name }}</p>
                             @if($user->id === auth()->id())
-                            <span class="text-[10px] text-[#C9A227] font-semibold">أنت</span>
+                            <span class="text-[10px] text-[#1B6CA8] font-semibold">أنت</span>
                             @endif
                         </div>
                     </div>

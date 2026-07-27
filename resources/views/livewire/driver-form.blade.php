@@ -3,13 +3,13 @@
 <div class="flex items-center justify-between mb-6">
     <div class="flex items-center gap-3">
         <a href="{{ route('drivers.index') }}" wire:navigate
-           class="w-9 h-9 flex items-center justify-center rounded-full border border-[#E2E4E9] bg-white text-[#6B7280] hover:bg-[#F3F4F6]">
+           class="w-9 h-9 flex items-center justify-center rounded-full border border-[#E2E8F0] bg-white text-[#6B7280] hover:bg-[#F3F4F6]">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
             </svg>
         </a>
         <div>
-            <h1 class="text-xl font-bold text-[#3D3D3D]">{{ $userId ? 'تعديل السائق' : 'سائق جديد' }}</h1>
+            <h1 class="text-xl font-bold text-[#1E293B]">{{ $userId ? 'تعديل السائق' : 'سائق جديد' }}</h1>
             <p class="text-xs text-gray-400 mt-0.5">حساب دخول بدور «سائق» + ملف موظف</p>
         </div>
     </div>
@@ -47,11 +47,11 @@
     </div>
     <div>
         <label class="flex items-center gap-2 cursor-pointer">
-            <input wire:model="is_active" type="checkbox" class="rounded border-[#E2E4E9]">
-            <span class="text-sm text-[#3D3D3D]">نشط (يمكنه تسجيل الدخول)</span>
+            <input wire:model="is_active" type="checkbox" class="rounded border-[#E2E8F0]">
+            <span class="text-sm text-[#1E293B]">نشط (يمكنه تسجيل الدخول)</span>
         </label>
     </div>
-    <p class="text-xs text-gray-500 border-t border-[#E2E4E9] pt-3">
+    <p class="text-xs text-gray-500 border-t border-[#E2E8F0] pt-3">
         لتعيين سيارة لهذا السائق، أنشئ مخزنًا من نوع «سيارة» واختره من قسم «المخازن والسيارات».
     </p>
 </div>

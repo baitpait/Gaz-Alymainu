@@ -2,10 +2,10 @@
 
 <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
     <div>
-        <h1 class="text-xl font-bold text-[#3D3D3D]">مصروفات السائق</h1>
+        <h1 class="text-xl font-bold text-[#1E293B]">مصروفات السائق</h1>
         <p class="text-sm text-gray-400 mt-0.5">مصروف يُخصم من الرصيد النقدي لصندوق السائق (مستقل عن المصروفات العامة)</p>
         @if($isDriver)
-        <a href="{{ route('pos.index') }}" wire:navigate class="inline-flex items-center gap-1 text-sm font-semibold text-[#C9A227] hover:underline mt-2">
+        <a href="{{ route('pos.index') }}" wire:navigate class="inline-flex items-center gap-1 text-sm font-semibold text-[#1B6CA8] hover:underline mt-2">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
             </svg>
@@ -39,7 +39,7 @@
 </div>
 
 <div class="card p-5 mb-6 max-w-lg">
-    <p class="text-sm font-bold text-[#3D3D3D] mb-3">تسجيل مصروف</p>
+    <p class="text-sm font-bold text-[#1E293B] mb-3">تسجيل مصروف</p>
     <div class="mb-3">
         <label class="label">التصنيف</label>
         <select wire:model="category" class="input">
@@ -64,8 +64,8 @@
 </div>
 
 <div class="card overflow-hidden">
-    <div class="px-5 py-3 border-b border-[#E2E4E9] bg-[#F9F9FB]">
-        <p class="text-sm font-bold text-[#3D3D3D]">آخر المصروفات</p>
+    <div class="px-5 py-3 border-b border-[#E2E8F0] bg-[#F9F9FB]">
+        <p class="text-sm font-bold text-[#1E293B]">آخر المصروفات</p>
     </div>
     <table class="data-table">
         <thead><tr>

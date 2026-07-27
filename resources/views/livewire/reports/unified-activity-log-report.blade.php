@@ -1,7 +1,7 @@
 <div>
     <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
         <div>
-            <h1 class="text-2xl font-bold text-[#3D3D3D]">سجل النشاط المالي</h1>
+            <h1 class="text-2xl font-bold text-[#1E293B]">سجل النشاط المالي</h1>
             <p class="text-sm text-gray-500 mt-1">كل الفواتير وأوامر الشراء والدفعات والمصروفات والتسويات — مرتبة زمنياً.</p>
         </div>
         @include('livewire.partials.period-report-export-actions', ['pdfExportUrl' => $pdfExportUrl])
@@ -51,7 +51,7 @@
                     $row['category'] === 'cash_in' => 'text-green-600',
                     $row['category'] === 'cash_out' => 'text-red-600',
                     $row['category'] === 'adjustment' => 'text-violet-600',
-                    default => 'text-[#3D3D3D]',
+                    default => 'text-[#1E293B]',
                 };
                 @endphp
                 <tr>

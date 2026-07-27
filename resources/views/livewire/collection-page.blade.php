@@ -2,7 +2,7 @@
 
 <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
     <div>
-        <h1 class="text-xl font-bold text-[#3D3D3D]">التحصيل</h1>
+        <h1 class="text-xl font-bold text-[#1E293B]">التحصيل</h1>
         <p class="text-sm text-gray-400 mt-0.5">تسجيل مبلغ محصّل (نقدي/شيك) بلا تفاصيل زبون</p>
     </div>
     @unless($isDriver)
@@ -31,7 +31,7 @@
 </div>
 
 <div class="card p-5 mb-6 max-w-lg">
-    <p class="text-sm font-bold text-[#3D3D3D] mb-3">تسجيل تحصيل</p>
+    <p class="text-sm font-bold text-[#1E293B] mb-3">تسجيل تحصيل</p>
     <div class="mb-3">
         <label class="label">آلية الدفع</label>
         <select wire:model="method" class="input h-12">
@@ -55,8 +55,8 @@
 </div>
 
 <div class="card overflow-hidden">
-    <div class="px-5 py-3 border-b border-[#E2E4E9] bg-[#F9F9FB]">
-        <p class="text-sm font-bold text-[#3D3D3D]">آخر التحصيلات</p>
+    <div class="px-5 py-3 border-b border-[#E2E8F0] bg-[#F9F9FB]">
+        <p class="text-sm font-bold text-[#1E293B]">آخر التحصيلات</p>
     </div>
     <table class="data-table">
         <thead><tr>

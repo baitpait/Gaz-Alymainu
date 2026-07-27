@@ -79,9 +79,9 @@
                 $mainCash   = (float) ($mainByCur[$cur]['cash'] ?? 0);
                 $mainCheque = (float) ($mainByCur[$cur]['cheque'] ?? 0);
             @endphp
-            <div class="card p-5 border-r-4 border-[#C9A227]">
+            <div class="card p-5 border-r-4 border-[#1B6CA8]">
                 <div class="flex items-center justify-between mb-4">
-                    <span class="text-sm font-bold text-[#3D3D3D]">الصندوق الرئيسي</span>
+                    <span class="text-sm font-bold text-[#1E293B]">الصندوق الرئيسي</span>
                     <span class="text-xs font-bold text-gray-400 uppercase tracking-widest" dir="ltr">{{ $cur }}</span>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
@@ -96,9 +96,9 @@
                 </div>
             </div>
         @empty
-            <div class="card p-5 border-r-4 border-[#C9A227]">
+            <div class="card p-5 border-r-4 border-[#1B6CA8]">
                 <div class="flex items-center justify-between mb-4">
-                    <span class="text-sm font-bold text-[#3D3D3D]">الصندوق الرئيسي</span>
+                    <span class="text-sm font-bold text-[#1E293B]">الصندوق الرئيسي</span>
                     <span class="text-xs font-bold text-gray-400 uppercase tracking-widest" dir="ltr">ILS</span>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
@@ -117,8 +117,8 @@
 
     {{-- صناديق السائقين (لم يُسحب بعد) --}}
     <div class="card overflow-hidden mb-6">
-        <div class="flex items-center justify-between px-5 py-3 border-b border-[#E2E4E9] bg-[#F9F9FB]">
-            <p class="text-sm font-bold text-[#3D3D3D]">صناديق السائقين (لم يُسحب بعد)</p>
+        <div class="flex items-center justify-between px-5 py-3 border-b border-[#E2E8F0] bg-[#F9F9FB]">
+            <p class="text-sm font-bold text-[#1E293B]">صناديق السائقين (لم يُسحب بعد)</p>
             <p class="text-xs text-gray-400" dir="ltr">
                 نقد: {{ number_format($driversCashHeld, 2) }} · شيكات: {{ number_format($driversChequeHeld, 2) }}
             </p>
@@ -145,8 +145,8 @@
 
     {{-- الحركات المالية — الشيكات --}}
     <div class="card overflow-hidden">
-        <div class="px-5 py-3 border-b border-[#E2E4E9] bg-[#F9F9FB]">
-            <p class="text-sm font-bold text-[#3D3D3D]">الحركات المالية — الشيكات</p>
+        <div class="px-5 py-3 border-b border-[#E2E8F0] bg-[#F9F9FB]">
+            <p class="text-sm font-bold text-[#1E293B]">الحركات المالية — الشيكات</p>
         </div>
         <table class="data-table">
             <thead><tr>
@@ -176,8 +176,8 @@
 
     {{-- مصروفات السائقين (تُخصم من الصندوق النقدي) --}}
     <div class="card overflow-hidden mt-6">
-        <div class="px-5 py-3 border-b border-[#E2E4E9] bg-[#F9F9FB]">
-            <p class="text-sm font-bold text-[#3D3D3D]">مصروفات السائقين</p>
+        <div class="px-5 py-3 border-b border-[#E2E8F0] bg-[#F9F9FB]">
+            <p class="text-sm font-bold text-[#1E293B]">مصروفات السائقين</p>
         </div>
         <table class="data-table">
             <thead><tr>

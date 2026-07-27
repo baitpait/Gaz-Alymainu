@@ -3,7 +3,7 @@
 <div class="flex flex-wrap items-end gap-3">
     @can('export-period-reports')
     <a href="{{ $pdfExportUrl }}" target="_blank" rel="noopener"
-       class="px-4 py-2 text-sm bg-[#3D3D3D] text-white rounded hover:bg-[#2a2a2a] font-medium self-end"
+       class="px-4 py-2 text-sm bg-[#1E293B] text-white rounded hover:bg-[#2a2a2a] font-medium self-end"
        style="text-decoration:none;">
         تصدير PDF
     </a>

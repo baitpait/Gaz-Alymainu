@@ -2,7 +2,7 @@
 
 <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
     <div>
-        <h1 class="text-xl font-bold text-[#3D3D3D]">سحب الكاش</h1>
+        <h1 class="text-xl font-bold text-[#1E293B]">سحب الكاش</h1>
         <p class="text-sm text-gray-400 mt-0.5">سحب النقدية من صندوق السائق</p>
     </div>
     @unless($isDriver)
@@ -22,11 +22,11 @@
 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
     <div class="card p-4">
         <p class="text-xs text-gray-400">إجمالي المبيعات النقدية</p>
-        <p class="text-xl font-bold text-[#3D3D3D] mt-1" dir="ltr">{{ number_format($totalCash, 2) }} ش</p>
+        <p class="text-xl font-bold text-[#1E293B] mt-1" dir="ltr">{{ number_format($totalCash, 2) }} ش</p>
     </div>
     <div class="card p-4">
         <p class="text-xs text-gray-400">إجمالي المسحوب</p>
-        <p class="text-xl font-bold text-[#3D3D3D] mt-1" dir="ltr">{{ number_format($totalHanded, 2) }} ش</p>
+        <p class="text-xl font-bold text-[#1E293B] mt-1" dir="ltr">{{ number_format($totalHanded, 2) }} ش</p>
     </div>
     <div class="card p-4 border-r-4 border-green-500">
         <p class="text-xs text-gray-400">الرصيد النقدي المتاح</p>
@@ -39,7 +39,7 @@
 </div>
 
 <div class="card p-5 mb-6 max-w-lg">
-    <p class="text-sm font-bold text-[#3D3D3D] mb-3">سحب من صندوق السائق</p>
+    <p class="text-sm font-bold text-[#1E293B] mb-3">سحب من صندوق السائق</p>
     <div class="mb-3">
         <label class="label">آلية الدفع</label>
         <select wire:model.live="method" class="input">
@@ -72,8 +72,8 @@
 </div>
 
 <div class="card overflow-hidden">
-    <div class="px-5 py-3 border-b border-[#E2E4E9] bg-[#F9F9FB]">
-        <p class="text-sm font-bold text-[#3D3D3D]">آخر عمليات السحب</p>
+    <div class="px-5 py-3 border-b border-[#E2E8F0] bg-[#F9F9FB]">
+        <p class="text-sm font-bold text-[#1E293B]">آخر عمليات السحب</p>
     </div>
     <table class="data-table">
         <thead><tr>

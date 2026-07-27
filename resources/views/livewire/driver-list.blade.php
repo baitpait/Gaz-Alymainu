@@ -2,7 +2,7 @@
 
 <div class="flex items-center justify-between mb-6">
     <div>
-        <h1 class="text-xl font-bold text-[#3D3D3D]">السائقون</h1>
+        <h1 class="text-xl font-bold text-[#1E293B]">السائقون</h1>
         <p class="text-sm text-gray-400 mt-0.5">{{ $rows->total() }} سائق</p>
     </div>
     <div class="flex items-center gap-2">
@@ -22,8 +22,8 @@
 ])
 
 <div class="card overflow-hidden">
-    <div wire:loading.delay class="h-0.5 bg-[#C9A227]/20 relative overflow-hidden">
-        <div class="absolute inset-y-0 right-0 w-1/3 bg-[#C9A227] animate-pulse"></div>
+    <div wire:loading.delay class="h-0.5 bg-[#1B6CA8]/20 relative overflow-hidden">
+        <div class="absolute inset-y-0 right-0 w-1/3 bg-[#1B6CA8] animate-pulse"></div>
     </div>
     <table class="data-table">
         <thead><tr>

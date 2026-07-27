@@ -2,11 +2,11 @@
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
     <div style="display:flex;align-items:center;gap:12px;">
         <a href="{{ route('suppliers.statement', $supplier) }}" wire:navigate
-           style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;border:1px solid #E2E4E9;background:#fff;color:#6B7280;text-decoration:none;">
+           style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;border:1px solid #E2E8F0;background:#fff;color:#6B7280;text-decoration:none;">
             <svg xmlns="http://www.w3.org/2000/svg" style="width:16px;height:16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
         </a>
         <div>
-            <h1 style="font-size:18px;font-weight:800;color:#3D3D3D;">
+            <h1 style="font-size:18px;font-weight:800;color:#1E293B;">
                 {{ $recordId ? 'تعديل تسوية' : 'تسوية على ذمة المورد' }}
             </h1>
             <p style="font-size:12px;color:#9CA3AF;margin-top:2px;">{{ $supplier->displayName() }}</p>

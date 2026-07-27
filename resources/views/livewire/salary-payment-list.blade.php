@@ -1,7 +1,7 @@
 <div>
 <div class="flex items-center justify-between mb-6">
     <div>
-        <h1 class="text-xl font-bold text-[#3D3D3D]">الرواتب</h1>
+        <h1 class="text-xl font-bold text-[#1E293B]">الرواتب</h1>
         <p class="text-sm text-gray-400 mt-0.5">{{ $rows->total() }} سجل</p>
     </div>
     @can('create', App\Models\SalaryPayment::class)
@@ -15,12 +15,12 @@
 <form wire:submit.prevent="applyListFilters" class="bg-white border border-[#E0E0E0] rounded p-4 mb-6">
     <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-5 items-end">
         <div class="lg:col-span-2">
-            <label class="block text-xs font-medium text-[#3D3D3D] mb-1">بحث</label>
+            <label class="block text-xs font-medium text-[#1E293B] mb-1">بحث</label>
             <input type="text" wire:model="searchDraft" placeholder="اسم موظف أو رقم وظيفي..."
-                   class="border border-[#E0E0E0] rounded px-3 py-2 text-sm w-full focus:outline-none focus:border-[#C9A227]">
+                   class="border border-[#E0E0E0] rounded px-3 py-2 text-sm w-full focus:outline-none focus:border-[#1B6CA8]">
         </div>
         <div>
-            <label class="block text-xs font-medium text-[#3D3D3D] mb-1">الموظف</label>
+            <label class="block text-xs font-medium text-[#1E293B] mb-1">الموظف</label>
             <select wire:model="employeeId" class="border border-[#E0E0E0] rounded px-3 py-2 text-sm w-full">
                 <option value="">الكل</option>
                 @foreach($employees as $id => $name)
@@ -29,11 +29,11 @@
             </select>
         </div>
         <div>
-            <label class="block text-xs font-medium text-[#3D3D3D] mb-1">الشهر</label>
+            <label class="block text-xs font-medium text-[#1E293B] mb-1">الشهر</label>
             <input type="month" wire:model="period" dir="ltr" class="border border-[#E0E0E0] rounded px-3 py-2 text-sm w-full">
         </div>
         <div>
-            <label class="block text-xs font-medium text-[#3D3D3D] mb-1">الحالة</label>
+            <label class="block text-xs font-medium text-[#1E293B] mb-1">الحالة</label>
             <select wire:model="status" class="border border-[#E0E0E0] rounded px-3 py-2 text-sm w-full">
                 <option value="">الكل</option>
                 <option value="draft">مسودة</option>
@@ -66,7 +66,7 @@
                     @if($pay->employee?->department)<div class="text-xs text-gray-400">{{ $pay->employee->department }}</div>@endif
                 </td>
                 <td class="font-mono text-sm" dir="ltr">{{ $pay->periodLabel() }}</td>
-                <td class="font-mono font-semibold text-sm text-[#C9A227]" dir="ltr">{{ number_format((float)$pay->net_amount, 2) }} {{ $pay->currency_code }}</td>
+                <td class="font-mono font-semibold text-sm text-[#1B6CA8]" dir="ltr">{{ number_format((float)$pay->net_amount, 2) }} {{ $pay->currency_code }}</td>
                 <td>{{ App\Models\SalaryPayment::statusLabel($pay->status) }}</td>
                 <td>
                     <div class="flex items-center gap-1 justify-end">
@@ -83,7 +83,7 @@
             @endforelse
         </tbody>
     </table>
-    <div class="p-4 border-t border-[#E2E4E9]"><x-list-pagination :paginator="$rows" /></div>
+    <div class="p-4 border-t border-[#E2E8F0]"><x-list-pagination :paginator="$rows" /></div>
 </div>
 
 @if($confirmDeleteId !== null)

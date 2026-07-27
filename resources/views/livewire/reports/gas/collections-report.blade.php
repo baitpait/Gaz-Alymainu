@@ -1,7 +1,7 @@
 <div>
     <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
         <div>
-            <h1 class="text-2xl font-bold text-[#3D3D3D]">تقرير التحصيلات</h1>
+            <h1 class="text-2xl font-bold text-[#1E293B]">تقرير التحصيلات</h1>
             <p class="text-sm text-gray-500 mt-1">تحصيلات نقدية وشيكات ضمن الفترة المحددة.</p>
         </div>
         @can('export-period-reports')
@@ -38,8 +38,8 @@
     <div class="flex flex-wrap gap-3 mb-4">
         <div class="card px-4 py-2 text-sm"><span class="text-gray-500">نقدي:</span> <span class="font-mono font-bold text-green-600 mr-2" dir="ltr">{{ number_format($totals['cash'], 2) }}</span></div>
         <div class="card px-4 py-2 text-sm"><span class="text-gray-500">شيكات:</span> <span class="font-mono font-bold text-blue-600 mr-2" dir="ltr">{{ number_format($totals['cheque'], 2) }}</span></div>
-        <div class="card px-4 py-2 text-sm"><span class="text-gray-500">الإجمالي:</span> <span class="font-mono font-bold text-[#3D3D3D] mr-2" dir="ltr">{{ number_format($totals['grand'], 2) }}</span></div>
-        <div class="card px-4 py-2 text-sm"><span class="text-gray-500">عدد العمليات:</span> <span class="font-mono font-bold text-[#3D3D3D] mr-2" dir="ltr">{{ $totals['count'] }}</span></div>
+        <div class="card px-4 py-2 text-sm"><span class="text-gray-500">الإجمالي:</span> <span class="font-mono font-bold text-[#1E293B] mr-2" dir="ltr">{{ number_format($totals['grand'], 2) }}</span></div>
+        <div class="card px-4 py-2 text-sm"><span class="text-gray-500">عدد العمليات:</span> <span class="font-mono font-bold text-[#1E293B] mr-2" dir="ltr">{{ $totals['count'] }}</span></div>
     </div>
 
     @if($rows->isEmpty())

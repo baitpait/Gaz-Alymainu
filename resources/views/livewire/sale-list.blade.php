@@ -2,7 +2,7 @@
 
 <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
     <div>
-        <h1 class="text-xl font-bold text-[#3D3D3D]">سجل المبيعات</h1>
+        <h1 class="text-xl font-bold text-[#1E293B]">سجل المبيعات</h1>
         <p class="text-sm text-gray-400 mt-0.5">{{ $rows->total() }} عملية</p>
     </div>
     <div class="flex items-end gap-2">
@@ -34,7 +34,7 @@
                     @if($s->payment_type->value === 'cash')
                         <span class="rounded px-2 py-0.5 bg-green-50 text-green-600 text-xs">{{ $s->payment_type->label() }}</span>
                     @else
-                        <span class="rounded px-2 py-0.5 bg-[#C9A227]/10 text-[#C9A227] text-xs">{{ $s->payment_type->label() }}</span>
+                        <span class="rounded px-2 py-0.5 bg-[#1B6CA8]/10 text-[#1B6CA8] text-xs">{{ $s->payment_type->label() }}</span>
                     @endif
                 </td>
                 <td class="text-left font-mono text-sm" dir="ltr">{{ rtrim(rtrim(number_format((float) $s->quantity, 4), '0'), '.') }}</td>

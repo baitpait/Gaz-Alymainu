@@ -7,7 +7,7 @@
 
 body {
     font-family: xbriyaz, sans-serif;
-    color: #3D3D3D;
+    color: #1E293B;
     font-size: 10pt;
     direction: rtl;
 }
@@ -29,7 +29,7 @@ body {
 .header-title span {
     font-size: 14pt;
     font-weight: normal;
-    color: #3D3D3D;
+    color: #1E293B;
 }
 .header-left {
     float: left;
@@ -44,7 +44,7 @@ body {
 .header-company {
     font-size: 10pt;
     font-weight: bold;
-    color: #3D3D3D;
+    color: #1E293B;
     direction: ltr;
     text-align: center;
 }
@@ -104,7 +104,7 @@ body {
     font-size: 8.5pt;
 }
 .lines-table th {
-    background: #C9A227;
+    background: #1B6CA8;
     color: #fff;
     padding: 4pt 6pt;
     text-align: right;
@@ -163,7 +163,7 @@ body {
 .row-final td {
     border: 1pt solid #CCCCCC;
     padding: 6pt 7pt;
-    background: #3D3D3D;
+    background: #1E293B;
     color: #fff;
     font-weight: bold;
     font-size: 10pt;

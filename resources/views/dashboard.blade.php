@@ -5,7 +5,7 @@
 
 {{-- رأس الصفحة --}}
 <div class="mb-7">
-    <h1 class="text-2xl font-bold text-[#3D3D3D]">لوحة التحكم</h1>
+    <h1 class="text-2xl font-bold text-[#1E293B]">لوحة التحكم</h1>
     <p class="text-sm text-gray-400 mt-0.5">{{ now()->locale('ar')->isoFormat('dddd، D MMMM YYYY') }}</p>
 </div>
 
@@ -19,11 +19,11 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
                 </svg>
             </div>
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-300 group-hover:text-[#C9A227] transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-300 group-hover:text-[#1B6CA8] transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
             </svg>
         </div>
-        <div class="text-3xl font-bold text-[#3D3D3D]">{{ number_format($supplierCount) }}</div>
+        <div class="text-3xl font-bold text-[#1E293B]">{{ number_format($supplierCount) }}</div>
         <div class="text-sm text-gray-400 mt-0.5">إجمالي الموردين</div>
     </a>
 
@@ -37,10 +37,10 @@
         <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-widest">الملخص المالي</h2>
         <div class="flex items-center gap-2">
             <a href="{{ route('financial-summary') }}"
-               class="text-xs font-semibold text-[#C9A227] hover:underline">صفحة الصناديق النقدية</a>
+               class="text-xs font-semibold text-[#1B6CA8] hover:underline">صفحة الصناديق النقدية</a>
             <button @click="open = !open"
                     type="button"
-                    class="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border border-[#E2E4E9] bg-white text-gray-500 hover:border-[#C9A227] hover:text-[#C9A227] transition select-none">
+                    class="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border border-[#E2E8F0] bg-white text-gray-500 hover:border-[#1B6CA8] hover:text-[#1B6CA8] transition select-none">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           x-show="!open" d="M15 12a3 3 0 11-6 0 3 3 0 016 0M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>

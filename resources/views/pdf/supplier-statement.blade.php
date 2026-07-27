@@ -6,7 +6,7 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
     font-family: xbriyaz, sans-serif;
-    color: #3D3D3D;
+    color: #1E293B;
     font-size: 11pt;
     direction: rtl;
     unicode-bidi: bidi-override;
@@ -14,7 +14,7 @@ body {
 
 .header {
     width: 100%;
-    border-bottom: 2px solid #C9A227;
+    border-bottom: 2px solid #1B6CA8;
     padding-bottom: 10pt;
     margin-bottom: 16pt;
     overflow: hidden;
@@ -22,12 +22,12 @@ body {
 .header-brand {
     font-size: 18pt;
     font-weight: bold;
-    color: #3D3D3D;
+    color: #1E293B;
     float: right;
 }
 .header-brand small {
     font-size: 9pt;
-    color: #C9A227;
+    color: #1B6CA8;
     display: block;
     margin-top: 2pt;
 }
@@ -40,7 +40,7 @@ body {
 }
 
 .statement-title { font-size: 16pt; font-weight: bold; margin-bottom: 4pt; }
-.supplier-name   { font-size: 13pt; color: #C9A227; margin-bottom: 14pt; }
+.supplier-name   { font-size: 13pt; color: #1B6CA8; margin-bottom: 14pt; }
 .date-range      { font-size: 9pt; color: #666; margin-bottom: 14pt; }
 
 .currency-section  { margin-bottom: 18pt; }
@@ -51,7 +51,7 @@ body {
     font-size: 12pt;
     font-weight: bold;
 }
-.currency-code { color: #C9A227; direction: ltr; }
+.currency-code { color: #1B6CA8; direction: ltr; }
 
 table { width: 100%; border-collapse: collapse; font-size: 9.5pt; margin-top: 6pt; }
 th {

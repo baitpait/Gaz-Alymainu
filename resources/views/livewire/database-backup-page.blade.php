@@ -1,8 +1,8 @@
 <div>
     <div class="mb-6">
-        <h1 class="text-xl font-bold text-[#3D3D3D]">نسخ احتياطي لقاعدة البيانات</h1>
+        <h1 class="text-xl font-bold text-[#1E293B]">نسخ احتياطي لقاعدة البيانات</h1>
         <p class="text-sm text-gray-400 mt-0.5">
-            اتصال حالي: <span class="font-medium text-[#3D3D3D]">{{ $driverLabel }}</span>
+            اتصال حالي: <span class="font-medium text-[#1E293B]">{{ $driverLabel }}</span>
             — الملفات تُحفظ في <code class="text-xs bg-gray-100 px-1 rounded" dir="ltr">{{ $backupDir }}</code> (خارج Git)
         </p>
     </div>
@@ -16,7 +16,7 @@
     <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mb-6">
         @if($driverName === 'sqlite')
         <div class="card p-5 flex flex-col">
-            <h2 class="text-sm font-bold text-[#3D3D3D] mb-1">نسخة SQLite كاملة</h2>
+            <h2 class="text-sm font-bold text-[#1E293B] mb-1">نسخة SQLite كاملة</h2>
             <p class="text-xs text-gray-500 flex-1 mb-4">نسخ ملف القاعدة بالكامل — مناسب للتطوير المحلي والاسترجاع السريع.</p>
             <button type="button" wire:click="createSqliteBackup" wire:loading.attr="disabled"
                     class="btn btn-primary w-full text-sm">
@@ -28,7 +28,7 @@
 
         @if(in_array($driverName, ['mysql', 'mariadb'], true))
         <div class="card p-5 flex flex-col">
-            <h2 class="text-sm font-bold text-[#3D3D3D] mb-1">نسخة MySQL كاملة</h2>
+            <h2 class="text-sm font-bold text-[#1E293B] mb-1">نسخة MySQL كاملة</h2>
             <p class="text-xs text-gray-500 flex-1 mb-4">هيكل الجداول + البيانات عبر mysqldump — للإنتاج والاسترجاع الكامل.</p>
             <button type="button" wire:click="createMysqlFullBackup" wire:loading.attr="disabled"
                     class="btn btn-primary w-full text-sm">
@@ -39,7 +39,7 @@
         @endif
 
         <div class="card p-5 flex flex-col">
-            <h2 class="text-sm font-bold text-[#3D3D3D] mb-1">بيانات فقط (INSERT)</h2>
+            <h2 class="text-sm font-bold text-[#1E293B] mb-1">بيانات فقط (INSERT)</h2>
             <p class="text-xs text-gray-500 flex-1 mb-4">أوامر INSERT بدون CREATE TABLE — للاستيراد بعد <code class="text-[10px]">migrate</code> على MySQL.</p>
             <button type="button" wire:click="createMysqlDataBackup" wire:loading.attr="disabled"
                     class="btn btn-secondary w-full text-sm">
@@ -50,8 +50,8 @@
     </div>
 
     <div class="card overflow-hidden">
-        <div class="px-4 py-3 border-b border-[#E2E4E9]">
-            <h2 class="text-sm font-bold text-[#3D3D3D]">آخر النسخ على الخادم</h2>
+        <div class="px-4 py-3 border-b border-[#E2E8F0]">
+            <h2 class="text-sm font-bold text-[#1E293B]">آخر النسخ على الخادم</h2>
             <p class="text-xs text-gray-400 mt-0.5">احتفظ بنسخة على قرص خارجي أو سحابة — لا تُرفع لـ GitHub.</p>
         </div>
         <table class="data-table">
@@ -78,7 +78,7 @@
                     <td class="text-gray-500 text-xs" dir="ltr">{{ $item['created_at'] }}</td>
                     <td>
                         <a href="{{ route('database-backup.download', $item['filename']) }}"
-                           class="btn btn-ghost py-1 px-2 text-xs text-[#C9A227] hover:bg-amber-50"
+                           class="btn btn-ghost py-1 px-2 text-xs text-[#1B6CA8] hover:bg-amber-50"
                            style="text-decoration:none;">تنزيل</a>
                     </td>
                 </tr>

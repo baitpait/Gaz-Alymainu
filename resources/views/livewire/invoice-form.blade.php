@@ -4,14 +4,14 @@
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
     <div style="display:flex;align-items:center;gap:12px;">
         <a href="{{ route('invoices.index') }}" wire:navigate
-           style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;border:1px solid #E2E4E9;background:#fff;color:#6B7280;text-decoration:none;transition:all .15s;"
+           style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;border:1px solid #E2E8F0;background:#fff;color:#6B7280;text-decoration:none;transition:all .15s;"
            onmouseover="this.style.background='#F3F4F6'" onmouseout="this.style.background='#fff'">
             <svg xmlns="http://www.w3.org/2000/svg" style="width:16px;height:16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
             </svg>
         </a>
         <div>
-            <h1 style="font-size:18px;font-weight:800;color:#3D3D3D;line-height:1.2;">
+            <h1 style="font-size:18px;font-weight:800;color:#1E293B;line-height:1.2;">
                 {{ $invoiceId ? 'تعديل الفاتورة' : 'فاتورة جديدة' }}
             </h1>
             @if($invoiceId)
@@ -81,22 +81,22 @@
 
         <div style="display:flex;flex-wrap:wrap;gap:10px;">
             <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;">
-                <input type="radio" wire:model.live="payment_collection" value="unpaid" style="accent-color:#C9A227;">
+                <input type="radio" wire:model.live="payment_collection" value="unpaid" style="accent-color:#1B6CA8;">
                 غير مدفوعة
             </label>
             <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;">
-                <input type="radio" wire:model.live="payment_collection" value="partial" style="accent-color:#C9A227;">
+                <input type="radio" wire:model.live="payment_collection" value="partial" style="accent-color:#1B6CA8;">
                 جزئية
             </label>
             <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;">
-                <input type="radio" wire:model.live="payment_collection" value="paid" style="accent-color:#C9A227;">
+                <input type="radio" wire:model.live="payment_collection" value="paid" style="accent-color:#1B6CA8;">
                 مدفوعة بالكامل
             </label>
         </div>
         @error('payment_collection')<p class="field-error">{{ $message }}</p>@enderror
 
         @if(in_array($payment_collection, ['partial', 'paid'], true))
-        <div style="display:flex;flex-wrap:wrap;gap:14px;padding-top:4px;border-top:1px solid #F0F2F5;">
+        <div style="display:flex;flex-wrap:wrap;gap:14px;padding-top:4px;border-top:1px solid #F1F5F9;">
             @if($payment_collection === 'partial')
             <div style="flex:1;min-width:min(100%,180px);">
                 <label class="label">مبلغ الدفعة <span class="text-red-400">*</span></label>
@@ -146,9 +146,9 @@
 
     <div class="card" style="width:100%;padding:20px;display:flex;flex-direction:column;">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-                <p style="font-size:13px;font-weight:700;color:#3D3D3D;">بنود الفاتورة</p>
+                <p style="font-size:13px;font-weight:700;color:#1E293B;">بنود الفاتورة</p>
                 <button type="button" wire:click="addLine"
-                        style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:#C9A227;background:transparent;border:none;cursor:pointer;padding:5px 10px;border-radius:8px;"
+                        style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:#1B6CA8;background:transparent;border:none;cursor:pointer;padding:5px 10px;border-radius:8px;"
                         onmouseover="this.style.background='#FFFBEB'" onmouseout="this.style.background='transparent'">
                     <svg xmlns="http://www.w3.org/2000/svg" style="width:13px;height:13px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
@@ -157,8 +157,8 @@
                 </button>
             </div>
 
-            <div style="border:1px solid #E2E4E9;border-radius:12px;overflow:hidden;">
-                <div style="display:flex;background:#F9F9FB;border-bottom:1px solid #E2E4E9;font-size:11px;font-weight:600;color:#9CA3AF;">
+            <div style="border:1px solid #E2E8F0;border-radius:12px;overflow:hidden;">
+                <div style="display:flex;background:#F9F9FB;border-bottom:1px solid #E2E8F0;font-size:11px;font-weight:600;color:#9CA3AF;">
                     <div style="width:220px;padding:8px 10px;">الصنف (بحث)</div>
                     <div style="flex:2;padding:8px 12px;">البند / الوصف</div>
                     <div style="width:130px;padding:8px 10px;text-align:center;">سعر الوحدة</div>
@@ -169,7 +169,7 @@
 
                 @forelse($lines as $i => $line)
                 <div wire:key="line-{{ $i }}"
-                     style="display:flex;align-items:flex-start;padding:8px 12px;border-bottom:1px solid #F0F2F5;{{ $loop->last ? 'border-bottom:none;' : '' }}{{ $loop->even ? 'background:#FAFAFA;' : '' }}">
+                     style="display:flex;align-items:flex-start;padding:8px 12px;border-bottom:1px solid #F1F5F9;{{ $loop->last ? 'border-bottom:none;' : '' }}{{ $loop->even ? 'background:#FAFAFA;' : '' }}">
 
                     <div style="width:220px;padding:0 8px 0 0;position:relative;">
                         <input type="search" autocomplete="off" dir="rtl"
@@ -178,13 +178,13 @@
                                placeholder="اكتب للبحث — بند بدون صنف اتركه فارغًا للعنوان فقط"
                                class="input" style="padding:6px 8px;font-size:12px;width:100%;">
                         @if($productAutocompleteLine === $i && (count($productAutocompleteHits) > 0 || trim($line['product_search'] ?? '') !== ''))
-                        <div class="absolute z-50 mt-1 right-0 w-[min(100vw-2rem,20rem)] max-h-56 overflow-y-auto rounded-lg border border-[#E2E4E9] bg-white shadow-lg text-sm"
+                        <div class="absolute z-50 mt-1 right-0 w-[min(100vw-2rem,20rem)] max-h-56 overflow-y-auto rounded-lg border border-[#E2E8F0] bg-white shadow-lg text-sm"
                              style="top:100%;">
                             @foreach($productAutocompleteHits as $hit)
                             <button type="button" wire:key="hit-{{ $i }}-{{ $hit['id'] }}"
                                     wire:click="selectProductFromAutocomplete({{ $i }}, {{ $hit['id'] }})"
-                                    class="w-full text-right px-3 py-2 hover:bg-[#FFFBEB] border-b border-[#F0F2F5] last:border-0">
-                                <span class="font-semibold text-[#3D3D3D]">{{ $hit['name'] }}</span>
+                                    class="w-full text-right px-3 py-2 hover:bg-[#FFFBEB] border-b border-[#F1F5F9] last:border-0">
+                                <span class="font-semibold text-[#1E293B]">{{ $hit['name'] }}</span>
                                 @if(!empty($hit['product_code']))
                                 <span class="text-gray-400 font-mono text-xs mr-1" dir="ltr">({{ $hit['product_code'] }})</span>
                                 @endif
@@ -193,7 +193,7 @@
                             @if(trim($line['product_search'] ?? '') !== '')
                             @can('create', \App\Models\Product::class)
                             <button type="button" wire:click="openQuickAddForLine({{ $i }})"
-                                    class="w-full text-right px-3 py-2 text-[#C9A227] font-semibold hover:bg-amber-50 border-t border-[#E2E4E9]">
+                                    class="w-full text-right px-3 py-2 text-[#1B6CA8] font-semibold hover:bg-amber-50 border-t border-[#E2E8F0]">
                                 + إضافة «{{ \Illuminate\Support\Str::limit(trim($line['product_search']), 40) }}» كخدمة جديدة…
                             </button>
                             @endcan
@@ -228,7 +228,7 @@
                     </div>
 
                     <div style="width:120px;padding:0 8px;display:flex;align-items:center;justify-content:flex-start;padding-top:7px;" dir="ltr">
-                        <span style="font-weight:700;font-size:14px;color:#3D3D3D;">
+                        <span style="font-weight:700;font-size:14px;color:#1E293B;">
                             {{ number_format((float)($line['line_total'] ?? 0), 2) }}
                         </span>
                     </div>
@@ -249,7 +249,7 @@
                 <div style="padding:44px 20px;text-align:center;">
                     <p style="font-size:13px;color:#9CA3AF;margin-bottom:14px;">لم تُضف أي بنود بعد</p>
                     <button type="button" wire:click="addLine"
-                            style="background:#C9A227;color:#fff;border:none;border-radius:10px;padding:10px 28px;font-size:13px;font-weight:700;cursor:pointer;">
+                            style="background:#1B6CA8;color:#fff;border:none;border-radius:10px;padding:10px 28px;font-size:13px;font-weight:700;cursor:pointer;">
                         + أضف أول بند
                     </button>
                 </div>
@@ -258,9 +258,9 @@
 
             @if(count($lines) > 0)
             <button type="button" wire:click="addLine"
-                    style="width:100%;margin-top:12px;padding:10px;border:1.5px dashed #E2E4E9;border-radius:10px;font-size:13px;font-weight:600;color:#C9A227;background:transparent;cursor:pointer;transition:all .15s;"
-                    onmouseover="this.style.borderColor='#C9A227';this.style.background='#FFFBEB'"
-                    onmouseout="this.style.borderColor='#E2E4E9';this.style.background='transparent'">
+                    style="width:100%;margin-top:12px;padding:10px;border:1.5px dashed #E2E8F0;border-radius:10px;font-size:13px;font-weight:600;color:#1B6CA8;background:transparent;cursor:pointer;transition:all .15s;"
+                    onmouseover="this.style.borderColor='#1B6CA8';this.style.background='#FFFBEB'"
+                    onmouseout="this.style.borderColor='#E2E8F0';this.style.background='transparent'">
                 + إضافة بند آخر
             </button>
             @endif
@@ -268,7 +268,7 @@
     </div>
 
     <div class="card" style="width:100%;padding:24px;display:flex;flex-direction:column;gap:12px;">
-        <label class="label" style="font-size:14px;font-weight:700;color:#3D3D3D;margin:0;">ملاحظات</label>
+        <label class="label" style="font-size:14px;font-weight:700;color:#1E293B;margin:0;">ملاحظات</label>
         <textarea wire:model="notes" rows="10"
                   placeholder="أي ملاحظات أو تفاصيل إضافية..."
                   class="input" style="width:100%;min-height:20rem;resize:vertical;font-size:14px;line-height:1.6;padding:14px 16px;"></textarea>
@@ -277,9 +277,9 @@
     <div class="card" style="padding:20px;display:flex;flex-direction:column;gap:10px;">
         <p style="font-size:11px;font-weight:700;color:#9CA3AF;letter-spacing:.06em;text-transform:uppercase;">الإجمالي</p>
 
-        <div style="display:flex;justify-content:space-between;font-size:13px;color:#6B7280;padding-bottom:8px;border-bottom:1px solid #F0F2F5;">
+        <div style="display:flex;justify-content:space-between;font-size:13px;color:#6B7280;padding-bottom:8px;border-bottom:1px solid #F1F5F9;">
             <span>المجموع الفرعي</span>
-            <span dir="ltr" style="font-weight:600;color:#3D3D3D;">{{ number_format($subtotal, 2) }} {{ $currency_code }}</span>
+            <span dir="ltr" style="font-weight:600;color:#1E293B;">{{ number_format($subtotal, 2) }} {{ $currency_code }}</span>
         </div>
 
         <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
@@ -299,7 +299,7 @@
 
         @error('lines')<p class="field-error">{{ $message }}</p>@enderror
 
-        <div style="background:linear-gradient(135deg,#C9A227,#e0b83a);border-radius:12px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;">
+        <div style="background:linear-gradient(135deg,#1B6CA8,#e0b83a);border-radius:12px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;">
             <span style="font-size:13px;font-weight:700;color:rgba(255,255,255,.85);">الإجمالي</span>
             <span style="font-size:20px;font-weight:900;color:#fff;" dir="ltr">
                 {{ number_format((float)$total_amount, 2) }}
@@ -328,7 +328,7 @@
 @if($showQuickAddProductModal)
 <div class="fixed inset-0 z-[70] flex items-center justify-center p-4" style="background:rgba(0,0,0,.45);" wire:click.self="closeQuickAddProductModal">
     <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto" wire:click.stop role="dialog" aria-modal="true" aria-labelledby="quick-add-title">
-        <h3 id="quick-add-title" class="text-lg font-bold text-[#3D3D3D] mb-1">إضافة خدمة سريعة</h3>
+        <h3 id="quick-add-title" class="text-lg font-bold text-[#1E293B] mb-1">إضافة خدمة سريعة</h3>
         <p class="text-xs text-gray-500 mb-4">يُحفظ في كتالوج المنتجات. التسعير لعملة الفاتورة الحالية: <span class="font-mono" dir="ltr">{{ $currency_code }}</span></p>
 
         <div class="space-y-3">

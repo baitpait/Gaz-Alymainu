@@ -2,7 +2,7 @@
 
 <div class="flex items-center justify-between mb-6">
     <div>
-        <h1 class="text-xl font-bold text-[#3D3D3D]">المنتجات</h1>
+        <h1 class="text-xl font-bold text-[#1E293B]">المنتجات</h1>
         <p class="text-sm text-gray-400 mt-0.5">{{ $rows->total() }} خدمة</p>
     </div>
     @can('create', \App\Models\Product::class)
@@ -21,8 +21,8 @@
 ])
 
 <div class="card overflow-hidden">
-    <div wire:loading.delay class="h-0.5 bg-[#C9A227]/20 relative overflow-hidden">
-        <div class="absolute inset-y-0 right-0 w-1/3 bg-[#C9A227] animate-pulse"></div>
+    <div wire:loading.delay class="h-0.5 bg-[#1B6CA8]/20 relative overflow-hidden">
+        <div class="absolute inset-y-0 right-0 w-1/3 bg-[#1B6CA8] animate-pulse"></div>
     </div>
     <table class="data-table">
         <thead><tr>
@@ -50,7 +50,7 @@
                     @if(count($ok))
                         <span class="inline-flex flex-wrap gap-1">
                             @foreach($ok as $cc)
-                            <span class="rounded px-1.5 py-0.5 bg-[#F7F8FA] border border-[#E2E4E9] font-mono text-xs" dir="ltr">{{ $cc }}</span>
+                            <span class="rounded px-1.5 py-0.5 bg-[#F7F8FA] border border-[#E2E8F0] font-mono text-xs" dir="ltr">{{ $cc }}</span>
                             @endforeach
                         </span>
                     @else
@@ -92,7 +92,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
             </svg>
         </div>
-        <h3 class="text-center font-bold text-[#3D3D3D] mb-2">حذف الخدمة؟</h3>
+        <h3 class="text-center font-bold text-[#1E293B] mb-2">حذف الخدمة؟</h3>
         <p class="text-center text-sm text-gray-500 mb-6">سيتم إخفاء الخدمة من القوائم. البنود المرتبطة سابقًا تبقى كما هي على الفواتير.</p>
         <div class="flex gap-2">
             <button type="button" @click="deletingId = null" class="btn btn-secondary flex-1">إلغاء</button>

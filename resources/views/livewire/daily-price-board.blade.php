@@ -2,7 +2,7 @@
 
 <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
     <div>
-        <h1 class="text-xl font-bold text-[#3D3D3D]">التسعير اليومي</h1>
+        <h1 class="text-xl font-bold text-[#1E293B]">التسعير اليومي</h1>
         <p class="text-sm text-gray-400 mt-0.5">سعر بيع الجرة لكل صنف — بالشيكل (ILS)</p>
     </div>
     <div class="flex items-end gap-2">

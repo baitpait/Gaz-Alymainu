@@ -2,7 +2,7 @@
 
 <div class="flex items-center justify-between mb-6">
     <div>
-        <h1 class="text-xl font-bold text-[#3D3D3D]">فواتير المشتريات</h1>
+        <h1 class="text-xl font-bold text-[#1E293B]">فواتير المشتريات</h1>
         <p class="text-sm text-gray-400 mt-0.5">{{ $rows->total() }} مستند مسجّل</p>
     </div>
     @can('create', \App\Models\PurchaseOrder::class)
@@ -77,7 +77,7 @@
 </form>
 
 <div class="card overflow-hidden">
-    <div wire:loading.delay class="h-0.5 bg-[#C9A227]/20 relative overflow-hidden"><div class="absolute inset-y-0 right-0 w-1/3 bg-[#C9A227] animate-pulse"></div></div>
+    <div wire:loading.delay class="h-0.5 bg-[#1B6CA8]/20 relative overflow-hidden"><div class="absolute inset-y-0 right-0 w-1/3 bg-[#1B6CA8] animate-pulse"></div></div>
     <table class="data-table">
         <thead>
             <tr>
@@ -152,47 +152,47 @@
             <div class="flex items-start justify-between mb-5">
                 <div>
                     <div class="flex items-center gap-2 mb-1">
-                        <h2 class="text-lg font-bold text-[#3D3D3D]">{{ $po->legacy_po_no ?? 'مستند #'.$po->id }}</h2>
+                        <h2 class="text-lg font-bold text-[#1E293B]">{{ $po->legacy_po_no ?? 'مستند #'.$po->id }}</h2>
                         <span class="badge {{ $st==='issued' ? 'badge-green' : ($st==='draft' ? 'badge-yellow' : 'badge-red') }}">
                             {{ $st==='issued' ? 'صادر' : ($st==='draft' ? 'مسودة' : 'ملغى') }}
                         </span>
                     </div>
-                    <p class="text-sm text-[#C9A227] font-semibold">{{ $po->supplier?->displayName() ?? '—' }}</p>
+                    <p class="text-sm text-[#1B6CA8] font-semibold">{{ $po->supplier?->displayName() ?? '—' }}</p>
                 </div>
                 <button type="button" wire:click="closeView" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 transition shrink-0">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
             </div>
 
-            <dl class="divide-y divide-[#E2E4E9]">
+            <dl class="divide-y divide-[#E2E8F0]">
                 <div class="flex justify-between py-3">
                     <dt class="text-sm text-gray-500">تاريخ المستند</dt>
-                    <dd class="text-sm font-medium text-[#3D3D3D]" dir="ltr">{{ $po->document_date?->format('Y-m-d') ?? '—' }}</dd>
+                    <dd class="text-sm font-medium text-[#1E293B]" dir="ltr">{{ $po->document_date?->format('Y-m-d') ?? '—' }}</dd>
                 </div>
                 @if($po->due_date)
                 <div class="flex justify-between py-3">
                     <dt class="text-sm text-gray-500">تاريخ الاستحقاق</dt>
-                    <dd class="text-sm font-medium {{ $po->due_date->isPast() && $st === 'issued' ? 'text-red-500' : 'text-[#3D3D3D]' }}" dir="ltr">{{ $po->due_date->format('Y-m-d') }}</dd>
+                    <dd class="text-sm font-medium {{ $po->due_date->isPast() && $st === 'issued' ? 'text-red-500' : 'text-[#1E293B]' }}" dir="ltr">{{ $po->due_date->format('Y-m-d') }}</dd>
                 </div>
                 @endif
                 <div class="flex justify-between py-3">
                     <dt class="text-sm text-gray-500">المورد</dt>
-                    <dd class="text-sm font-medium text-[#3D3D3D]">{{ $po->supplier?->displayName() ?? '—' }}</dd>
+                    <dd class="text-sm font-medium text-[#1E293B]">{{ $po->supplier?->displayName() ?? '—' }}</dd>
                 </div>
                 @if($po->notes)
                 <div class="py-3">
                     <dt class="text-sm text-gray-500 mb-1">ملاحظات</dt>
-                    <dd class="text-sm text-[#3D3D3D] bg-amber-50 rounded-lg p-2">{{ $po->notes }}</dd>
+                    <dd class="text-sm text-[#1E293B] bg-amber-50 rounded-lg p-2">{{ $po->notes }}</dd>
                 </div>
                 @endif
             </dl>
 
             @if($po->lines->isNotEmpty())
             <div class="mt-4 mb-2">
-                <p class="text-xs font-semibold text-[#C9A227] mb-2 uppercase tracking-wide">البنود</p>
+                <p class="text-xs font-semibold text-[#1B6CA8] mb-2 uppercase tracking-wide">البنود</p>
                 <table class="w-full text-xs border-collapse">
                     <thead>
-                        <tr class="bg-[#3D3D3D] text-white">
+                        <tr class="bg-[#1E293B] text-white">
                             <th class="text-right px-3 py-2 rounded-r-md">البند</th>
                             <th class="text-center px-2 py-2">الكمية</th>
                             <th class="text-left px-3 py-2 rounded-l-md" dir="ltr">المجموع</th>
@@ -201,12 +201,12 @@
                     <tbody>
                         @foreach($po->lines as $line)
                         <tr class="{{ $loop->even ? 'bg-gray-50' : '' }}">
-                            <td class="px-3 py-2 border-b border-[#E2E4E9]">
-                                <div class="font-semibold text-[#3D3D3D]">{{ $line->title }}</div>
+                            <td class="px-3 py-2 border-b border-[#E2E8F0]">
+                                <div class="font-semibold text-[#1E293B]">{{ $line->title }}</div>
                                 @if($line->description)<div class="text-gray-400 text-[10px] mt-0.5">{{ $line->description }}</div>@endif
                             </td>
-                            <td class="px-2 py-2 text-center border-b border-[#E2E4E9] text-gray-500">{{ rtrim(rtrim(number_format((float) $line->quantity, 2), '0'), '.') }}</td>
-                            <td class="px-3 py-2 border-b border-[#E2E4E9] font-mono font-semibold text-[#3D3D3D]" dir="ltr">{{ number_format((float) $line->line_total, 2) }}</td>
+                            <td class="px-2 py-2 text-center border-b border-[#E2E8F0] text-gray-500">{{ rtrim(rtrim(number_format((float) $line->quantity, 2), '0'), '.') }}</td>
+                            <td class="px-3 py-2 border-b border-[#E2E8F0] font-mono font-semibold text-[#1E293B]" dir="ltr">{{ number_format((float) $line->line_total, 2) }}</td>
                         </tr>
                         @endforeach
                     </tbody>
@@ -214,7 +214,7 @@
             </div>
             @endif
 
-            <div class="mt-3 pt-3 border-t border-[#E2E4E9] space-y-1">
+            <div class="mt-3 pt-3 border-t border-[#E2E8F0] space-y-1">
                 @if($po->discount_amount && (float) $po->discount_amount > 0)
                 <div class="flex justify-between text-sm">
                     <span class="text-gray-500">الخصم</span>
@@ -222,15 +222,15 @@
                 </div>
                 @endif
                 <div class="flex justify-between">
-                    <span class="text-sm font-bold text-[#3D3D3D]">الإجمالي</span>
-                    <span class="text-base font-bold text-[#3D3D3D]" dir="ltr">
+                    <span class="text-sm font-bold text-[#1E293B]">الإجمالي</span>
+                    <span class="text-base font-bold text-[#1E293B]" dir="ltr">
                         {{ number_format((float) $po->total_amount, 2) }}
                         <span class="text-xs font-normal text-gray-400">{{ $po->currency_code }}</span>
                     </span>
                 </div>
             </div>
 
-            <div class="flex justify-end gap-2 pt-4 border-t border-[#E2E4E9] mt-4">
+            <div class="flex justify-end gap-2 pt-4 border-t border-[#E2E8F0] mt-4">
                 <button type="button" wire:click="closeView" class="btn btn-secondary text-xs">إغلاق</button>
                 <a href="{{ route('purchase-orders.show', $po) }}" wire:navigate class="btn btn-primary text-xs" style="text-decoration:none;">صفحة التفاصيل</a>
                 @can('update', $po)

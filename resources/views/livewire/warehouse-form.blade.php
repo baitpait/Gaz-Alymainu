@@ -3,13 +3,13 @@
 <div class="flex items-center justify-between mb-6">
     <div class="flex items-center gap-3">
         <a href="{{ route('warehouses.index') }}" wire:navigate
-           class="w-9 h-9 flex items-center justify-center rounded-full border border-[#E2E4E9] bg-white text-[#6B7280] hover:bg-[#F3F4F6]">
+           class="w-9 h-9 flex items-center justify-center rounded-full border border-[#E2E8F0] bg-white text-[#6B7280] hover:bg-[#F3F4F6]">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
             </svg>
         </a>
         <div>
-            <h1 class="text-xl font-bold text-[#3D3D3D]">{{ $warehouseId ? 'تعديل المخزن' : 'مخزن جديد' }}</h1>
+            <h1 class="text-xl font-bold text-[#1E293B]">{{ $warehouseId ? 'تعديل المخزن' : 'مخزن جديد' }}</h1>
             @if($warehouseId)<p class="text-xs text-gray-400 mt-0.5">رقم #{{ $warehouseId }}</p>@endif
         </div>
     </div>
@@ -45,8 +45,8 @@
         </div>
         <div class="flex items-end">
             <label class="flex items-center gap-2 cursor-pointer">
-                <input wire:model="is_active" type="checkbox" class="rounded border-[#E2E4E9]">
-                <span class="text-sm text-[#3D3D3D]">نشط</span>
+                <input wire:model="is_active" type="checkbox" class="rounded border-[#E2E8F0]">
+                <span class="text-sm text-[#1E293B]">نشط</span>
             </label>
         </div>
     </div>
@@ -82,16 +82,16 @@
 </div>
 
 <div class="card p-5 mb-6">
-    <p class="text-sm font-bold text-[#3D3D3D] mb-1">الأصناف المسموحة في هذا المخزن</p>
+    <p class="text-sm font-bold text-[#1E293B] mb-1">الأصناف المسموحة في هذا المخزن</p>
     <p class="text-xs text-gray-500 mb-3">حدّد أصناف الغاز التي تُخزَّن هنا. يحقق «أكثر من مخزن لأصناف معيّنة».</p>
     @if($products->isEmpty())
         <p class="text-sm text-amber-600">لا توجد أصناف غاز بعد — فعّل «تتبّع المخزون» على الصنف من قسم الأصناف.</p>
     @else
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
             @foreach($products as $p)
-            <label class="flex items-center gap-2 border border-[#E2E4E9] rounded-lg px-3 py-2 cursor-pointer hover:bg-[#F9F9FB]" wire:key="prod-{{ $p->id }}">
-                <input type="checkbox" value="{{ $p->id }}" wire:model="allowedProductIds" class="rounded border-[#E2E4E9]">
-                <span class="text-sm text-[#3D3D3D]">{{ $p->name }}</span>
+            <label class="flex items-center gap-2 border border-[#E2E8F0] rounded-lg px-3 py-2 cursor-pointer hover:bg-[#F9F9FB]" wire:key="prod-{{ $p->id }}">
+                <input type="checkbox" value="{{ $p->id }}" wire:model="allowedProductIds" class="rounded border-[#E2E8F0]">
+                <span class="text-sm text-[#1E293B]">{{ $p->name }}</span>
             </label>
             @endforeach
         </div>

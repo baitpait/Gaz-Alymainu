@@ -1,7 +1,7 @@
 <div>
     <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
         <div>
-            <h1 class="text-2xl font-bold text-[#3D3D3D]">حركات المخزون</h1>
+            <h1 class="text-2xl font-bold text-[#1E293B]">حركات المخزون</h1>
             <p class="text-sm text-gray-500 mt-1">شراء/تحميل/إرجاع/تحويل/بيع/تسوية ضمن الفترة المحددة.</p>
         </div>
         @can('export-period-reports')
@@ -42,7 +42,7 @@
     </div>
 
     <div class="flex flex-wrap gap-3 mb-4">
-        <div class="card px-4 py-2 text-sm"><span class="text-gray-500">عدد الحركات:</span> <span class="font-mono font-bold text-[#3D3D3D] mr-2" dir="ltr">{{ $count }}</span></div>
+        <div class="card px-4 py-2 text-sm"><span class="text-gray-500">عدد الحركات:</span> <span class="font-mono font-bold text-[#1E293B] mr-2" dir="ltr">{{ $count }}</span></div>
     </div>
 
     @if($rows->isEmpty())

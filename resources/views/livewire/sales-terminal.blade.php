@@ -3,7 +3,7 @@
 {{-- ═══ الترويسة ═══ --}}
 <div class="mb-4">
     <div class="flex items-center justify-between">
-        <h1 class="text-lg font-bold text-[#3D3D3D]">نقطة البيع</h1>
+        <h1 class="text-lg font-bold text-[#1E293B]">نقطة البيع</h1>
         <span class="text-xs text-gray-400" dir="ltr">{{ $today }}</span>
     </div>
     @unless($isDriver)
@@ -31,8 +31,8 @@
     {{-- على الحساب --}}
     <div class="flex flex-col items-center gap-1.5">
         <div class="w-20 h-20 rounded-full flex items-center justify-center border-[3px]"
-             style="border-color:#C9A227;background:#C9A22714;">
-            <span class="text-lg font-black" style="color:#C9A227" dir="ltr">{{ number_format($creditToday, 0) }}</span>
+             style="border-color:#1B6CA8;background:#1B6CA814;">
+            <span class="text-lg font-black" style="color:#1B6CA8" dir="ltr">{{ number_format($creditToday, 0) }}</span>
         </div>
         <span class="text-[11px] text-gray-500 text-center leading-tight">على الحساب</span>
     </div>
@@ -40,8 +40,8 @@
     {{-- كاش الصندوق --}}
     <div class="flex flex-col items-center gap-1.5">
         <div class="w-20 h-20 rounded-full flex items-center justify-center border-[3px]"
-             style="border-color:#3D3D3D;background:#3D3D3D14;">
-            <span class="text-lg font-black" style="color:#3D3D3D" dir="ltr">{{ number_format($boxBalance, 0) }}</span>
+             style="border-color:#1E293B;background:#1E293B14;">
+            <span class="text-lg font-black" style="color:#1E293B" dir="ltr">{{ number_format($boxBalance, 0) }}</span>
         </div>
         <span class="text-[11px] text-gray-500 text-center leading-tight">كاش الصندوق</span>
     </div>
@@ -68,8 +68,8 @@
     <div class="card p-4" wire:key="pos-{{ $p->id }}">
         <div class="flex items-center justify-between mb-3">
             <div class="min-w-0">
-                <p class="text-xl font-black truncate" style="color:#C9A227">{{ $p->name }}</p>
-                <p class="text-sm font-semibold text-[#3D3D3D] mt-0.5">
+                <p class="text-xl font-black truncate" style="color:#1B6CA8">{{ $p->name }}</p>
+                <p class="text-sm font-semibold text-[#1E293B] mt-0.5">
                     {{ $p->capacity_kg ? $p->capacity_kg.' كغ' : '' }}
                     @if($price !== null)
                     · <span class="text-gray-400">سعر الإدارة:</span>
@@ -116,7 +116,7 @@
                     wire:click="sell({{ $p->id }}, 'credit')"
                     wire:loading.attr="disabled"
                     @disabled($stock <= 0)
-                    class="btn btn-primary bg-[#C9A227] hover:bg-[#b3901f] border-[#C9A227] justify-center h-12 text-base disabled:opacity-40 disabled:cursor-not-allowed">
+                    class="btn btn-primary bg-[#1B6CA8] hover:bg-[#b3901f] border-[#1B6CA8] justify-center h-12 text-base disabled:opacity-40 disabled:cursor-not-allowed">
                 على الحساب
             </button>
         </div>

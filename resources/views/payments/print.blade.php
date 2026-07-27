@@ -30,7 +30,7 @@
   .header {
     margin-bottom: 28px;
     padding-bottom: 0;
-    border-bottom: 3px solid #C9A227;
+    border-bottom: 3px solid #1B6CA8;
   }
 
   .header-row {
@@ -71,13 +71,13 @@
   }
 
   .brand-text { line-height: 1.5; }
-  .brand-name { font-size: 16px; font-weight: 700; color: #3D3D3D; }
+  .brand-name { font-size: 16px; font-weight: 700; color: #1E293B; }
   .brand-sub  { font-size: 12px; color: #888; margin-top: 4px; }
 
   .doc-title {
     font-size: 36px;
     font-weight: 900;
-    color: #C9A227;
+    color: #1B6CA8;
     line-height: 1.1;
     text-align: left;
   }
@@ -98,7 +98,7 @@
   .info-box {
     flex: 1;
     min-width: 140px;
-    border: 1px solid #E2E4E9;
+    border: 1px solid #E2E8F0;
     border-radius: 8px;
     padding: 10px 16px;
     display: flex;
@@ -107,29 +107,29 @@
   }
 
   .info-box .lbl { font-size: 11px; color: #888; }
-  .info-box .val { font-size: 13px; font-weight: 700; color: #3D3D3D; direction: ltr; }
+  .info-box .val { font-size: 13px; font-weight: 700; color: #1E293B; direction: ltr; }
 
   .client-card {
     background: #FAFAFA;
-    border: 1px solid #E2E4E9;
+    border: 1px solid #E2E8F0;
     border-radius: 8px;
     padding: 14px 16px;
     margin-bottom: 20px;
   }
 
-  .client-card .section-lbl { font-size: 11px; color: #C9A227; font-weight: 700; margin-bottom: 6px; }
-  .client-card .client-name { font-size: 18px; font-weight: 800; color: #3D3D3D; margin-bottom: 4px; }
+  .client-card .section-lbl { font-size: 11px; color: #1B6CA8; font-weight: 700; margin-bottom: 6px; }
+  .client-card .client-name { font-size: 18px; font-weight: 800; color: #1E293B; margin-bottom: 4px; }
   .client-card .client-sub  { font-size: 12px; color: #666; line-height: 1.6; }
 
   .amount-box {
-    border: 2px solid #C9A227;
+    border: 2px solid #1B6CA8;
     border-radius: 10px;
     overflow: hidden;
     margin-bottom: 16px;
   }
 
   .amount-box .head {
-    background: #C9A227;
+    background: #1B6CA8;
     color: #fff;
     text-align: center;
     font-weight: 700;
@@ -141,7 +141,7 @@
     text-align: center;
     font-size: 32px;
     font-weight: 900;
-    color: #3D3D3D;
+    color: #1E293B;
     padding: 18px 14px 8px;
     direction: ltr;
   }
@@ -155,13 +155,13 @@
   }
 
   .amount-words {
-    background: #FFFBF0;
-    border: 1px solid #F0E6B8;
+    background: #EFF6FF;
+    border: 1px solid #BFDBFE;
     border-radius: 6px;
     padding: 12px 16px;
     font-size: 14px;
     font-weight: 600;
-    color: #7A6200;
+    color: #1E40AF;
     margin-bottom: 24px;
     text-align: center;
     line-height: 1.7;
@@ -176,7 +176,7 @@
 
   .details-table td {
     padding: 10px 12px;
-    border: 1px solid #E2E4E9;
+    border: 1px solid #E2E8F0;
   }
 
   .details-table td.lbl {
@@ -188,7 +188,7 @@
 
   .details-table td.val {
     font-weight: 700;
-    color: #3D3D3D;
+    color: #1E293B;
   }
 
   .details-table td.val.ltr { direction: ltr; text-align: left; }
@@ -199,7 +199,7 @@
     gap: 24px;
     margin-top: 36px;
     padding-top: 20px;
-    border-top: 1px dashed #E2E4E9;
+    border-top: 1px dashed #E2E8F0;
   }
 
   .sig-box {
@@ -208,7 +208,7 @@
   }
 
   .sig-line {
-    border-top: 1px solid #3D3D3D;
+    border-top: 1px solid #1E293B;
     margin-top: 48px;
     padding-top: 8px;
     font-size: 12px;

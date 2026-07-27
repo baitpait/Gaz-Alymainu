@@ -1,7 +1,7 @@
 <div>
     <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
         <div>
-            <h1 class="text-2xl font-bold text-[#3D3D3D]">أداء السائقين</h1>
+            <h1 class="text-2xl font-bold text-[#1E293B]">أداء السائقين</h1>
             <p class="text-sm text-gray-500 mt-1">ملخص لكل سائق ضمن الفترة: الكميات والمبيعات والتحصيلات.</p>
         </div>
         @can('export-period-reports')
@@ -41,7 +41,7 @@
                     <td class="font-mono text-left text-sm" dir="ltr">{{ $r['count'] }}</td>
                     <td class="font-mono text-left text-sm" dir="ltr">{{ rtrim(rtrim(number_format($r['qty'], 2), '0'), '.') }}</td>
                     <td class="font-mono text-left text-sm text-green-600" dir="ltr">{{ number_format($r['cash_sales'], 2) }}</td>
-                    <td class="font-mono text-left text-sm text-[#C9A227]" dir="ltr">{{ number_format($r['credit_sales'], 2) }}</td>
+                    <td class="font-mono text-left text-sm text-[#1B6CA8]" dir="ltr">{{ number_format($r['credit_sales'], 2) }}</td>
                     <td class="font-mono text-left text-sm font-semibold" dir="ltr">{{ number_format($r['total_sales'], 2) }}</td>
                     <td class="font-mono text-left text-sm text-blue-600" dir="ltr">{{ number_format($r['collections'], 2) }}</td>
                 </tr>

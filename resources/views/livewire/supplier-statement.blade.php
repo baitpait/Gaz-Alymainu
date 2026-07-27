@@ -1,8 +1,8 @@
 <div>
     <div class="flex items-start justify-between mb-6">
         <div>
-            <h1 class="text-2xl font-bold text-[#3D3D3D]">كشف حساب مورد</h1>
-            <p class="text-[#C9A227] font-semibold mt-1">{{ $supplier->displayName() }}</p>
+            <h1 class="text-2xl font-bold text-[#1E293B]">كشف حساب مورد</h1>
+            <p class="text-[#1B6CA8] font-semibold mt-1">{{ $supplier->displayName() }}</p>
         </div>
         <div class="flex gap-2 flex-wrap">
             @if(auth()->user()->isAccountant())
@@ -21,7 +21,7 @@
             </button>
             <a href="{{ route('suppliers.statement.pdf', $supplier) }}{{ ($dateFrom || $dateTo) ? '?'.http_build_query(array_filter(['date_from' => $dateFrom ?: null, 'date_to' => $dateTo ?: null])) : '' }}"
                target="_blank"
-               class="px-4 py-2 text-sm bg-[#C9A227] text-white rounded hover:opacity-90 font-medium">
+               class="px-4 py-2 text-sm bg-[#1B6CA8] text-white rounded hover:opacity-90 font-medium">
                 طباعة PDF
             </a>
             @endcan
@@ -30,14 +30,14 @@
 
     <form wire:submit.prevent="applyStatementFilters" class="bg-white border border-[#E0E0E0] rounded p-4 mb-6 flex flex-wrap gap-4 items-end">
         <div>
-            <label class="block text-xs font-medium text-[#3D3D3D] mb-1">من تاريخ</label>
+            <label class="block text-xs font-medium text-[#1E293B] mb-1">من تاريخ</label>
             <input type="date" wire:model="dateFrom"
-                   class="border border-[#E0E0E0] rounded px-3 py-1.5 text-sm focus:outline-none focus:border-[#C9A227]">
+                   class="border border-[#E0E0E0] rounded px-3 py-1.5 text-sm focus:outline-none focus:border-[#1B6CA8]">
         </div>
         <div>
-            <label class="block text-xs font-medium text-[#3D3D3D] mb-1">إلى تاريخ</label>
+            <label class="block text-xs font-medium text-[#1E293B] mb-1">إلى تاريخ</label>
             <input type="date" wire:model="dateTo"
-                   class="border border-[#E0E0E0] rounded px-3 py-1.5 text-sm focus:outline-none focus:border-[#C9A227]">
+                   class="border border-[#E0E0E0] rounded px-3 py-1.5 text-sm focus:outline-none focus:border-[#1B6CA8]">
         </div>
         @include('livewire.partials.list-filter-actions', [
             'applyMethod' => 'applyStatementFilters',
@@ -56,8 +56,8 @@
     @php $payMethods = ['cash' => 'نقداً', 'bank' => 'بنك', 'check' => 'شيك', 'transfer' => 'تحويل']; @endphp
     <div class="mb-8" id="currency-{{ $currency }}">
 
-        <h2 class="text-lg font-bold text-[#3D3D3D] mb-3">
-            عملة: <span dir="ltr" class="text-[#C9A227] font-mono">{{ $currency }}</span>
+        <h2 class="text-lg font-bold text-[#1E293B] mb-3">
+            عملة: <span dir="ltr" class="text-[#1B6CA8] font-mono">{{ $currency }}</span>
         </h2>
 
         <div class="bg-[#FAFAFA] border border-[#E0E0E0] rounded-lg p-4 mb-4 max-w-md">
@@ -75,7 +75,7 @@
             </div>
             <div class="border-t border-[#E0E0E0] pt-3 flex justify-between font-bold">
                 <span>المتبقي للمورد</span>
-                <span class="font-mono {{ $section['balance'] > 0 ? 'text-[#DC2626]' : ($section['balance'] < 0 ? 'text-[#16A34A]' : 'text-[#3D3D3D]') }}" dir="ltr">
+                <span class="font-mono {{ $section['balance'] > 0 ? 'text-[#DC2626]' : ($section['balance'] < 0 ? 'text-[#16A34A]' : 'text-[#1E293B]') }}" dir="ltr">
                     {{ number_format($section['balance'], 2) }} {{ $currency }}
                 </span>
             </div>
@@ -84,12 +84,12 @@
 
         @if(!empty($section['timeline']))
         <div class="mb-4">
-            <h3 class="text-sm font-semibold text-[#3D3D3D] mb-2 bg-[#F5F5F5] px-3 py-1.5 rounded-t border border-[#E0E0E0]">
+            <h3 class="text-sm font-semibold text-[#1E293B] mb-2 bg-[#F5F5F5] px-3 py-1.5 rounded-t border border-[#E0E0E0]">
                 حركة الحساب
             </h3>
             <div class="overflow-x-auto">
                 <table class="w-full text-sm border border-[#E0E0E0] rounded-b">
-                    <thead class="bg-[#F5F5F5] text-[#3D3D3D]">
+                    <thead class="bg-[#F5F5F5] text-[#1E293B]">
                         <tr>
                             <th class="text-right px-3 py-2 font-semibold border-b border-[#E0E0E0] w-28">التاريخ</th>
                             <th class="text-right px-3 py-2 font-semibold border-b border-[#E0E0E0]">العملية</th>
@@ -108,7 +108,7 @@
                                 <tr class="bg-[#FAFAFA] border-b border-[#E0E0E0]">
                                     <td class="px-3 py-2 text-gray-600" dir="ltr">{{ $event['date']->format('Y-m-d') }}</td>
                                     <td class="px-3 py-2">
-                                        <span class="font-bold text-[#3D3D3D]">أمر شراء {{ $poNo }}</span>
+                                        <span class="font-bold text-[#1E293B]">أمر شراء {{ $poNo }}</span>
                                         <span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded mr-2">صادر</span>
                                     </td>
                                     <td class="px-3 py-2 font-mono font-semibold" dir="ltr">{{ number_format($event['amount'], 2) }}</td>
@@ -127,7 +127,7 @@
                                     <td colspan="5" class="p-0">
                                         <table class="w-full text-xs">
                                             <thead>
-                                                <tr class="bg-[#C9A227] text-white">
+                                                <tr class="bg-[#1B6CA8] text-white">
                                                     <th class="text-right px-3 py-1.5 font-semibold">البند</th>
                                                     <th class="text-center px-3 py-1.5 font-semibold w-20">الكمية</th>
                                                     <th class="text-left px-3 py-1.5 font-semibold w-28" dir="ltr">سعر الوحدة</th>
@@ -138,7 +138,7 @@
                                                 @foreach($po->lines as $line)
                                                 <tr class="border-t border-[#E8E8E8] bg-white">
                                                     <td class="px-3 py-2">
-                                                        <span class="font-medium text-[#3D3D3D]">{{ $line->title }}</span>
+                                                        <span class="font-medium text-[#1E293B]">{{ $line->title }}</span>
                                                         @if($line->description)
                                                         <span class="text-gray-400"> — {{ $line->description }}</span>
                                                         @endif
@@ -175,7 +175,7 @@
                                 <tr class="bg-[#FFFDF5] border-b border-[#E0E0E0]">
                                     <td class="px-3 py-2 text-gray-600" dir="ltr">{{ $event['date']->format('Y-m-d') }}</td>
                                     <td class="px-3 py-2">
-                                        <span class="font-semibold text-[#3D3D3D]">دفعة {{ $payRef }}</span>
+                                        <span class="font-semibold text-[#1E293B]">دفعة {{ $payRef }}</span>
                                         <span class="text-xs text-gray-500 mr-2">({{ $methodLabel }})</span>
                                     </td>
                                     <td class="px-3 py-2 font-mono font-semibold text-[#16A34A]" dir="ltr">−{{ number_format($event['amount'], 2) }}</td>
@@ -205,7 +205,7 @@
                         @endforeach
                     </tbody>
                     <tfoot>
-                        <tr class="bg-[#3D3D3D] text-white font-bold">
+                        <tr class="bg-[#1E293B] text-white font-bold">
                             <td colspan="3" class="px-3 py-2.5 text-right">المتبقي للمورد</td>
                             <td class="px-3 py-2.5 font-mono" dir="ltr">{{ number_format($section['balance'], 2) }}</td>
                             <td></td>

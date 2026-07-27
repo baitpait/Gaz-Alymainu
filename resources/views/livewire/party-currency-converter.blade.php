@@ -9,7 +9,7 @@
     @if($showModal)
     <div class="fixed inset-0 z-[80] flex items-center justify-center p-4" style="background:rgba(0,0,0,.45);" wire:click.self="closeModal">
         <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6" wire:click.stop role="dialog" aria-modal="true">
-            <h3 class="text-lg font-bold text-[#3D3D3D] mb-1">تحويل العملة</h3>
+            <h3 class="text-lg font-bold text-[#1E293B] mb-1">تحويل العملة</h3>
             <p class="text-xs text-gray-500 mb-4">
                 يغيّر <strong>رمز العملة</strong> فقط في كل الفواتير (بما فيها المسودات) والدفعات والتسويات.
                 <strong>المبالغ تبقى كما هي</strong> — بدون سعر صرف.
@@ -40,7 +40,7 @@
 
             @if($preview !== null)
             <div class="mt-4 p-3 bg-[#FAFAFA] border border-[#E0E0E0] rounded-lg text-sm space-y-1">
-                <p class="font-semibold text-[#3D3D3D] mb-2">معاينة التحويل</p>
+                <p class="font-semibold text-[#1E293B] mb-2">معاينة التحويل</p>
                 <p>{{ $documentLabel }}: <span class="font-mono">{{ $preview['invoices'] }}</span></p>
                 <p>دفعات: <span class="font-mono">{{ $preview['payments'] }}</span></p>
                 <p>تسويات: <span class="font-mono">{{ $preview['adjustments'] }}</span></p>

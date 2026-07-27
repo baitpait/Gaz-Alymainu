@@ -113,7 +113,7 @@
 <div class="amount-words">{{ $amountInWords }}</div>
 
 @if($invoice->notes)
-<div class="notes-box"><strong style="color:#C9A227;">ملاحظات:</strong> {{ $invoice->notes }}</div>
+<div class="notes-box"><strong style="color:#1B6CA8;">ملاحظات:</strong> {{ $invoice->notes }}</div>
 @endif
 
 <div class="footer">

@@ -1,7 +1,7 @@
 <div>
     <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
         <div>
-            <h1 class="text-2xl font-bold text-[#3D3D3D]">أعمار ذمم العملاء</h1>
+            <h1 class="text-2xl font-bold text-[#1E293B]">أعمار ذمم العملاء</h1>
             <p class="text-sm text-gray-500 mt-1">
                 رصيد مستحق لكل عميل وعملة، مع أيام التأخير من تاريخ أقدم فاتورة غير مسدّدة (تخصيص FIFO).
             </p>
@@ -9,7 +9,7 @@
         <div class="flex flex-wrap items-end gap-3">
             @can('export-client-receivables-aging-csv')
             <a href="{{ $pdfExportUrl }}" target="_blank" rel="noopener"
-               class="px-4 py-2 text-sm bg-[#3D3D3D] text-white rounded hover:bg-[#2a2a2a] font-medium self-end"
+               class="px-4 py-2 text-sm bg-[#1E293B] text-white rounded hover:bg-[#2a2a2a] font-medium self-end"
                style="text-decoration:none;">
                 تصدير PDF
             </a>
@@ -23,13 +23,13 @@
 
     <form wire:submit.prevent="applyReportFilters" class="bg-white border border-[#E0E0E0] rounded p-4 mb-6">
         <div class="flex flex-wrap items-end justify-between gap-3 mb-3">
-            <h2 class="text-sm font-bold text-[#3D3D3D]">تصفية النتائج</h2>
+            <h2 class="text-sm font-bold text-[#1E293B]">تصفية النتائج</h2>
         </div>
         <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
             <div>
-                <label class="block text-xs font-medium text-[#3D3D3D] mb-1">العملة</label>
+                <label class="block text-xs font-medium text-[#1E293B] mb-1">العملة</label>
                 <select wire:model="currency"
-                        class="border border-[#E0E0E0] rounded px-3 py-2 text-sm w-full focus:outline-none focus:border-[#C9A227]">
+                        class="border border-[#E0E0E0] rounded px-3 py-2 text-sm w-full focus:outline-none focus:border-[#1B6CA8]">
                     <option value="">كل العملات</option>
                     @foreach($currencyOptions as $c)
                         <option value="{{ $c }}" dir="ltr">{{ $c }}</option>
@@ -37,9 +37,9 @@
                 </select>
             </div>
             <div>
-                <label class="block text-xs font-medium text-[#3D3D3D] mb-1">فئة التأخير</label>
+                <label class="block text-xs font-medium text-[#1E293B] mb-1">فئة التأخير</label>
                 <select wire:model="agingBucket"
-                        class="border border-[#E0E0E0] rounded px-3 py-2 text-sm w-full focus:outline-none focus:border-[#C9A227]"
+                        class="border border-[#E0E0E0] rounded px-3 py-2 text-sm w-full focus:outline-none focus:border-[#1B6CA8]"
                         @disabled($daysMin !== '' || $daysMax !== '')>
                     <option value="">الكل</option>
                     <option value="0_30">0–30 يوم</option>
@@ -49,30 +49,30 @@
                 </select>
             </div>
             <div>
-                <label class="block text-xs font-medium text-[#3D3D3D] mb-1">أيام من (حد أدنى)</label>
+                <label class="block text-xs font-medium text-[#1E293B] mb-1">أيام من (حد أدنى)</label>
                 <input type="number" min="0" step="1" wire:model="daysMin" dir="ltr"
                        placeholder="—"
                        @disabled($agingBucket !== '')
-                       class="border border-[#E0E0E0] rounded px-3 py-2 text-sm w-full font-mono focus:outline-none focus:border-[#C9A227] disabled:bg-[#F5F5F5]">
+                       class="border border-[#E0E0E0] rounded px-3 py-2 text-sm w-full font-mono focus:outline-none focus:border-[#1B6CA8] disabled:bg-[#F5F5F5]">
             </div>
             <div>
-                <label class="block text-xs font-medium text-[#3D3D3D] mb-1">أيام إلى (حد أقصى)</label>
+                <label class="block text-xs font-medium text-[#1E293B] mb-1">أيام إلى (حد أقصى)</label>
                 <input type="number" min="0" step="1" wire:model="daysMax" dir="ltr"
                        placeholder="—"
                        @disabled($agingBucket !== '')
-                       class="border border-[#E0E0E0] rounded px-3 py-2 text-sm w-full font-mono focus:outline-none focus:border-[#C9A227] disabled:bg-[#F5F5F5]">
+                       class="border border-[#E0E0E0] rounded px-3 py-2 text-sm w-full font-mono focus:outline-none focus:border-[#1B6CA8] disabled:bg-[#F5F5F5]">
             </div>
             <div>
-                <label class="block text-xs font-medium text-[#3D3D3D] mb-1">حد أدنى للمبلغ</label>
+                <label class="block text-xs font-medium text-[#1E293B] mb-1">حد أدنى للمبلغ</label>
                 <input type="number" min="0" step="0.01" wire:model="minBalance" dir="ltr"
                        placeholder="0"
-                       class="border border-[#E0E0E0] rounded px-3 py-2 text-sm w-full font-mono focus:outline-none focus:border-[#C9A227]">
+                       class="border border-[#E0E0E0] rounded px-3 py-2 text-sm w-full font-mono focus:outline-none focus:border-[#1B6CA8]">
             </div>
             <div class="sm:col-span-2 lg:col-span-1 xl:col-span-2">
-                <label class="block text-xs font-medium text-[#3D3D3D] mb-1">بحث (اسم أو هاتف)</label>
+                <label class="block text-xs font-medium text-[#1E293B] mb-1">بحث (اسم أو هاتف)</label>
                 <input type="search" wire:model="search"
                        placeholder="ابحث..."
-                       class="border border-[#E0E0E0] rounded px-3 py-2 text-sm w-full focus:outline-none focus:border-[#C9A227]">
+                       class="border border-[#E0E0E0] rounded px-3 py-2 text-sm w-full focus:outline-none focus:border-[#1B6CA8]">
             </div>
         </div>
         @if($agingBucket !== '')
@@ -96,7 +96,7 @@
     @else
         <div class="overflow-x-auto bg-white border border-[#E0E0E0] rounded mb-6">
             <table class="w-full text-sm">
-                <thead class="bg-[#F5F5F5] text-[#3D3D3D]">
+                <thead class="bg-[#F5F5F5] text-[#1E293B]">
                     <tr>
                         <th class="text-right px-3 py-2 font-semibold border-b border-[#E0E0E0]">العميل</th>
                         <th class="text-right px-3 py-2 font-semibold border-b border-[#E0E0E0]" dir="ltr">الهاتف</th>
@@ -110,7 +110,7 @@
                     @foreach($rows as $r)
                     <tr class="border-b border-[#E0E0E0] last:border-0 hover:bg-[#FAFAFA]">
                         <td class="px-3 py-2">
-                            <a href="{{ route('clients.statement', $r['client_id']) }}" class="text-[#C9A227] font-medium hover:underline">
+                            <a href="{{ route('clients.statement', $r['client_id']) }}" class="text-[#1B6CA8] font-medium hover:underline">
                                 {{ $r['client_name'] }}
                             </a>
                         </td>
@@ -127,7 +127,7 @@
 
         <div class="grid gap-4 md:grid-cols-2">
             <div class="bg-white border border-[#E0E0E0] rounded p-4">
-                <h2 class="text-sm font-bold text-[#3D3D3D] mb-3">إجمالي الذمم</h2>
+                <h2 class="text-sm font-bold text-[#1E293B] mb-3">إجمالي الذمم</h2>
                 <dl class="space-y-2 text-sm">
                     <div class="flex justify-between gap-4">
                         <dt class="text-gray-500">عدد العملاء</dt>
@@ -135,13 +135,13 @@
                     </div>
                     <div class="flex justify-between gap-4">
                         <dt class="text-gray-500">المبلغ المستحق</dt>
-                        <dd class="font-mono font-semibold text-[#3D3D3D]" dir="ltr">{{ number_format((float) $summary['total_balance'], 2) }}</dd>
+                        <dd class="font-mono font-semibold text-[#1E293B]" dir="ltr">{{ number_format((float) $summary['total_balance'], 2) }}</dd>
                     </div>
                 </dl>
             </div>
 
             <div class="bg-white border border-[#E0E0E0] rounded p-4">
-                <h2 class="text-sm font-bold text-[#3D3D3D] mb-3">تصنيف عمرية (حسب أول ذمة)</h2>
+                <h2 class="text-sm font-bold text-[#1E293B] mb-3">تصنيف عمرية (حسب أول ذمة)</h2>
                 <table class="w-full text-sm">
                     <thead>
                         <tr class="text-gray-500 border-b border-[#E0E0E0]">

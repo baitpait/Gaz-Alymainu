@@ -1,7 +1,7 @@
 <div>
     <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
         <div>
-            <h1 class="text-2xl font-bold text-[#3D3D3D]">قائمة الربح والخسارة</h1>
+            <h1 class="text-2xl font-bold text-[#1E293B]">قائمة الربح والخسارة</h1>
             <p class="text-sm text-gray-500 mt-1">{{ $modeLabel }} — صافي الربح/الخسارة <strong>لكل عملة على حدة</strong>.</p>
         </div>
         @include('livewire.partials.period-report-export-actions', ['pdfExportUrl' => $pdfExportUrl])
@@ -9,10 +9,10 @@
 
     <div class="flex flex-wrap gap-2 mb-4 text-sm">
         <a href="{{ route('reports.profit-loss') }}" wire:navigate
-           class="px-3 py-1.5 rounded border {{ !$isCash ? 'bg-[#3D3D3D] text-white border-[#3D3D3D]' : 'bg-white border-[#E0E0E0] text-gray-600' }}"
+           class="px-3 py-1.5 rounded border {{ !$isCash ? 'bg-[#1E293B] text-white border-[#1E293B]' : 'bg-white border-[#E0E0E0] text-gray-600' }}"
            style="text-decoration:none;">كامل (فواتير)</a>
         <a href="{{ route('reports.profit-loss-cash') }}" wire:navigate
-           class="px-3 py-1.5 rounded border {{ $isCash ? 'bg-[#3D3D3D] text-white border-[#3D3D3D]' : 'bg-white border-[#E0E0E0] text-gray-600' }}"
+           class="px-3 py-1.5 rounded border {{ $isCash ? 'bg-[#1E293B] text-white border-[#1E293B]' : 'bg-white border-[#E0E0E0] text-gray-600' }}"
            style="text-decoration:none;">بدون دين (نقدي)</a>
         <a href="{{ route('reports.profit-loss-ils') }}" wire:navigate
            class="px-3 py-1.5 rounded border bg-white border-[#E0E0E0] text-gray-600"

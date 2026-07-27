@@ -17,23 +17,23 @@
 <body class="min-h-screen font-sans antialiased flex flex-col">
 
 {{-- ═══ شريط التنقل العلوي ═══ --}}
-<header class="bg-white border-b border-[#E2E4E9] h-14 flex items-center px-5 sticky top-0 z-30 shadow-sm">
+<header class="bg-white border-b border-[#E2E8F0] h-14 flex items-center px-5 sticky top-0 z-30 shadow-sm">
     <div class="flex items-center gap-3 flex-1">
         <img src="{{ asset('branding/logo.png') }}" alt="{{ $appName }}" class="h-8 w-auto" onerror="this.style.display='none'">
         <div class="flex flex-col leading-tight">
-            <span class="text-sm font-bold text-[#3D3D3D]">{{ $appName }}</span>
-            <span class="text-[10px] text-[#C9A227] font-medium tracking-wide">توزيع الغاز</span>
+            <span class="text-sm font-bold text-[#1E293B]">{{ $appName }}</span>
+            <span class="text-[10px] text-[#E85D04] font-medium tracking-wide">توزيع الغاز</span>
         </div>
     </div>
     @auth
     <div class="flex items-center gap-3 shrink-0">
         <div class="hidden sm:block text-left">
-            <div class="text-xs font-semibold text-[#3D3D3D]">{{ auth()->user()->full_name }}</div>
+            <div class="text-xs font-semibold text-[#1E293B]">{{ auth()->user()->full_name }}</div>
             <div class="text-[10px] text-gray-400">
                 {{ match(auth()->user()->role) { 'manager' => 'مدير', 'accountant' => 'محاسب', 'driver' => 'سائق', default => 'مشاهد' } }}
             </div>
         </div>
-        <div class="w-8 h-8 rounded-full bg-[#C9A227]/15 flex items-center justify-center text-[#C9A227] font-bold text-sm">
+        <div class="w-8 h-8 rounded-full bg-[#1B6CA8]/15 flex items-center justify-center text-[#1B6CA8] font-bold text-sm">
             {{ mb_substr(auth()->user()->full_name, 0, 1) }}
         </div>
         <form method="POST" action="{{ route('logout') }}" class="mr-1">
@@ -55,7 +55,7 @@
 
     {{-- ═══ القائمة الجانبية (مخفية للسائق) ═══ --}}
     @unless(auth()->user()->isDriver())
-    <aside class="w-56 bg-white border-l border-[#E2E4E9] hidden md:flex flex-col py-3 shrink-0">
+    <aside class="w-56 bg-white border-l border-[#E2E8F0] hidden md:flex flex-col py-3 shrink-0">
         <nav class="flex-1 px-3 space-y-0.5 overflow-y-auto">
 
             @php
@@ -551,9 +551,9 @@
 
 @can('record-sales')
 {{-- ═══ شريط التنقل السفلي — يظهر على الموبايل فقط ═══ --}}
-<nav class="fixed bottom-0 inset-x-0 z-40 bg-white border-t border-[#E2E4E9] shadow-[0_-2px_10px_rgba(0,0,0,0.05)] flex items-stretch md:hidden">
+<nav class="fixed bottom-0 inset-x-0 z-40 bg-white border-t border-[#E2E8F0] shadow-[0_-2px_10px_rgba(0,0,0,0.05)] flex items-stretch md:hidden">
     <a href="{{ route('pos.index') }}" wire:navigate
-       class="flex-1 flex flex-col items-center justify-center gap-1 py-2.5 transition {{ request()->routeIs('pos.*') ? 'text-[#C9A227]' : 'text-gray-400' }}">
+       class="flex-1 flex flex-col items-center justify-center gap-1 py-2.5 transition {{ request()->routeIs('pos.*') ? 'text-[#1B6CA8]' : 'text-gray-400' }}">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
         </svg>
@@ -561,7 +561,7 @@
     </a>
 
     <a href="{{ route('collections.index') }}" wire:navigate
-       class="flex-1 flex flex-col items-center justify-center gap-1 py-2.5 transition {{ request()->routeIs('collections.*') ? 'text-[#C9A227]' : 'text-gray-400' }}">
+       class="flex-1 flex flex-col items-center justify-center gap-1 py-2.5 transition {{ request()->routeIs('collections.*') ? 'text-[#1B6CA8]' : 'text-gray-400' }}">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
         </svg>
@@ -570,7 +570,7 @@
 
     @can('manage-driver-expenses')
     <a href="{{ route('driver-expenses.index') }}" wire:navigate
-       class="flex-1 flex flex-col items-center justify-center gap-1 py-2.5 transition {{ request()->routeIs('driver-expenses.*') ? 'text-[#C9A227]' : 'text-gray-400' }}">
+       class="flex-1 flex flex-col items-center justify-center gap-1 py-2.5 transition {{ request()->routeIs('driver-expenses.*') ? 'text-[#1B6CA8]' : 'text-gray-400' }}">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M17 14l-5-5-5 5m10 0H7"/>
         </svg>
@@ -580,7 +580,7 @@
 
     @can('share-location')
     <a href="{{ route('location.share') }}" wire:navigate
-       class="flex-1 flex flex-col items-center justify-center gap-1 py-2.5 transition {{ request()->routeIs('location.*') ? 'text-[#C9A227]' : 'text-gray-400' }}">
+       class="flex-1 flex flex-col items-center justify-center gap-1 py-2.5 transition {{ request()->routeIs('location.*') ? 'text-[#1B6CA8]' : 'text-gray-400' }}">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
             <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -607,7 +607,7 @@
              x-transition:leave-end="opacity-0 translate-y-2"
              :class="toast.type === 'success' ? 'border-r-4 border-green-500' :
                      toast.type === 'error'   ? 'border-r-4 border-red-500'   :
-                                                'border-r-4 border-[#C9A227]'"
+                                                'border-r-4 border-[#1B6CA8]'"
              class="card px-4 py-3 flex items-center gap-3 shadow-xl">
             <span x-show="toast.type === 'success'" class="text-green-500 shrink-0">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -619,7 +619,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
             </span>
-            <span class="text-sm text-[#3D3D3D] flex-1" x-text="toast.message"></span>
+            <span class="text-sm text-[#1E293B] flex-1" x-text="toast.message"></span>
             <button @click="remove(toast.id)" class="text-gray-300 hover:text-gray-500 transition shrink-0 text-lg leading-none">&times;</button>
         </div>
     </template>

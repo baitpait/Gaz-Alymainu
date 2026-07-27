@@ -1,7 +1,7 @@
 <div>
     <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
         <div>
-            <h1 class="text-2xl font-bold text-[#3D3D3D]">كشف التدفق النقدي</h1>
+            <h1 class="text-2xl font-bold text-[#1E293B]">كشف التدفق النقدي</h1>
             <p class="text-sm text-gray-500 mt-1">دفعات العملاء (+) ودفعات الموردين (−) والمصروفات (−) ضمن الفترة المحددة.</p>
         </div>
         @include('livewire.partials.period-report-export-actions', ['pdfExportUrl' => $pdfExportUrl])
@@ -18,7 +18,7 @@
                 <div class="flex justify-between"><span class="text-gray-500">وارد (عملاء)</span><span class="font-mono text-green-600" dir="ltr">+{{ number_format($s['inflow'], 2) }}</span></div>
                 <div class="flex justify-between"><span class="text-gray-500">صادر (موردين)</span><span class="font-mono text-red-500" dir="ltr">−{{ number_format($s['supplier_outflow'], 2) }}</span></div>
                 <div class="flex justify-between"><span class="text-gray-500">صادر (مصروفات)</span><span class="font-mono text-red-500" dir="ltr">−{{ number_format($s['expense_outflow'], 2) }}</span></div>
-                <div class="flex justify-between pt-2 border-t font-bold"><span>صافي الفترة</span><span class="font-mono {{ $s['net'] >= 0 ? 'text-[#C9A227]' : 'text-red-600' }}" dir="ltr">{{ number_format($s['net'], 2) }}</span></div>
+                <div class="flex justify-between pt-2 border-t font-bold"><span>صافي الفترة</span><span class="font-mono {{ $s['net'] >= 0 ? 'text-[#1B6CA8]' : 'text-red-600' }}" dir="ltr">{{ number_format($s['net'], 2) }}</span></div>
             </div>
         </div>
         @endforeach

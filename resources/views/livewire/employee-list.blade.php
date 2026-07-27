@@ -1,7 +1,7 @@
 <div>
 <div class="flex items-center justify-between mb-6">
     <div>
-        <h1 class="text-xl font-bold text-[#3D3D3D]">الموظفون</h1>
+        <h1 class="text-xl font-bold text-[#1E293B]">الموظفون</h1>
         <p class="text-sm text-gray-400 mt-0.5">{{ $rows->total() }} موظف</p>
     </div>
     @can('create', App\Models\Employee::class)
@@ -15,12 +15,12 @@
 <form wire:submit.prevent="applyListFilters" class="bg-white border border-[#E0E0E0] rounded p-4 mb-6">
     <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 items-end">
         <div class="lg:col-span-2">
-            <label class="block text-xs font-medium text-[#3D3D3D] mb-1">بحث</label>
+            <label class="block text-xs font-medium text-[#1E293B] mb-1">بحث</label>
             <input type="text" wire:model="searchDraft" placeholder="اسم، رقم وظيفي، قسم..."
-                   class="border border-[#E0E0E0] rounded px-3 py-2 text-sm w-full focus:outline-none focus:border-[#C9A227]">
+                   class="border border-[#E0E0E0] rounded px-3 py-2 text-sm w-full focus:outline-none focus:border-[#1B6CA8]">
         </div>
         <div>
-            <label class="block text-xs font-medium text-[#3D3D3D] mb-1">الحالة</label>
+            <label class="block text-xs font-medium text-[#1E293B] mb-1">الحالة</label>
             <select wire:model="active" class="border border-[#E0E0E0] rounded px-3 py-2 text-sm w-full">
                 <option value="">الكل</option>
                 <option value="1">نشط</option>
@@ -77,7 +77,7 @@
             @endforelse
         </tbody>
     </table>
-    <div class="p-4 border-t border-[#E2E4E9]"><x-list-pagination :paginator="$rows" /></div>
+    <div class="p-4 border-t border-[#E2E8F0]"><x-list-pagination :paginator="$rows" /></div>
 </div>
 
 @if($confirmDeleteId !== null)

@@ -2,7 +2,7 @@
 
 <div class="flex items-center justify-between mb-6">
     <div>
-        <h1 class="text-xl font-bold text-[#3D3D3D]">الفواتير</h1>
+        <h1 class="text-xl font-bold text-[#1E293B]">الفواتير</h1>
         <p class="text-sm text-gray-400 mt-0.5">{{ $rows->total() }} فاتورة مسجّلة</p>
     </div>
     @if(auth()->user()->isAccountant())
@@ -72,8 +72,8 @@
 </form>
 
 <div class="card overflow-hidden">
-    <div wire:loading.delay class="h-0.5 bg-[#C9A227]/20 relative overflow-hidden">
-        <div class="absolute inset-y-0 right-0 w-1/3 bg-[#C9A227] animate-pulse"></div>
+    <div wire:loading.delay class="h-0.5 bg-[#1B6CA8]/20 relative overflow-hidden">
+        <div class="absolute inset-y-0 right-0 w-1/3 bg-[#1B6CA8] animate-pulse"></div>
     </div>
     <table class="data-table">
         <thead><tr>
@@ -142,37 +142,37 @@
             <div class="flex items-start justify-between mb-5">
                 <div>
                     <div class="flex items-center gap-2 mb-1">
-                        <h2 class="text-lg font-bold text-[#3D3D3D]">{{ $inv->legacy_invoice_no ?? 'فاتورة #'.$inv->id }}</h2>
+                        <h2 class="text-lg font-bold text-[#1E293B]">{{ $inv->legacy_invoice_no ?? 'فاتورة #'.$inv->id }}</h2>
                         <span class="badge {{ $s==='issued' ? 'badge-green' : ($s==='draft' ? 'badge-yellow' : 'badge-red') }}">
                             {{ $s==='issued' ? 'صادرة' : ($s==='draft' ? 'مسودة' : 'ملغاة') }}
                         </span>
                     </div>
-                    <p class="text-sm text-[#C9A227] font-semibold">{{ $inv->client?->displayName() ?? '—' }}</p>
+                    <p class="text-sm text-[#1B6CA8] font-semibold">{{ $inv->client?->displayName() ?? '—' }}</p>
                 </div>
                 <button wire:click="closeView" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 transition shrink-0">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
             </div>
 
-            <dl class="divide-y divide-[#E2E4E9]">
+            <dl class="divide-y divide-[#E2E8F0]">
                 <div class="flex justify-between py-3">
                     <dt class="text-sm text-gray-500">تاريخ الفاتورة</dt>
-                    <dd class="text-sm font-medium text-[#3D3D3D]" dir="ltr">{{ $inv->document_date?->format('Y-m-d') ?? '—' }}</dd>
+                    <dd class="text-sm font-medium text-[#1E293B]" dir="ltr">{{ $inv->document_date?->format('Y-m-d') ?? '—' }}</dd>
                 </div>
                 @if($inv->due_date)
                 <div class="flex justify-between py-3">
                     <dt class="text-sm text-gray-500">تاريخ الاستحقاق</dt>
-                    <dd class="text-sm font-medium {{ $inv->due_date->isPast() && $s === 'issued' ? 'text-red-500' : 'text-[#3D3D3D]' }}" dir="ltr">{{ $inv->due_date->format('Y-m-d') }}</dd>
+                    <dd class="text-sm font-medium {{ $inv->due_date->isPast() && $s === 'issued' ? 'text-red-500' : 'text-[#1E293B]' }}" dir="ltr">{{ $inv->due_date->format('Y-m-d') }}</dd>
                 </div>
                 @endif
                 <div class="flex justify-between py-3">
                     <dt class="text-sm text-gray-500">العميل</dt>
-                    <dd class="text-sm font-medium text-[#3D3D3D]">{{ $inv->client?->displayName() ?? '—' }}</dd>
+                    <dd class="text-sm font-medium text-[#1E293B]">{{ $inv->client?->displayName() ?? '—' }}</dd>
                 </div>
                 @if($inv->notes)
                 <div class="py-3">
                     <dt class="text-sm text-gray-500 mb-1">ملاحظات</dt>
-                    <dd class="text-sm text-[#3D3D3D] bg-amber-50 rounded-lg p-2">{{ $inv->notes }}</dd>
+                    <dd class="text-sm text-[#1E293B] bg-amber-50 rounded-lg p-2">{{ $inv->notes }}</dd>
                 </div>
                 @endif
             </dl>
@@ -180,10 +180,10 @@
             {{-- بنود الفاتورة --}}
             @if($inv->lines->isNotEmpty())
             <div class="mt-4 mb-2">
-                <p class="text-xs font-semibold text-[#C9A227] mb-2 uppercase tracking-wide">بنود الفاتورة</p>
+                <p class="text-xs font-semibold text-[#1B6CA8] mb-2 uppercase tracking-wide">بنود الفاتورة</p>
                 <table class="w-full text-xs border-collapse">
                     <thead>
-                        <tr class="bg-[#3D3D3D] text-white">
+                        <tr class="bg-[#1E293B] text-white">
                             <th class="text-right px-3 py-2 rounded-r-md">البند</th>
                             <th class="text-center px-2 py-2">الكمية</th>
                             <th class="text-left px-3 py-2 rounded-l-md" dir="ltr">المجموع</th>
@@ -192,12 +192,12 @@
                     <tbody>
                         @foreach($inv->lines as $line)
                         <tr class="{{ $loop->even ? 'bg-gray-50' : '' }}">
-                            <td class="px-3 py-2 border-b border-[#E2E4E9]">
-                                <div class="font-semibold text-[#3D3D3D]">{{ $line->title }}</div>
+                            <td class="px-3 py-2 border-b border-[#E2E8F0]">
+                                <div class="font-semibold text-[#1E293B]">{{ $line->title }}</div>
                                 @if($line->description)<div class="text-gray-400 text-[10px] mt-0.5">{{ $line->description }}</div>@endif
                             </td>
-                            <td class="px-2 py-2 text-center border-b border-[#E2E4E9] text-gray-500">{{ rtrim(rtrim(number_format((float)$line->quantity, 2), '0'), '.') }}</td>
-                            <td class="px-3 py-2 border-b border-[#E2E4E9] font-mono font-semibold text-[#3D3D3D]" dir="ltr">{{ number_format((float)$line->line_total, 2) }}</td>
+                            <td class="px-2 py-2 text-center border-b border-[#E2E8F0] text-gray-500">{{ rtrim(rtrim(number_format((float)$line->quantity, 2), '0'), '.') }}</td>
+                            <td class="px-3 py-2 border-b border-[#E2E8F0] font-mono font-semibold text-[#1E293B]" dir="ltr">{{ number_format((float)$line->line_total, 2) }}</td>
                         </tr>
                         @endforeach
                     </tbody>
@@ -206,7 +206,7 @@
             @endif
 
             {{-- الإجمالي --}}
-            <div class="mt-3 pt-3 border-t border-[#E2E4E9] space-y-1">
+            <div class="mt-3 pt-3 border-t border-[#E2E8F0] space-y-1">
                 @if($inv->discount_amount && $inv->discount_amount > 0)
                 <div class="flex justify-between text-sm">
                     <span class="text-gray-500">الخصم</span>
@@ -214,15 +214,15 @@
                 </div>
                 @endif
                 <div class="flex justify-between">
-                    <span class="text-sm font-bold text-[#3D3D3D]">الإجمالي</span>
-                    <span class="text-base font-bold text-[#3D3D3D]" dir="ltr">
+                    <span class="text-sm font-bold text-[#1E293B]">الإجمالي</span>
+                    <span class="text-base font-bold text-[#1E293B]" dir="ltr">
                         {{ number_format((float)$inv->total_amount, 2) }}
                         <span class="text-xs font-normal text-gray-400">{{ $inv->currency_code }}</span>
                     </span>
                 </div>
             </div>
 
-            <div class="flex justify-end gap-2 pt-4 border-t border-[#E2E4E9] mt-4">
+            <div class="flex justify-end gap-2 pt-4 border-t border-[#E2E8F0] mt-4">
                 <button wire:click="closeView" class="btn btn-secondary text-xs">إغلاق</button>
                 <x-document-export-buttons
                     :print-url="route('invoices.print', $inv->id)"
@@ -247,8 +247,8 @@
          style="width:calc(100vw - 40px);max-width:900px;height:90vh;display:flex;flex-direction:column;">
 
         {{-- ── رأس ثابت ── --}}
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid #E2E4E9;flex-shrink:0;">
-            <h2 style="font-size:15px;font-weight:800;color:#3D3D3D;">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid #E2E8F0;flex-shrink:0;">
+            <h2 style="font-size:15px;font-weight:800;color:#1E293B;">
                 {{ $editingId ? 'تعديل الفاتورة' : 'فاتورة جديدة' }}
             </h2>
             <button wire:click="closeModal" style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:50%;border:none;background:transparent;cursor:pointer;color:#9CA3AF;" onmouseover="this.style.background='#F3F4F6'" onmouseout="this.style.background='transparent'">
@@ -260,7 +260,7 @@
         <div style="display:flex;flex:1;overflow:hidden;min-height:0;">
 
             {{-- العمود الأيمن: معلومات الفاتورة ── --}}
-            <div style="width:260px;flex-shrink:0;border-left:1px solid #E2E4E9;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;background:#FAFAFA;">
+            <div style="width:260px;flex-shrink:0;border-left:1px solid #E2E8F0;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;background:#FAFAFA;">
 
                 <p style="font-size:10px;font-weight:700;color:#9CA3AF;letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px;">معلومات الفاتورة</p>
 
@@ -315,7 +315,7 @@
                 </div>
 
                 {{-- الإجمالي في الشريط الجانبي --}}
-                <div style="margin-top:auto;background:#fff;border:1px solid #E2E4E9;border-radius:12px;padding:12px;margin-top:8px;">
+                <div style="margin-top:auto;background:#fff;border:1px solid #E2E8F0;border-radius:12px;padding:12px;margin-top:8px;">
                     @php $subtotal = collect($lines)->sum(fn($l) => (float)($l['line_total'] ?? 0)); @endphp
                     <div style="display:flex;justify-content:space-between;font-size:12px;color:#6B7280;margin-bottom:5px;">
                         <span>المجموع الفرعي</span>
@@ -334,9 +334,9 @@
                     </div>
                     @error('total_amount')<p class="field-error">{{ $message }}</p>@enderror
                     @endif
-                    <div style="border-top:1px solid #E2E4E9;padding-top:8px;margin-top:4px;display:flex;justify-content:space-between;align-items:center;">
-                        <span style="font-size:12px;font-weight:700;color:#3D3D3D;">الإجمالي</span>
-                        <span style="font-size:16px;font-weight:900;color:#C9A227;" dir="ltr">
+                    <div style="border-top:1px solid #E2E8F0;padding-top:8px;margin-top:4px;display:flex;justify-content:space-between;align-items:center;">
+                        <span style="font-size:12px;font-weight:700;color:#1E293B;">الإجمالي</span>
+                        <span style="font-size:16px;font-weight:900;color:#1B6CA8;" dir="ltr">
                             {{ number_format((float)$total_amount, 2) }}
                             <span style="font-size:11px;font-weight:500;color:#9CA3AF;">{{ $currency_code }}</span>
                         </span>
@@ -351,7 +351,7 @@
                 <div style="display:flex;align-items:center;justify-content:space-between;">
                     <p style="font-size:10px;font-weight:700;color:#9CA3AF;letter-spacing:.06em;text-transform:uppercase;">بنود الفاتورة</p>
                     <button type="button" wire:click="addLine"
-                            style="display:flex;align-items:center;gap:4px;font-size:12px;font-weight:700;color:#C9A227;background:transparent;border:none;cursor:pointer;padding:4px 8px;border-radius:8px;"
+                            style="display:flex;align-items:center;gap:4px;font-size:12px;font-weight:700;color:#1B6CA8;background:transparent;border:none;cursor:pointer;padding:4px 8px;border-radius:8px;"
                             onmouseover="this.style.background='#FFFBEB'" onmouseout="this.style.background='transparent'">
                         <svg xmlns="http://www.w3.org/2000/svg" style="width:13px;height:13px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
                         إضافة بند
@@ -359,20 +359,20 @@
                 </div>
 
                 @if(empty($lines))
-                <div style="border:2px dashed #E2E4E9;border-radius:12px;padding:40px 20px;text-align:center;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;">
-                    <svg xmlns="http://www.w3.org/2000/svg" style="width:40px;height:40px;color:#E2E4E9;margin-bottom:10px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                <div style="border:2px dashed #E2E8F0;border-radius:12px;padding:40px 20px;text-align:center;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+                    <svg xmlns="http://www.w3.org/2000/svg" style="width:40px;height:40px;color:#E2E8F0;margin-bottom:10px;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
                     <p style="font-size:13px;color:#D1D5DB;margin-bottom:12px;">لا توجد بنود بعد</p>
                     <button type="button" wire:click="addLine"
-                            style="background:#C9A227;color:#fff;border:none;border-radius:8px;padding:8px 20px;font-size:13px;font-weight:700;cursor:pointer;">
+                            style="background:#1B6CA8;color:#fff;border:none;border-radius:8px;padding:8px 20px;font-size:13px;font-weight:700;cursor:pointer;">
                         + أضف أول بند
                     </button>
                 </div>
                 @else
 
                 {{-- جدول البنود --}}
-                <div style="border:1px solid #E2E4E9;border-radius:12px;overflow:hidden;">
+                <div style="border:1px solid #E2E8F0;border-radius:12px;overflow:hidden;">
                     {{-- رأس الجدول --}}
-                    <div style="display:flex;background:#F9F9FB;border-bottom:1px solid #E2E4E9;font-size:11px;font-weight:600;color:#9CA3AF;">
+                    <div style="display:flex;background:#F9F9FB;border-bottom:1px solid #E2E8F0;font-size:11px;font-weight:600;color:#9CA3AF;">
                         <div style="flex:1;padding:8px 10px;">البند / الوصف</div>
                         <div style="width:90px;padding:8px 8px;text-align:center;">سعر الوحدة</div>
                         <div style="width:70px;padding:8px 8px;text-align:center;">الكمية</div>
@@ -381,7 +381,7 @@
                     </div>
 
                     @foreach($lines as $i => $line)
-                    <div wire:key="line-{{ $i }}" style="display:flex;align-items:flex-start;border-top:1px solid #F0F2F5;padding:6px 0;{{ $loop->even ? 'background:#FAFAFA;' : '' }}">
+                    <div wire:key="line-{{ $i }}" style="display:flex;align-items:flex-start;border-top:1px solid #F1F5F9;padding:6px 0;{{ $loop->even ? 'background:#FAFAFA;' : '' }}">
 
                         {{-- البند --}}
                         <div style="flex:1;padding:0 8px;">
@@ -412,7 +412,7 @@
 
                         {{-- المجموع --}}
                         <div style="width:85px;padding:0 6px;display:flex;align-items:center;justify-content:center;padding-top:5px;">
-                            <span style="font-weight:700;font-size:13px;color:#3D3D3D;" dir="ltr">
+                            <span style="font-weight:700;font-size:13px;color:#1E293B;" dir="ltr">
                                 {{ number_format((float)($line['line_total'] ?? 0), 2) }}
                             </span>
                         </div>
@@ -431,9 +431,9 @@
                 </div>
 
                 <button type="button" wire:click="addLine"
-                        style="width:100%;padding:8px;border:1.5px dashed #E2E4E9;border-radius:10px;font-size:12px;font-weight:600;color:#C9A227;background:transparent;cursor:pointer;transition:all .15s;"
-                        onmouseover="this.style.borderColor='#C9A227';this.style.background='#FFFBEB'"
-                        onmouseout="this.style.borderColor='#E2E4E9';this.style.background='transparent'">
+                        style="width:100%;padding:8px;border:1.5px dashed #E2E8F0;border-radius:10px;font-size:12px;font-weight:600;color:#1B6CA8;background:transparent;cursor:pointer;transition:all .15s;"
+                        onmouseover="this.style.borderColor='#1B6CA8';this.style.background='#FFFBEB'"
+                        onmouseout="this.style.borderColor='#E2E8F0';this.style.background='transparent'">
                     + إضافة بند
                 </button>
                 @endif
@@ -442,7 +442,7 @@
         </div>
 
         {{-- ── شريط الأزرار ── --}}
-        <div style="display:flex;justify-content:flex-end;gap:10px;padding:12px 20px;border-top:1px solid #E2E4E9;flex-shrink:0;background:#fff;">
+        <div style="display:flex;justify-content:flex-end;gap:10px;padding:12px 20px;border-top:1px solid #E2E8F0;flex-shrink:0;background:#fff;">
             <button wire:click="closeModal" class="btn btn-secondary" style="font-size:13px;">إلغاء</button>
             <button wire:click="save" wire:loading.attr="disabled" class="btn btn-primary" style="font-size:13px;">
                 <svg wire:loading wire:target="save" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg>

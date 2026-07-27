@@ -2,7 +2,7 @@
 
 <div class="flex items-center justify-between mb-6">
     <div>
-        <h1 class="text-xl font-bold text-[#3D3D3D]">الموردون</h1>
+        <h1 class="text-xl font-bold text-[#1E293B]">الموردون</h1>
         <p class="text-sm text-gray-400 mt-0.5">{{ $rows->total() }} مورد مسجّل</p>
     </div>
     @if(auth()->user()->isAccountant())
@@ -20,8 +20,8 @@
 ])
 
 <div class="card overflow-hidden">
-    <div wire:loading.delay class="h-0.5 bg-[#C9A227]/20 relative overflow-hidden">
-        <div class="absolute inset-y-0 right-0 w-1/3 bg-[#C9A227] animate-pulse"></div>
+    <div wire:loading.delay class="h-0.5 bg-[#1B6CA8]/20 relative overflow-hidden">
+        <div class="absolute inset-y-0 right-0 w-1/3 bg-[#1B6CA8] animate-pulse"></div>
     </div>
     <table class="data-table">
         <thead><tr>
@@ -36,7 +36,7 @@
                 <td class="text-gray-500">{{ $s->city ?? '—' }}</td>
                 <td>
                     <div class="flex items-center gap-1 justify-end">
-                        <a href="{{ route('suppliers.statement', $s->id) }}" wire:navigate class="btn btn-ghost py-1 px-2 text-xs text-[#C9A227] hover:bg-amber-50" style="text-decoration:none;">كشف</a>
+                        <a href="{{ route('suppliers.statement', $s->id) }}" wire:navigate class="btn btn-ghost py-1 px-2 text-xs text-[#1B6CA8] hover:bg-amber-50" style="text-decoration:none;">كشف</a>
                         <a href="{{ route('suppliers.show', $s->id) }}" wire:navigate class="btn btn-ghost py-1 px-2 text-xs text-gray-500 hover:bg-gray-50" style="text-decoration:none;">عرض</a>
                         @if(auth()->user()->isAccountant())
                         <a href="{{ route('suppliers.edit', $s->id) }}" wire:navigate class="btn btn-ghost py-1 px-2 text-xs text-blue-600 hover:bg-blue-50" style="text-decoration:none;">تعديل</a>

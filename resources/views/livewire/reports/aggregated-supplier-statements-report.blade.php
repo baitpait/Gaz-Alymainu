@@ -1,7 +1,7 @@
 <div>
     <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
         <div>
-            <h1 class="text-2xl font-bold text-[#3D3D3D]">كشوف الموردين المجمّعة</h1>
+            <h1 class="text-2xl font-bold text-[#1E293B]">كشوف الموردين المجمّعة</h1>
             <p class="text-sm text-gray-500 mt-1">ملخص كشف حساب لكل مورد/عملة ضمن الفترة — للتفاصيل الكاملة افتح كشف المورد.</p>
         </div>
         @include('livewire.partials.period-report-export-actions', ['pdfExportUrl' => $pdfExportUrl])
@@ -54,7 +54,7 @@
                     <td class="text-center text-sm text-gray-500">{{ $row['movement_count'] }}</td>
                     <td>
                         <a href="{{ route('suppliers.statement', ['supplier' => $row['supplier_id'], 'date_from' => $dateFrom, 'date_to' => $dateTo]) }}" wire:navigate
-                           class="text-xs text-[#C9A227] hover:underline">كشف</a>
+                           class="text-xs text-[#1B6CA8] hover:underline">كشف</a>
                     </td>
                 </tr>
                 @endforeach

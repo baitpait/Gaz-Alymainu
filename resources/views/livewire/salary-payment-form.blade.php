@@ -1,7 +1,7 @@
 <div>
 <div class="flex items-center justify-between mb-6">
     <div>
-        <h1 class="text-xl font-bold text-[#3D3D3D]">{{ $recordId ? 'تعديل راتب' : 'تسجيل راتب' }}</h1>
+        <h1 class="text-xl font-bold text-[#1E293B]">{{ $recordId ? 'تعديل راتب' : 'تسجيل راتب' }}</h1>
     </div>
     <div class="flex gap-2">
         <a href="{{ route('salary-payments.index') }}" wire:navigate class="btn btn-secondary" style="text-decoration:none;">إلغاء</a>
@@ -89,7 +89,7 @@
 
     <div class="bg-amber-50 rounded-lg px-4 py-3 text-sm">
         <span class="text-gray-600">الصافي:</span>
-        <span class="font-mono font-bold text-[#C9A227] mr-2" dir="ltr">{{ number_format($netPreview, 2) }} {{ $currency_code }}</span>
+        <span class="font-mono font-bold text-[#1B6CA8] mr-2" dir="ltr">{{ number_format($netPreview, 2) }} {{ $currency_code }}</span>
     </div>
 
     <div class="grid sm:grid-cols-2 gap-4">

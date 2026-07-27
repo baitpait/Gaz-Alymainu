@@ -1,10 +1,10 @@
 <div wire:poll.10s="refreshMarkers">
     <div class="flex flex-wrap items-start justify-between gap-4 mb-5">
         <div>
-            <h1 class="text-xl font-bold text-[#3D3D3D]">خريطة السائقين</h1>
+            <h1 class="text-xl font-bold text-[#1E293B]">خريطة السائقين</h1>
             <p class="text-sm text-gray-500 mt-1">
                 مواقع السائقين أثناء مشاركة الوردية —
-                <span class="font-semibold text-[#C9A227]">{{ $sharingCount }}</span> مشارك،
+                <span class="font-semibold text-[#1B6CA8]">{{ $sharingCount }}</span> مشارك،
                 <span class="font-semibold text-green-600">{{ $freshCount }}</span> حيّ (آخر 3 دقائق).
             </p>
         </div>
@@ -32,9 +32,9 @@
         </div>
 
         <div class="card p-4 max-h-[560px] overflow-y-auto">
-            <h2 class="font-bold text-sm text-[#3D3D3D] mb-3">السائقون على الخريطة</h2>
+            <h2 class="font-bold text-sm text-[#1E293B] mb-3">السائقون على الخريطة</h2>
             @forelse($markers as $m)
-            <div class="border-b border-[#E2E4E9] py-3 last:border-0">
+            <div class="border-b border-[#E2E8F0] py-3 last:border-0">
                 <div class="flex items-center justify-between gap-2">
                     <p class="font-semibold text-sm">{{ $m['name'] }}</p>
                     @if($m['is_fresh'])

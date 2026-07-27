@@ -1,6 +1,6 @@
 <div>
     <div class="mb-6">
-        <h1 class="text-2xl font-bold text-[#3D3D3D]">صندوق السائق وتسوية الكاش</h1>
+        <h1 class="text-2xl font-bold text-[#1E293B]">صندوق السائق وتسوية الكاش</h1>
         <p class="text-sm text-gray-500 mt-1">لكل سائق: نقدي + تحصيل نقدي − مصروفات − مسحوب = صافي الفترة، مع الرصيد الحالي غير المُسلَّم.</p>
     </div>
 
@@ -36,13 +36,13 @@
                 <tr>
                     <td class="font-semibold text-sm">{{ $r['driver'] }}</td>
                     <td class="font-mono text-left text-sm text-green-600" dir="ltr">{{ number_format($r['cash_sales'], 2) }}</td>
-                    <td class="font-mono text-left text-sm text-[#C9A227]" dir="ltr">{{ number_format($r['credit_sales'], 2) }}</td>
+                    <td class="font-mono text-left text-sm text-[#1B6CA8]" dir="ltr">{{ number_format($r['credit_sales'], 2) }}</td>
                     <td class="font-mono text-left text-sm text-green-600" dir="ltr">{{ number_format($r['cash_collections'], 2) }}</td>
                     <td class="font-mono text-left text-sm text-blue-600" dir="ltr">{{ number_format($r['cheque_collections'], 2) }}</td>
                     <td class="font-mono text-left text-sm text-red-600" dir="ltr">{{ number_format($r['expenses'], 2) }}</td>
                     <td class="font-mono text-left text-sm text-red-600" dir="ltr">{{ number_format($r['withdrawn'], 2) }}</td>
                     <td class="font-mono text-left text-sm font-semibold" dir="ltr">{{ number_format($r['net'], 2) }}</td>
-                    <td class="font-mono text-left text-sm font-bold text-[#3D3D3D]" dir="ltr">{{ number_format($r['balance'], 2) }}</td>
+                    <td class="font-mono text-left text-sm font-bold text-[#1E293B]" dir="ltr">{{ number_format($r['balance'], 2) }}</td>
                 </tr>
                 @endforeach
             </tbody>

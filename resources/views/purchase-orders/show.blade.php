@@ -3,18 +3,18 @@
 
     <div class="flex items-center gap-3 mb-6">
         <a href="{{ route('purchase-orders.index', ['po_supplier' => $purchaseOrder->supplier_id]) }}" wire:navigate
-           class="w-8 h-8 flex items-center justify-center rounded-lg bg-white border border-[#E2E4E9] text-[#9CA3AF] hover:text-[#3D3D3D] transition"
+           class="w-8 h-8 flex items-center justify-center rounded-lg bg-white border border-[#E2E8F0] text-[#9CA3AF] hover:text-[#1E293B] transition"
            style="text-decoration:none;">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
         </a>
         <div>
-            <h1 class="text-xl font-bold text-[#3D3D3D]">فاتورة مشتريات</h1>
-            <p class="text-sm text-[#C9A227] font-semibold mt-0.5">{{ $purchaseOrder->supplier?->displayName() ?? '—' }}</p>
+            <h1 class="text-xl font-bold text-[#1E293B]">فاتورة مشتريات</h1>
+            <p class="text-sm text-[#1B6CA8] font-semibold mt-0.5">{{ $purchaseOrder->supplier?->displayName() ?? '—' }}</p>
         </div>
     </div>
 
     <div class="card overflow-hidden mb-6">
-        <div class="p-6 border-b border-[#E2E4E9] flex flex-wrap justify-between gap-4">
+        <div class="p-6 border-b border-[#E2E8F0] flex flex-wrap justify-between gap-4">
             <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                 <div>
                     <dt class="text-gray-500">رقم المستند</dt>
@@ -48,7 +48,7 @@
             </dl>
             <div class="text-left">
                 <p class="text-xs text-gray-500">الإجمالي</p>
-                <p class="text-2xl font-bold text-[#3D3D3D] font-mono" dir="ltr">
+                <p class="text-2xl font-bold text-[#1E293B] font-mono" dir="ltr">
                     {{ number_format((float) $purchaseOrder->total_amount, 2) }}
                     <span class="text-sm font-normal text-gray-400">{{ $purchaseOrder->currency_code }}</span>
                 </p>
@@ -60,7 +60,7 @@
     </div>
 
     <div class="card overflow-hidden">
-        <h2 class="text-base font-semibold text-[#3D3D3D] px-5 py-4 border-b border-[#E2E4E9]">البنود</h2>
+        <h2 class="text-base font-semibold text-[#1E293B] px-5 py-4 border-b border-[#E2E8F0]">البنود</h2>
         <table class="data-table">
             <thead>
                 <tr>
