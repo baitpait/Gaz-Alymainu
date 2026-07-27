@@ -8,7 +8,7 @@ const serverUrl = process.env.DRIVER_APP_URL || 'https://gaz.baitpait.space';
  */
 const config: CapacitorConfig = {
   appId: 'space.baitpait.gaz.driver',
-  appName: 'غاز اليمني - سائق',
+  appName: 'غاز اليمني',
   webDir: 'www',
   server: {
     url: serverUrl,
