@@ -16,7 +16,7 @@
    aria-label="الدعم الفني واتساب">
     <img src="{{ asset('branding/support.png') }}"
          alt="الدعم الفني"
-         class="w-20 h-20 object-contain drop-shadow-sm group-hover:scale-105 transition-transform cursor-pointer"
+         class="w-28 h-28 object-contain drop-shadow-sm group-hover:scale-105 transition-transform cursor-pointer"
          onerror="this.style.display='none'">
 </a>
 @elseif($variant === 'nav')
