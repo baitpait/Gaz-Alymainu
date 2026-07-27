@@ -19,6 +19,8 @@ use App\Models\StockMovement;
 use App\Models\SupplierPayment;
 use App\Models\User;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 /**
  * Business Purpose: Build the executive dashboard snapshot for managers/accountants —
@@ -35,20 +37,74 @@ class DashboardSummaryService
 
     /**
      * Business Purpose: Aggregate all dashboard sections for a given calendar day (app timezone).
+     * Failures in optional subsections are logged and replaced with zeros so login never 500s.
      *
      * @return array<string, mixed>
      */
     public function forDate(?string $date = null): array
     {
-        $day = $date ?? $this->prices->today();
-        $dayStart = Carbon::parse($day)->startOfDay();
-        $dayEnd = Carbon::parse($day)->endOfDay();
+        try {
+            $day = $date ?? $this->prices->today();
+            $dayStart = Carbon::parse($day)->startOfDay();
+            $dayEnd = Carbon::parse($day)->endOfDay();
 
+            return [
+                'date' => $day,
+                'today' => $this->todayOps($day),
+                'fleet' => $this->fleetAndStock($day, $dayStart, $dayEnd),
+                'finance' => $this->financeBrief(),
+            ];
+        } catch (Throwable $e) {
+            Log::error('DashboardSummaryService failed', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            return $this->emptySnapshot($date ?? Carbon::now()->toDateString());
+        }
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function emptySnapshot(string $day): array
+    {
         return [
             'date' => $day,
-            'today' => $this->todayOps($day),
-            'fleet' => $this->fleetAndStock($day, $dayStart, $dayEnd),
-            'finance' => $this->financeBrief(),
+            'today' => [
+                'sales_count' => 0,
+                'sales_qty' => 0.0,
+                'sales_cash' => 0.0,
+                'sales_credit' => 0.0,
+                'sales_total' => 0.0,
+                'collections_cash' => 0.0,
+                'collections_cheque' => 0.0,
+                'collections_total' => 0.0,
+                'driver_expenses' => 0.0,
+                'drivers_cash_held' => 0.0,
+                'drivers_cheque_held' => 0.0,
+            ],
+            'fleet' => [
+                'zero_vehicle_stock' => 0,
+                'low_vehicle_stock' => 0,
+                'loads_today' => 0,
+                'returns_today' => 0,
+                'tracked_products' => 0,
+                'priced_today' => 0,
+                'pricing_complete' => true,
+                'sharing_drivers' => 0,
+                'active_drivers' => 0,
+            ],
+            'finance' => [
+                'currency' => DailyPriceService::DEFAULT_CURRENCY,
+                'client_receivable' => 0.0,
+                'supplier_payable' => 0.0,
+                'main_cash' => 0.0,
+                'main_cheque' => 0.0,
+                'draft_invoices' => 0,
+                'draft_purchase_orders' => 0,
+            ],
         ];
     }
 
@@ -57,12 +113,16 @@ class DashboardSummaryService
      */
     private function todayOps(string $day): array
     {
-        $salesBase = Sale::query()->whereDate('sale_date', $day);
-
-        $cashSales = (float) (clone $salesBase)->where('payment_type', SalePaymentType::Cash->value)->sum('total_amount');
-        $creditSales = (float) (clone $salesBase)->where('payment_type', SalePaymentType::Credit->value)->sum('total_amount');
-        $salesQty = (float) (clone $salesBase)->sum('quantity');
-        $salesCount = (int) (clone $salesBase)->count();
+        $cashSales = (float) Sale::query()
+            ->whereDate('sale_date', $day)
+            ->where('payment_type', SalePaymentType::Cash->value)
+            ->sum('total_amount');
+        $creditSales = (float) Sale::query()
+            ->whereDate('sale_date', $day)
+            ->where('payment_type', SalePaymentType::Credit->value)
+            ->sum('total_amount');
+        $salesQty = (float) Sale::query()->whereDate('sale_date', $day)->sum('quantity');
+        $salesCount = (int) Sale::query()->whereDate('sale_date', $day)->count();
 
         $collectionsCash = (float) Collection::query()
             ->whereDate('collection_date', $day)
@@ -133,7 +193,12 @@ class DashboardSummaryService
             ->unique()
             ->count();
 
-        $sharingDrivers = count($this->locations->mapMarkers());
+        $sharingDrivers = 0;
+        try {
+            $sharingDrivers = count($this->locations->mapMarkers());
+        } catch (Throwable $e) {
+            Log::warning('Dashboard mapMarkers failed: '.$e->getMessage());
+        }
 
         return [
             'zero_vehicle_stock' => $zeroVehicleStock,
@@ -149,9 +214,7 @@ class DashboardSummaryService
     }
 
     /**
-     * Brief multi-currency aware totals shown per ILS primary + counts for drafts.
-     *
-     * @return array<string, float|int>
+     * @return array<string, float|int|string>
      */
     private function financeBrief(): array
     {
@@ -173,7 +236,12 @@ class DashboardSummaryService
             ->where('currency_code', $currency)
             ->sum('amount');
 
-        $main = $this->cashBoxes->mainBoxByCurrency()[$currency] ?? ['cash' => 0.0, 'cheque' => 0.0];
+        $main = ['cash' => 0.0, 'cheque' => 0.0];
+        try {
+            $main = $this->cashBoxes->mainBoxByCurrency()[$currency] ?? $main;
+        } catch (Throwable $e) {
+            Log::warning('Dashboard mainBox failed: '.$e->getMessage());
+        }
 
         return [
             'currency' => $currency,

@@ -11,7 +11,7 @@
 <div class="mb-6 flex flex-wrap items-end justify-between gap-3">
     <div>
         <h1 class="text-2xl font-bold text-[#1E293B]">لوحة التحكم</h1>
-        <p class="text-sm text-gray-400 mt-0.5">{{ now()->locale('ar')->isoFormat('dddd، D MMMM YYYY') }}</p>
+        <p class="text-sm text-gray-400 mt-0.5">{{ now()->translatedFormat('l، d F Y') }}</p>
     </div>
     <p class="text-xs text-gray-400" dir="ltr">{{ $dash['date'] }}</p>
 </div>
@@ -91,7 +91,7 @@
 <section class="mb-7">
     <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-widest mb-3">ملخص مالي مختصر ({{ $finance['currency'] }})</h2>
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <a href="{{ route('reports.client-receivables-aging') }}" wire:navigate class="card p-4 hover:shadow-md transition block" style="text-decoration:none;">
+        <a href="{{ route('financial-summary') }}" wire:navigate class="card p-4 hover:shadow-md transition block" style="text-decoration:none;">
             <div class="text-xs text-gray-400 mb-1">ذمم عملاء تقريبية</div>
             <div class="text-xl font-bold text-[#1E293B]" dir="ltr">{{ $fmt($finance['client_receivable']) }}</div>
             <div class="text-[11px] text-gray-400 mt-1">فواتير − دفعات (بدون تسويات)</div>
@@ -109,11 +109,9 @@
         <div class="card p-4">
             <div class="text-xs text-gray-400 mb-1">مسودات معلّقة</div>
             <div class="text-xl font-bold text-[#1E293B]">
-                <a href="{{ route('invoices.index') }}" wire:navigate class="hover:text-[#1B6CA8]" style="text-decoration:none;">{{ $finance['draft_invoices'] }}</a>
-                <span class="text-gray-300 font-normal">/</span>
                 <a href="{{ route('purchase-orders.index') }}" wire:navigate class="hover:text-[#1B6CA8]" style="text-decoration:none;">{{ $finance['draft_purchase_orders'] }}</a>
             </div>
-            <div class="text-[11px] text-gray-400 mt-1">فواتير / مشتريات</div>
+            <div class="text-[11px] text-gray-400 mt-1">مسودات مشتريات</div>
         </div>
     </div>
 </section>
