@@ -16,6 +16,7 @@ class PurchaseOrder extends Model
         'document_date', 'due_date',
         'currency_code', 'discount_amount', 'total_amount',
         'notes', 'status', 'recorded_by_user_id', 'source_row_json',
+        'receiving_warehouse_id', 'inventory_posted_at',
     ];
 
     protected $casts = [
@@ -24,6 +25,7 @@ class PurchaseOrder extends Model
         'discount_amount' => 'decimal:4',
         'total_amount' => 'decimal:4',
         'source_row_json' => 'array',
+        'inventory_posted_at' => 'datetime',
     ];
 
     public function supplier(): BelongsTo
@@ -39,5 +41,10 @@ class PurchaseOrder extends Model
     public function recordedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'recorded_by_user_id');
+    }
+
+    public function receivingWarehouse(): BelongsTo
+    {
+        return $this->belongsTo(Warehouse::class, 'receiving_warehouse_id');
     }
 }

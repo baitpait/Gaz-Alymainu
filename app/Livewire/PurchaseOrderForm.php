@@ -2,15 +2,23 @@
 
 namespace App\Livewire;
 
+use App\Enums\WarehouseType;
+use App\Models\Product;
 use App\Models\PurchaseOrder;
 use App\Models\Supplier;
 use App\Models\SupplierPayment;
+use App\Models\Warehouse;
+use App\Services\InventoryService;
 use App\Services\PurchaseOrderPaymentAllocationService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
+use Throwable;
 
+/**
+ * Business Purpose: فاتورة مشتريات مع اختيار منتجات من الكتالوج وترحيل مخزون عند الإصدار.
+ */
 class PurchaseOrderForm extends Component
 {
     public ?int $purchaseOrderId = null;
@@ -33,6 +41,8 @@ class PurchaseOrderForm extends Component
 
     public string $notes = '';
 
+    public string $receiving_warehouse_id = '';
+
     /** unpaid | partial | paid — create only; persisted via supplier_payments */
     public string $payment_collection = 'unpaid';
 
@@ -42,8 +52,13 @@ class PurchaseOrderForm extends Component
 
     public string $paid_at = '';
 
-    /** @var array<int, array{title:string, description:string, unit_price:string, quantity:string, line_total:string}> */
+    /** @var array<int, array{product_id:string, product_search:string, title:string, description:string, unit_price:string, quantity:string, line_total:string}> */
     public array $lines = [];
+
+    public ?int $productAutocompleteLine = null;
+
+    /** @var list<array{id:int, name:string, product_code:?string}> */
+    public array $productAutocompleteHits = [];
 
     public function mount(?PurchaseOrder $purchaseOrder = null): void
     {
@@ -51,7 +66,7 @@ class PurchaseOrderForm extends Component
 
         if ($purchaseOrder && $purchaseOrder->exists) {
             Gate::authorize('update', $purchaseOrder);
-            $purchaseOrder->load('lines');
+            $purchaseOrder->load(['lines.product']);
             $this->purchaseOrderId = $purchaseOrder->id;
             $this->supplier_id = (string) $purchaseOrder->supplier_id;
             $this->legacy_po_no = $purchaseOrder->legacy_po_no ?? '';
@@ -62,7 +77,12 @@ class PurchaseOrderForm extends Component
             $this->discount_amount = (string) ($purchaseOrder->discount_amount ?? 0);
             $this->status = $purchaseOrder->status ?? 'draft';
             $this->notes = $purchaseOrder->notes ?? '';
+            $this->receiving_warehouse_id = $purchaseOrder->receiving_warehouse_id
+                ? (string) $purchaseOrder->receiving_warehouse_id
+                : '';
             $this->lines = $purchaseOrder->lines->map(fn ($l) => [
+                'product_id' => $l->product_id ? (string) $l->product_id : '',
+                'product_search' => $l->product?->name ?? '',
                 'title' => $l->title ?? '',
                 'description' => $l->description ?? '',
                 'unit_price' => (string) $l->unit_price,
@@ -78,6 +98,14 @@ class PurchaseOrderForm extends Component
             if ($prefillSupplierId > 0 && Supplier::query()->whereKey($prefillSupplierId)->exists()) {
                 $this->supplier_id = (string) $prefillSupplierId;
             }
+            $defaultWh = Warehouse::query()
+                ->where('type', WarehouseType::Fixed)
+                ->where('is_active', true)
+                ->orderBy('name')
+                ->value('id');
+            if ($defaultWh) {
+                $this->receiving_warehouse_id = (string) $defaultWh;
+            }
         }
 
         if (count($this->lines) === 0) {
@@ -92,11 +120,107 @@ class PurchaseOrderForm extends Component
         }
 
         $parts = explode('.', $key);
+        if (count($parts) === 2 && $parts[1] === 'product_search') {
+            $i = (int) $parts[0];
+            $this->productAutocompleteLine = $i;
+            if (trim((string) $value) === '') {
+                $this->lines[$i]['product_id'] = '';
+            } else {
+                $pid = (int) ($this->lines[$i]['product_id'] ?? 0);
+                if ($pid > 0) {
+                    $p = Product::query()->find($pid);
+                    if ($p && trim((string) $value) !== $p->name) {
+                        $this->lines[$i]['product_id'] = '';
+                    }
+                }
+            }
+            $this->refreshProductAutocompleteForLine($i);
+        }
+
         if (count($parts) === 2 && in_array($parts[1], ['unit_price', 'quantity'], true)) {
             $i = (int) $parts[0];
             $price = (float) ($this->lines[$i]['unit_price'] ?? 0);
             $qty = (float) ($this->lines[$i]['quantity'] ?? 1);
             $this->lines[$i]['line_total'] = (string) round($price * $qty, 4);
+            $this->recalcTotal();
+        }
+    }
+
+    public function onProductSearchFocus(int $lineIndex): void
+    {
+        $this->productAutocompleteLine = $lineIndex;
+        $this->refreshProductAutocompleteForLine($lineIndex);
+    }
+
+    public function refreshProductAutocompleteForLine(int $lineIndex): void
+    {
+        if (! isset($this->lines[$lineIndex])) {
+            $this->productAutocompleteHits = [];
+
+            return;
+        }
+
+        $q = trim($this->lines[$lineIndex]['product_search'] ?? '');
+        if ($q === '') {
+            $this->productAutocompleteHits = [];
+
+            return;
+        }
+
+        $like = '%'.$q.'%';
+        $this->productAutocompleteHits = Product::query()
+            ->where(function ($query) use ($like) {
+                $query->where('name', 'like', $like)
+                    ->orWhere('product_code', 'like', $like);
+            })
+            ->orderByDesc('is_stock_tracked')
+            ->orderBy('name')
+            ->limit(12)
+            ->get(['id', 'name', 'product_code'])
+            ->map(fn (Product $p) => [
+                'id' => $p->id,
+                'name' => $p->name,
+                'product_code' => $p->product_code,
+            ])
+            ->all();
+    }
+
+    public function selectProductFromAutocomplete(int $lineIndex, int $productId): void
+    {
+        if (! isset($this->lines[$lineIndex])) {
+            return;
+        }
+
+        $this->lines[$lineIndex]['product_id'] = (string) $productId;
+        $this->applyProductToLine($lineIndex);
+        $this->productAutocompleteHits = [];
+        $this->productAutocompleteLine = null;
+    }
+
+    private function applyProductToLine(int $i): void
+    {
+        $pid = (int) ($this->lines[$i]['product_id'] ?? 0);
+        if ($pid <= 0) {
+            return;
+        }
+
+        $product = Product::query()->with('currencyPrices')->find($pid);
+        if ($product === null) {
+            $this->lines[$i]['product_id'] = '';
+
+            return;
+        }
+
+        $this->lines[$i]['product_search'] = $product->name;
+        $this->lines[$i]['title'] = $product->name;
+
+        $row = $product->priceRowForCurrency($this->currency_code)
+            ?? $product->priceRowForCurrency('ILS');
+
+        if ($row !== null && $row->service_cost_price !== null) {
+            $this->lines[$i]['unit_price'] = (string) $row->service_cost_price;
+            $qty = (float) ($this->lines[$i]['quantity'] ?? 1);
+            $this->lines[$i]['line_total'] = (string) round((float) $row->service_cost_price * $qty, 4);
             $this->recalcTotal();
         }
     }
@@ -142,6 +266,8 @@ class PurchaseOrderForm extends Component
     public function addLine(): void
     {
         $this->lines[] = [
+            'product_id' => '',
+            'product_search' => '',
             'title' => '',
             'description' => '',
             'unit_price' => '',
@@ -167,7 +293,23 @@ class PurchaseOrderForm extends Component
         $this->recalcTotal();
     }
 
-    public function save(): void
+    private function linesNeedStockPosting(array $titledLines): bool
+    {
+        foreach ($titledLines as $line) {
+            $pid = isset($line['product_id']) && $line['product_id'] !== '' ? (int) $line['product_id'] : 0;
+            if ($pid <= 0 || (float) ($line['quantity'] ?? 0) <= 0) {
+                continue;
+            }
+            $product = Product::query()->find($pid);
+            if ($product && $product->is_stock_tracked) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function save(InventoryService $inventory): void
     {
         if ($this->purchaseOrderId) {
             Gate::authorize('update', PurchaseOrder::findOrFail($this->purchaseOrderId));
@@ -183,6 +325,7 @@ class PurchaseOrderForm extends Component
             'due_date' => 'nullable|date|after_or_equal:document_date',
             'currency_code' => 'required|string|size:3',
             'status' => 'required|in:draft,issued,void',
+            'receiving_warehouse_id' => 'nullable|exists:warehouses,id',
             'legacy_po_no' => [
                 'nullable',
                 'string',
@@ -190,6 +333,7 @@ class PurchaseOrderForm extends Component
                 Rule::unique('purchase_orders', 'legacy_po_no')->ignore($this->purchaseOrderId),
             ],
             'lines' => 'array',
+            'lines.*.product_id' => ['nullable', 'integer', Rule::exists(Product::class, 'id')],
             'lines.*.title' => 'required_with:lines|string|max:500',
             'lines.*.quantity' => 'required_with:lines|numeric|min:0',
             'lines.*.unit_price' => 'required_with:lines|numeric|min:0',
@@ -217,6 +361,7 @@ class PurchaseOrderForm extends Component
             'currency_code' => 'العملة',
             'status' => 'حالة المستند',
             'legacy_po_no' => 'رقم المستند',
+            'receiving_warehouse_id' => 'مخزن الاستلام',
             'payment_collection' => 'حالة الدفع',
             'payment_amount' => 'مبلغ الدفعة',
             'payment_method' => 'طريقة الدفع',
@@ -228,6 +373,26 @@ class PurchaseOrderForm extends Component
             $this->addError('lines', 'أضف بنداً واحداً على الأقل.');
 
             return;
+        }
+
+        $needsStock = $this->status === 'issued' && $this->linesNeedStockPosting($titledLines);
+        $existing = $this->purchaseOrderId
+            ? PurchaseOrder::query()->find($this->purchaseOrderId)
+            : null;
+        $alreadyPosted = $existing && $existing->inventory_posted_at !== null;
+
+        if ($needsStock && ! $alreadyPosted) {
+            if (trim($this->receiving_warehouse_id) === '') {
+                $this->addError('receiving_warehouse_id', 'اختر مخزن الاستلام لزيادة المخزون.');
+
+                return;
+            }
+            $warehouse = Warehouse::query()->find((int) $this->receiving_warehouse_id);
+            if ($warehouse === null || $warehouse->type !== WarehouseType::Fixed || ! $warehouse->is_active) {
+                $this->addError('receiving_warehouse_id', 'يجب اختيار مخزن ثابت نشط.');
+
+                return;
+            }
         }
 
         $subtotal = collect($titledLines)->sum(fn ($l) => (float) ($l['line_total'] ?? 0));
@@ -261,6 +426,9 @@ class PurchaseOrderForm extends Component
             'status' => $this->status,
             'notes' => $this->notes !== '' ? $this->notes : null,
             'recorded_by_user_id' => auth()->id(),
+            'receiving_warehouse_id' => $this->receiving_warehouse_id !== ''
+                ? (int) $this->receiving_warehouse_id
+                : null,
         ];
 
         $collectPayment = ! $this->purchaseOrderId
@@ -271,43 +439,83 @@ class PurchaseOrderForm extends Component
             ? ($this->payment_collection === 'paid' ? $orderTotal : (float) $this->payment_amount)
             : null;
 
-        DB::transaction(function () use ($data, $titledLines, $collectPayment, $paymentAmount): void {
-            if ($this->purchaseOrderId) {
-                $po = PurchaseOrder::findOrFail($this->purchaseOrderId);
-                $po->update($data);
-            } else {
-                $po = PurchaseOrder::create($data);
-            }
+        $stockPosted = false;
 
-            $po->lines()->delete();
-            foreach ($titledLines as $i => $line) {
-                $po->lines()->create([
-                    'line_order' => $i,
-                    'title' => $line['title'],
-                    'description' => ($line['description'] ?? '') !== '' ? $line['description'] : null,
-                    'unit_price' => (float) ($line['unit_price'] ?? 0),
-                    'quantity' => (float) ($line['quantity'] ?? 1),
-                    'line_total' => (float) ($line['line_total'] ?? 0),
-                ]);
-            }
+        try {
+            DB::transaction(function () use ($data, $titledLines, $collectPayment, $paymentAmount, $needsStock, $alreadyPosted, $inventory, &$stockPosted): void {
+                if ($this->purchaseOrderId) {
+                    $po = PurchaseOrder::findOrFail($this->purchaseOrderId);
+                    $po->update($data);
+                } else {
+                    $po = PurchaseOrder::create($data);
+                }
 
-            if ($collectPayment && $paymentAmount !== null && $paymentAmount > 0) {
-                SupplierPayment::query()->create([
-                    'supplier_id' => $po->supplier_id,
-                    'amount' => $paymentAmount,
-                    'currency_code' => $po->currency_code,
-                    'paid_at' => $this->paid_at,
-                    'method' => $this->payment_method,
-                    'bank_reference' => null,
-                    'notes' => 'دفع عند إنشاء فاتورة المشتريات #'.($po->legacy_po_no ?? $po->id),
-                    'recorded_by_user_id' => auth()->id(),
-                ]);
-            }
-        });
+                $po->lines()->delete();
+                foreach ($titledLines as $i => $line) {
+                    $pid = isset($line['product_id']) && $line['product_id'] !== '' ? (int) $line['product_id'] : null;
+                    $po->lines()->create([
+                        'line_order' => $i,
+                        'product_id' => $pid,
+                        'title' => $line['title'],
+                        'description' => ($line['description'] ?? '') !== '' ? $line['description'] : null,
+                        'unit_price' => (float) ($line['unit_price'] ?? 0),
+                        'quantity' => (float) ($line['quantity'] ?? 1),
+                        'line_total' => (float) ($line['line_total'] ?? 0),
+                    ]);
+                }
+
+                if ($collectPayment && $paymentAmount !== null && $paymentAmount > 0) {
+                    SupplierPayment::query()->create([
+                        'supplier_id' => $po->supplier_id,
+                        'amount' => $paymentAmount,
+                        'currency_code' => $po->currency_code,
+                        'paid_at' => $this->paid_at,
+                        'method' => $this->payment_method,
+                        'bank_reference' => null,
+                        'notes' => 'دفع عند إنشاء فاتورة المشتريات #'.($po->legacy_po_no ?? $po->id),
+                        'recorded_by_user_id' => auth()->id(),
+                    ]);
+                }
+
+                if ($needsStock && ! $alreadyPosted && $po->receiving_warehouse_id) {
+                    $warehouse = Warehouse::query()->findOrFail($po->receiving_warehouse_id);
+                    $po->load('lines.product');
+                    foreach ($po->lines as $line) {
+                        if ($line->product_id === null || $line->product === null) {
+                            continue;
+                        }
+                        if (! $line->product->is_stock_tracked) {
+                            continue;
+                        }
+                        $qty = (float) $line->quantity;
+                        if ($qty <= 0) {
+                            continue;
+                        }
+                        $inventory->purchaseIn(
+                            $warehouse,
+                            $line->product,
+                            $qty,
+                            auth()->id(),
+                            $po->document_date,
+                            'فاتورة مشتريات #'.($po->legacy_po_no ?? $po->id),
+                        );
+                    }
+                    $po->update(['inventory_posted_at' => now()]);
+                    $stockPosted = true;
+                }
+            });
+        } catch (Throwable $e) {
+            $this->addError('receiving_warehouse_id', $e->getMessage());
+
+            return;
+        }
 
         $toast = $this->purchaseOrderId ? 'تم تحديث فاتورة المشتريات' : 'تم إضافة فاتورة المشتريات بنجاح';
         if ($collectPayment) {
             $toast .= ' وتسجيل الدفعة';
+        }
+        if ($stockPosted) {
+            $toast .= ' وزيادة المخزون';
         }
         session()->flash('toast', $toast);
         $this->redirect(route('purchase-orders.index'), navigate: true);
@@ -319,6 +527,12 @@ class PurchaseOrderForm extends Component
             ->orderBy('business_name')
             ->orderBy('first_name')
             ->get();
+
+        $warehouses = Warehouse::query()
+            ->where('type', WarehouseType::Fixed)
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get(['id', 'name']);
 
         $subtotal = collect($this->lines)
             ->filter(fn ($l) => trim((string) ($l['title'] ?? '')) !== '')
@@ -334,6 +548,7 @@ class PurchaseOrderForm extends Component
 
         return view('livewire.purchase-order-form', [
             'suppliers' => $suppliers,
+            'warehouses' => $warehouses,
             'subtotal' => $subtotal,
             'computedPaymentStatus' => $computedPaymentStatus,
         ]);
