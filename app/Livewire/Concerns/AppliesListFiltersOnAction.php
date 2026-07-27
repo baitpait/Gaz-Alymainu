@@ -22,6 +22,11 @@ trait AppliesListFiltersOnAction
         $this->resetPage();
     }
 
+    public function applySaleFilters(): void
+    {
+        $this->resetPage();
+    }
+
     public function applyReportFilters(): void
     {
         if (method_exists($this, 'loadRows')) {
