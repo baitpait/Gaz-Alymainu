@@ -27,6 +27,11 @@ trait AppliesListFiltersOnAction
         $this->resetPage();
     }
 
+    public function applyStockMovementFilters(): void
+    {
+        $this->resetPage();
+    }
+
     public function applyReportFilters(): void
     {
         if (method_exists($this, 'loadRows')) {
