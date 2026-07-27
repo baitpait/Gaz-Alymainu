@@ -137,87 +137,103 @@
 (function () {
     function isNativeApk() {
         try {
-            return Boolean(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
-        } catch (e) {
-            return false;
-        }
+            if (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()) {
+                return true;
+            }
+        } catch (e) { /* ignore */ }
+        // Android System WebView داخل APK غالباً يحمل "; wv)"
+        var ua = navigator.userAgent || '';
+        return /Android/i.test(ua) && /; wv\)/i.test(ua);
     }
 
-    if (!isNativeApk()) {
-        return;
-    }
-
-    var form = document.getElementById('login-form');
-    var errEl = document.getElementById('apk-login-error');
-    if (!form) {
-        return;
-    }
-
-    form.addEventListener('submit', async function (e) {
-        e.preventDefault();
-
-        var btn = form.querySelector('[type="submit"]');
-        var email = form.email && form.email.value;
-        var password = form.password && form.password.value;
-        var remember = form.remember && form.remember.checked;
-
-        if (errEl) {
-            errEl.classList.add('hidden');
-            errEl.textContent = '';
-        }
-        if (btn) {
-            btn.disabled = true;
-            btn.style.opacity = '0.7';
+    function bindNativeLogin() {
+        if (!isNativeApk()) {
+            return;
         }
 
-        try {
-            var res = await fetch('/api/apk/bootstrap-session', {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email: email, password: password, remember: Boolean(remember) }),
-            });
-            var data = await res.json().catch(function () { return {}; });
+        var form = document.getElementById('login-form');
+        var errEl = document.getElementById('apk-login-error');
+        if (!form || form.dataset.apkBound === '1') {
+            return;
+        }
+        form.dataset.apkBound = '1';
 
-            if (!res.ok) {
-                var msg = (data && data.message) ? data.message : 'فشل تسجيل الدخول.';
+        form.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            var btn = form.querySelector('[type="submit"]');
+            var email = form.email && form.email.value;
+            var password = form.password && form.password.value;
+            var remember = form.remember && form.remember.checked;
+
+            if (errEl) {
+                errEl.classList.add('hidden');
+                errEl.textContent = '';
+            }
+            if (btn) {
+                btn.disabled = true;
+                btn.style.opacity = '0.7';
+            }
+
+            try {
+                var res = await fetch('/api/apk/bootstrap-session', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email: email, password: password, remember: Boolean(remember) }),
+                });
+                var data = await res.json().catch(function () { return {}; });
+
+                if (!res.ok) {
+                    var msg = (data && data.message) ? data.message : 'فشل تسجيل الدخول.';
+                    if (errEl) {
+                        errEl.textContent = msg;
+                        errEl.classList.remove('hidden');
+                    } else {
+                        alert(msg);
+                    }
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.style.opacity = '1';
+                    }
+                    return;
+                }
+
+                if (data.token && window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Preferences) {
+                    try {
+                        await window.Capacitor.Plugins.Preferences.set({ key: 'driver_api_token', value: data.token });
+                        await window.Capacitor.Plugins.Preferences.set({
+                            key: 'driver_api_base',
+                            value: window.location.origin + '/api',
+                        });
+                    } catch (prefErr) { /* تجاهل */ }
+                }
+
+                window.location.href = data.session_url;
+            } catch (netErr) {
                 if (errEl) {
-                    errEl.textContent = msg;
+                    errEl.textContent = 'تعذّر الاتصال بالخادم. تحقق من الإنترنت.';
                     errEl.classList.remove('hidden');
-                } else {
-                    alert(msg);
                 }
                 if (btn) {
                     btn.disabled = false;
                     btn.style.opacity = '1';
                 }
-                return;
             }
+        });
+    }
 
-            if (data.token && window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Preferences) {
-                try {
-                    await window.Capacitor.Plugins.Preferences.set({ key: 'driver_api_token', value: data.token });
-                    await window.Capacitor.Plugins.Preferences.set({
-                        key: 'driver_api_base',
-                        value: window.location.origin + '/api',
-                    });
-                } catch (prefErr) { /* تجاهل */ }
-            }
-
-            window.location.href = data.session_url;
-        } catch (netErr) {
-            if (errEl) {
-                errEl.textContent = 'تعذّر الاتصال بالخادم. تحقق من الإنترنت.';
-                errEl.classList.remove('hidden');
-            }
-            if (btn) {
-                btn.disabled = false;
-                btn.style.opacity = '1';
-            }
+    // Capacitor قد يُحقن بعد تحميل الصفحة قليلاً
+    bindNativeLogin();
+    var tries = 0;
+    var timer = setInterval(function () {
+        bindNativeLogin();
+        if (++tries >= 40) {
+            clearInterval(timer);
         }
-    });
+    }, 50);
 })();
 </script>
 
