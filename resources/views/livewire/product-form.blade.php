@@ -44,17 +44,16 @@
     </div>
 </div>
 
-{{-- 2) خصائص المخزون --}}
+{{-- 2) المخزون --}}
 <div class="card p-5 space-y-4 mb-6">
     <div>
-        <p class="text-sm font-bold text-[#1E293B]">خصائص المخزون</p>
-        <p class="text-xs text-gray-500 mt-1">فعّل التتبّع لأصناف جرات الغاز لتظهر في المخازن والتسعير اليومي والتحميل.</p>
+        <p class="text-sm font-bold text-[#1E293B]">المخزون</p>
+        <p class="text-xs text-gray-500 mt-1">وحدة وسعة الجرة، وهل يظهر الصنف في المخازن والتحميل.</p>
     </div>
     <label class="flex items-center gap-2 cursor-pointer">
-        <input wire:model.live="is_stock_tracked" type="checkbox" class="rounded border-[#E2E8F0]">
-        <span class="text-sm text-[#1E293B]">تتبّع المخزون (صنف غاز)</span>
+        <input wire:model="is_stock_tracked" type="checkbox" class="rounded border-[#E2E8F0]">
+        <span class="text-sm text-[#1E293B]">يُحسب في المخازن</span>
     </label>
-    @if($is_stock_tracked)
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div>
             <label class="label">الوحدة</label>
@@ -72,7 +71,6 @@
             @error('category')<p class="field-error">{{ $message }}</p>@enderror
         </div>
     </div>
-    @endif
 </div>
 
 {{-- 3) التسعير بالشيكل فقط --}}
