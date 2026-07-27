@@ -86,7 +86,8 @@
                 </x-slot>
             </x-nav-link>
 
-            <div class="pt-4 pb-1 px-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">الغاز والمخزون</div>
+            <x-nav-group title="الغاز والمخزون" name="gas"
+                :active="request()->routeIs(['products.*','pos.*','sales.*','cash-handovers.*','driver-expenses.*','warehouses.*','stock-movements.*','daily-prices.*','drivers.*'])">
 
             <x-nav-link :route="route('products.index')" label="المنتجات" :active="request()->routeIs('products.*')">
                 <x-slot name="icon">
@@ -186,6 +187,7 @@
                 </x-slot>
             </x-nav-link>
             @endif
+            </x-nav-group>
 
             {{-- قسم "المبيعات" مُخفى بعد التحوّل إلى نشاط توزيع الغاز (المسارات محجوبة عبر middleware: block.sales) --}}
             @if(false)
@@ -231,7 +233,8 @@
             @endif
             @endif
 
-            <div class="pt-4 pb-1 px-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">المشتريات</div>
+            <x-nav-group title="المشتريات" name="purchases"
+                :active="request()->routeIs(['suppliers.*','purchase-orders.*','supplier-payments.*','supplier-adjustments.*','suppliers.adjustments.*'])">
 
             <x-nav-link :route="route('suppliers.index')" label="الموردون" :active="request()->routeIs('suppliers.*')">
                 <x-slot name="icon">
@@ -271,8 +274,10 @@
                 </x-slot>
             </x-nav-link>
             @endif
+            </x-nav-group>
 
-            <div class="pt-4 pb-1 px-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">الموارد البشرية</div>
+            <x-nav-group title="الموارد البشرية" name="hr"
+                :active="request()->routeIs(['employees.*','salary-payments.*'])">
 
             <x-nav-link :route="route('employees.index')" label="الموظفون" :active="request()->routeIs('employees.*')">
                 <x-slot name="icon">
@@ -291,8 +296,10 @@
                     </svg>
                 </x-slot>
             </x-nav-link>
+            </x-nav-group>
 
-            <div class="pt-4 pb-1 px-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">المالية</div>
+            <x-nav-group title="المالية" name="finance"
+                :active="request()->routeIs(['financial-summary','expenses.*'])">
 
             <x-nav-link :route="route('financial-summary')" label="الصناديق النقدية"
                         :active="request()->routeIs('financial-summary')">
@@ -312,9 +319,11 @@
                     </svg>
                 </x-slot>
             </x-nav-link>
+            </x-nav-group>
 
             @can('view-period-reports')
-            <div class="pt-4 pb-1 px-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">التقارير</div>
+            <x-nav-group title="التقارير" name="reports"
+                :active="request()->routeIs('reports.*')">
 
             <x-nav-link :route="route('reports.index')" label="مركز التقارير"
                         :active="request()->routeIs('reports.index')">
@@ -516,10 +525,12 @@
                 </x-slot>
             </x-nav-link>
             @endif
+            </x-nav-group>
             @endcan
 
             @if(auth()->user()->isManager())
-            <div class="pt-4 pb-1 px-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">الإدارة</div>
+            <x-nav-group title="الإدارة" name="admin"
+                :active="request()->routeIs(['users.*','database-backup.*'])">
 
             <x-nav-link :route="route('users.index')" label="المستخدمون" :active="request()->routeIs('users.*')">
                 <x-slot name="icon">
@@ -539,6 +550,7 @@
                     </svg>
                 </x-slot>
             </x-nav-link>
+            </x-nav-group>
             @endif
 
         </nav>
