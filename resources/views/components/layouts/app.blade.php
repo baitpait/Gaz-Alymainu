@@ -554,6 +554,10 @@
             @endif
 
         </nav>
+
+        <div class="px-3 pt-2 pb-1 border-t border-[#E2E8F0] shrink-0">
+            <x-support-whatsapp-link variant="sidebar" />
+        </div>
     </aside>
     @endunless
 
