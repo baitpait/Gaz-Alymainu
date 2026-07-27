@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">غاز اليمني - سائق</string>
+    <string name="title_activity_main">غاز اليمني - سائق</string>
+    <string name="package_name">space.baitpait.gaz.driver</string>
+    <string name="custom_url_scheme">space.baitpait.gaz.driver</string>
+</resources>

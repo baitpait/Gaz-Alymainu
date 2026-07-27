@@ -1,16 +1,17 @@
 <?php
 
-use App\Http\Controllers\ClientReceivablesAgingController;
-use App\Http\Controllers\DatabaseBackupController;
-use App\Http\Controllers\Reports\PeriodReportsController;
-use App\Http\Controllers\Reports\SupplierReceivablesAgingController;
-use App\Http\Controllers\ClientStatementController;
 use App\Http\Controllers\ClientPaymentPdfController;
 use App\Http\Controllers\ClientPaymentPrintController;
+use App\Http\Controllers\ClientReceivablesAgingController;
+use App\Http\Controllers\ClientStatementController;
+use App\Http\Controllers\DatabaseBackupController;
+use App\Http\Controllers\DriverDeviceTokenController;
 use App\Http\Controllers\InvoicePdfController;
 use App\Http\Controllers\InvoicePrintController;
 use App\Http\Controllers\PurchaseOrderPdfController;
 use App\Http\Controllers\PurchaseOrderPrintController;
+use App\Http\Controllers\Reports\PeriodReportsController;
+use App\Http\Controllers\Reports\SupplierReceivablesAgingController;
 use App\Http\Controllers\SupplierPaymentPdfController;
 use App\Http\Controllers\SupplierPaymentPrintController;
 use App\Http\Controllers\SupplierStatementController;
@@ -29,6 +30,8 @@ use App\Models\SupplierBalanceAdjustment;
 use App\Models\SupplierPayment;
 use App\Models\User;
 use App\Models\Warehouse;
+use App\Services\InvoicePaymentAllocationService;
+use App\Services\PurchaseOrderPaymentAllocationService;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => redirect()->route('dashboard'));
@@ -99,7 +102,7 @@ Route::middleware(['auth', 'driver.sales', 'block.sales'])->group(function () {
     Route::get('/purchase-orders/{purchaseOrder}', function (PurchaseOrder $purchaseOrder) {
         abort_unless(auth()->user()->can('view', $purchaseOrder), 403);
         $purchaseOrder->load(['supplier', 'lines']);
-        $paymentStatus = (new \App\Services\PurchaseOrderPaymentAllocationService)->forPurchaseOrder($purchaseOrder);
+        $paymentStatus = (new PurchaseOrderPaymentAllocationService)->forPurchaseOrder($purchaseOrder);
 
         return view('purchase-orders.show', compact('purchaseOrder', 'paymentStatus'));
     })->name('purchase-orders.show');
@@ -140,7 +143,7 @@ Route::middleware(['auth', 'driver.sales', 'block.sales'])->group(function () {
     })->name('invoices.edit');
     Route::get('/invoices/{invoice}', function (Invoice $invoice) {
         $invoice->load(['client', 'lines', 'recordedBy']);
-        $paymentStatus = (new \App\Services\InvoicePaymentAllocationService)->forInvoice($invoice);
+        $paymentStatus = (new InvoicePaymentAllocationService)->forInvoice($invoice);
 
         return view('invoices.show', compact('invoice', 'paymentStatus'));
     })->name('invoices.show');
@@ -471,6 +474,9 @@ Route::middleware(['auth', 'driver.sales', 'block.sales'])->group(function () {
 
         return view('location.index');
     })->name('location.share');
+
+    Route::post('/driver/device-token', [DriverDeviceTokenController::class, 'store'])
+        ->name('driver.device-token');
 
     Route::get('/users', function () {
         abort_unless(auth()->user()->isManager(), 403);

@@ -61,6 +61,8 @@ class AuthenticatedSessionController extends Controller
             } catch (Throwable) {
                 // تجاهل
             }
+
+            $user->tokens()->where('name', 'driver-device')->delete();
         }
 
         Auth::guard('web')->logout();

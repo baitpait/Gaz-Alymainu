@@ -14,7 +14,14 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
 </head>
-<body class="min-h-screen font-sans antialiased flex flex-col">
+<body class="min-h-screen font-sans antialiased flex flex-col"
+      @auth
+      @if(auth()->user()->isDriver())
+      data-driver-native-bridge="1"
+      data-driver-bg-title="{{ config('gaz_driver.background_notification_title') }}"
+      data-driver-bg-text="{{ config('gaz_driver.background_notification_text') }}"
+      @endif
+      @endauth>
 
 {{-- ═══ شريط التنقل العلوي ═══ --}}
 <header class="bg-white border-b border-[#E2E8F0] h-14 flex items-center px-5 sticky top-0 z-30 shadow-sm">

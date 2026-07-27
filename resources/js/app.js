@@ -1,4 +1,5 @@
 import './bootstrap';
+import './driver-native-bridge';
 import { Livewire, Alpine } from '../../vendor/livewire/livewire/dist/livewire.esm';
 
 Alpine.data('toastManager', () => ({

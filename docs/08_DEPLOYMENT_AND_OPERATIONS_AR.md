@@ -188,8 +188,9 @@ DB_PASSWORD="..."
 
 SESSION_DRIVER=database
 SESSION_ENCRYPT=true
-SESSION_DOMAIN=gaz.baitpait.space
+SESSION_DOMAIN=null
 SESSION_SECURE_COOKIE=true
+SESSION_SAME_SITE=lax
 
 MAIL_MAILER=log              # log أثناء التشغيل التجريبي، smtp لاحقاً
 ```
