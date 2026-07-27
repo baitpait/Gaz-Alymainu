@@ -29,12 +29,12 @@
 >
     <button type="button"
             @click="toggle()"
-            class="w-full flex items-center justify-between gap-2 px-2 py-2 rounded-lg
-                   text-[10px] font-bold text-gray-400 uppercase tracking-widest
+            class="w-full flex items-center justify-between gap-2 px-2 py-2.5 rounded-lg
+                   text-sm font-bold text-gray-500 tracking-wide
                    hover:bg-[#F7F8FA] hover:text-[#1B6CA8] transition select-none">
         <span>{{ $title }}</span>
         <svg xmlns="http://www.w3.org/2000/svg"
-             class="w-3.5 h-3.5 shrink-0 transition-transform duration-200"
+             class="w-4 h-4 shrink-0 transition-transform duration-200"
              :class="open ? 'rotate-180' : ''"
              fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
