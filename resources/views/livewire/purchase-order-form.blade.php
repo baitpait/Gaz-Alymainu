@@ -181,7 +181,7 @@
 
             <div style="border:1px solid #E2E8F0;border-radius:12px;overflow:hidden;">
                 <div style="display:flex;background:#F9F9FB;border-bottom:1px solid #E2E8F0;font-size:11px;font-weight:600;color:#9CA3AF;">
-                    <div style="width:220px;padding:8px 10px;">المنتج (بحث)</div>
+                    <div style="width:220px;padding:8px 10px;">المنتج</div>
                     <div style="flex:2;padding:8px 12px;">البند / الوصف</div>
                     <div style="width:130px;padding:8px 10px;text-align:center;">سعر الوحدة</div>
                     <div style="width:100px;padding:8px 10px;text-align:center;">الكمية</div>
@@ -193,29 +193,16 @@
                 <div wire:key="po-line-{{ $i }}"
                      style="display:flex;align-items:flex-start;padding:8px 12px;border-bottom:1px solid #F1F5F9;{{ $loop->last ? 'border-bottom:none;' : '' }}{{ $loop->even ? 'background:#FAFAFA;' : '' }}">
 
-                    <div style="width:220px;padding:0 8px 0 0;position:relative;">
-                        <input type="search" autocomplete="off" dir="rtl"
-                               wire:model.live.debounce.300ms="lines.{{ $i }}.product_search"
-                               wire:focus="onProductSearchFocus({{ $i }})"
-                               placeholder="ابحث عن منتج..."
-                               class="input" style="padding:6px 8px;font-size:12px;width:100%;">
-                        @if($productAutocompleteLine === $i && (count($productAutocompleteHits) > 0 || trim($line['product_search'] ?? '') !== ''))
-                        <div class="absolute z-50 mt-1 right-0 w-[min(100vw-2rem,20rem)] max-h-56 overflow-y-auto rounded-lg border border-[#E2E8F0] bg-white shadow-lg text-sm"
-                             style="top:100%;">
-                            @forelse($productAutocompleteHits as $hit)
-                            <button type="button" wire:key="po-hit-{{ $i }}-{{ $hit['id'] }}"
-                                    wire:click="selectProductFromAutocomplete({{ $i }}, {{ $hit['id'] }})"
-                                    class="w-full text-right px-3 py-2 hover:bg-[#FFFBEB] border-b border-[#F1F5F9] last:border-0">
-                                <span class="font-semibold text-[#1E293B]">{{ $hit['name'] }}</span>
-                                @if(!empty($hit['product_code']))
-                                <span class="text-gray-400 font-mono text-xs mr-1" dir="ltr">({{ $hit['product_code'] }})</span>
-                                @endif
-                            </button>
-                            @empty
-                            <p class="px-3 py-2 text-xs text-gray-400">لا توجد منتجات مطابقة</p>
-                            @endforelse
-                        </div>
-                        @endif
+                    <div style="width:220px;padding:0 8px 0 0;">
+                        <select wire:model.live="lines.{{ $i }}.product_id"
+                                class="input select" style="padding:6px 8px;font-size:12px;width:100%;">
+                            <option value="">— بدون منتج —</option>
+                            @foreach($products as $p)
+                            <option value="{{ $p->id }}">
+                                {{ $p->name }}@if($p->product_code) ({{ $p->product_code }})@endif
+                            </option>
+                            @endforeach
+                        </select>
                         @error("lines.{$i}.product_id")<p class="field-error" style="font-size:10px;">{{ $message }}</p>@enderror
                     </div>
 

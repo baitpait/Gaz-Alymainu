@@ -52,13 +52,8 @@ class PurchaseOrderForm extends Component
 
     public string $paid_at = '';
 
-    /** @var array<int, array{product_id:string, product_search:string, title:string, description:string, unit_price:string, quantity:string, line_total:string}> */
+    /** @var array<int, array{product_id:string, title:string, description:string, unit_price:string, quantity:string, line_total:string}> */
     public array $lines = [];
-
-    public ?int $productAutocompleteLine = null;
-
-    /** @var list<array{id:int, name:string, product_code:?string}> */
-    public array $productAutocompleteHits = [];
 
     public function mount(?PurchaseOrder $purchaseOrder = null): void
     {
@@ -82,7 +77,6 @@ class PurchaseOrderForm extends Component
                 : '';
             $this->lines = $purchaseOrder->lines->map(fn ($l) => [
                 'product_id' => $l->product_id ? (string) $l->product_id : '',
-                'product_search' => $l->product?->name ?? '',
                 'title' => $l->title ?? '',
                 'description' => $l->description ?? '',
                 'unit_price' => (string) $l->unit_price,
@@ -120,21 +114,14 @@ class PurchaseOrderForm extends Component
         }
 
         $parts = explode('.', $key);
-        if (count($parts) === 2 && $parts[1] === 'product_search') {
+        if (count($parts) === 2 && $parts[1] === 'product_id') {
             $i = (int) $parts[0];
-            $this->productAutocompleteLine = $i;
-            if (trim((string) $value) === '') {
-                $this->lines[$i]['product_id'] = '';
-            } else {
-                $pid = (int) ($this->lines[$i]['product_id'] ?? 0);
-                if ($pid > 0) {
-                    $p = Product::query()->find($pid);
-                    if ($p && trim((string) $value) !== $p->name) {
-                        $this->lines[$i]['product_id'] = '';
-                    }
-                }
+            if (trim((string) ($this->lines[$i]['product_id'] ?? '')) === '') {
+                return;
             }
-            $this->refreshProductAutocompleteForLine($i);
+            $this->applyProductToLine($i);
+
+            return;
         }
 
         if (count($parts) === 2 && in_array($parts[1], ['unit_price', 'quantity'], true)) {
@@ -144,57 +131,6 @@ class PurchaseOrderForm extends Component
             $this->lines[$i]['line_total'] = (string) round($price * $qty, 4);
             $this->recalcTotal();
         }
-    }
-
-    public function onProductSearchFocus(int $lineIndex): void
-    {
-        $this->productAutocompleteLine = $lineIndex;
-        $this->refreshProductAutocompleteForLine($lineIndex);
-    }
-
-    public function refreshProductAutocompleteForLine(int $lineIndex): void
-    {
-        if (! isset($this->lines[$lineIndex])) {
-            $this->productAutocompleteHits = [];
-
-            return;
-        }
-
-        $q = trim($this->lines[$lineIndex]['product_search'] ?? '');
-        if ($q === '') {
-            $this->productAutocompleteHits = [];
-
-            return;
-        }
-
-        $like = '%'.$q.'%';
-        $this->productAutocompleteHits = Product::query()
-            ->where(function ($query) use ($like) {
-                $query->where('name', 'like', $like)
-                    ->orWhere('product_code', 'like', $like);
-            })
-            ->orderByDesc('is_stock_tracked')
-            ->orderBy('name')
-            ->limit(12)
-            ->get(['id', 'name', 'product_code'])
-            ->map(fn (Product $p) => [
-                'id' => $p->id,
-                'name' => $p->name,
-                'product_code' => $p->product_code,
-            ])
-            ->all();
-    }
-
-    public function selectProductFromAutocomplete(int $lineIndex, int $productId): void
-    {
-        if (! isset($this->lines[$lineIndex])) {
-            return;
-        }
-
-        $this->lines[$lineIndex]['product_id'] = (string) $productId;
-        $this->applyProductToLine($lineIndex);
-        $this->productAutocompleteHits = [];
-        $this->productAutocompleteLine = null;
     }
 
     private function applyProductToLine(int $i): void
@@ -211,7 +147,6 @@ class PurchaseOrderForm extends Component
             return;
         }
 
-        $this->lines[$i]['product_search'] = $product->name;
         $this->lines[$i]['title'] = $product->name;
 
         $row = $product->priceRowForCurrency($this->currency_code)
@@ -267,7 +202,6 @@ class PurchaseOrderForm extends Component
     {
         $this->lines[] = [
             'product_id' => '',
-            'product_search' => '',
             'title' => '',
             'description' => '',
             'unit_price' => '',
@@ -534,6 +468,11 @@ class PurchaseOrderForm extends Component
             ->orderBy('name')
             ->get(['id', 'name']);
 
+        $products = Product::query()
+            ->orderByDesc('is_stock_tracked')
+            ->orderBy('name')
+            ->get(['id', 'name', 'product_code']);
+
         $subtotal = collect($this->lines)
             ->filter(fn ($l) => trim((string) ($l['title'] ?? '')) !== '')
             ->sum(fn ($l) => (float) ($l['line_total'] ?? 0));
@@ -549,6 +488,7 @@ class PurchaseOrderForm extends Component
         return view('livewire.purchase-order-form', [
             'suppliers' => $suppliers,
             'warehouses' => $warehouses,
+            'products' => $products,
             'subtotal' => $subtotal,
             'computedPaymentStatus' => $computedPaymentStatus,
         ]);
