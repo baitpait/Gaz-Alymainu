@@ -4,7 +4,7 @@
 > مع تحميل البضاعة من المخازن الثابتة، تسعير يومي مرن، تسجيل مبيعات نقدية/على الحساب،
 > تحصيل وسحب كاش من السائق إلى الصندوق الرئيسي، ومصروفات خاصة بالسائق/السيارة.
 
-آخر تحديث: 2026-07-20. يُقرأ مع: `03_DATABASE_SPEC.md`، `07_SYSTEM_OVERVIEW_AR.md`، `08_DEPLOYMENT_AND_OPERATIONS_AR.md`.
+آخر تحديث: 2026-07-27. يُقرأ مع: `03_DATABASE_SPEC.md`، `07_SYSTEM_OVERVIEW_AR.md`، `08_DEPLOYMENT_AND_OPERATIONS_AR.md`، `18_SESSION_UI_DASHBOARD_APK_2026_07_27_AR.md`.
 
 ---
 
