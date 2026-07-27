@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -11,11 +12,20 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // SQLite لا يدعم MODIFY ENUM — عمود role نصّي والتحقق في التطبيق.
+        if (Schema::getConnection()->getDriverName() === 'sqlite') {
+            return;
+        }
+
         DB::statement("ALTER TABLE users MODIFY COLUMN role ENUM('viewer','accountant','manager','driver') NOT NULL DEFAULT 'viewer'");
     }
 
     public function down(): void
     {
+        if (Schema::getConnection()->getDriverName() === 'sqlite') {
+            return;
+        }
+
         DB::statement("ALTER TABLE users MODIFY COLUMN role ENUM('viewer','accountant','manager') NOT NULL DEFAULT 'viewer'");
     }
 };

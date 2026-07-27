@@ -9,8 +9,13 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
 
+/**
+ * Business Purpose: إنشاء/تعديل منتج غاز بأسعار شيكل (ILS) فقط — بدون منطق خدمات متعددة العملات.
+ */
 class ProductForm extends Component
 {
+    public const PRICING_CURRENCY = 'ILS';
+
     public ?int $productId = null;
 
     public string $name = '';
@@ -19,7 +24,7 @@ class ProductForm extends Component
 
     public string $description = '';
 
-    public bool $is_stock_tracked = false;
+    public bool $is_stock_tracked = true;
 
     public string $unit = '';
 
@@ -27,23 +32,14 @@ class ProductForm extends Component
 
     public string $category = '';
 
-    /**
-     * لكل عملة: تكلفة الخدمة، الحد الأدنى للبيع، سعر البيع (نصوص عشرية للنموذج).
-     *
-     * @var array<string, array{service_cost_price: string, min_sale_price: string, sale_price: string}>
-     */
-    public array $pricesByCurrency = [];
+    public string $service_cost_price = '';
+
+    public string $min_sale_price = '';
+
+    public string $sale_price = '';
 
     public function mount(?Product $product = null): void
     {
-        foreach (Product::billingCurrencies() as $cc) {
-            $this->pricesByCurrency[$cc] = [
-                'service_cost_price' => '',
-                'min_sale_price' => '',
-                'sale_price' => '',
-            ];
-        }
-
         if ($product && $product->exists) {
             Gate::authorize('update', $product);
             $this->productId = $product->id;
@@ -54,34 +50,20 @@ class ProductForm extends Component
             $this->unit = $product->unit ?? '';
             $this->capacity_kg = $product->capacity_kg !== null ? (string) $product->capacity_kg : '';
             $this->category = $product->category ?? '';
-            $product->load('currencyPrices');
-            foreach ($product->currencyPrices as $row) {
-                $cc = $row->currency_code;
-                if (! isset($this->pricesByCurrency[$cc])) {
-                    continue;
-                }
-                $this->pricesByCurrency[$cc] = [
-                    'service_cost_price' => (string) $row->service_cost_price,
-                    'min_sale_price' => (string) $row->min_sale_price,
-                    'sale_price' => (string) $row->sale_price,
-                ];
+
+            $row = $product->currencyPrices()
+                ->where('currency_code', self::PRICING_CURRENCY)
+                ->first();
+
+            if ($row !== null) {
+                $this->service_cost_price = (string) $row->service_cost_price;
+                $this->min_sale_price = (string) $row->min_sale_price;
+                $this->sale_price = (string) $row->sale_price;
             }
         } else {
             Gate::authorize('create', Product::class);
+            $this->is_stock_tracked = true;
         }
-    }
-
-    private function currencyBlockHasAny(string $currencyCode): bool
-    {
-        $b = $this->pricesByCurrency[$currencyCode] ?? [];
-
-        foreach (['service_cost_price', 'min_sale_price', 'sale_price'] as $k) {
-            if (trim((string) ($b[$k] ?? '')) !== '') {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     public function save(): void
@@ -105,6 +87,9 @@ class ProductForm extends Component
             'unit' => 'nullable|string|max:32',
             'capacity_kg' => 'nullable|numeric|min:0',
             'category' => 'nullable|string|max:64',
+            'service_cost_price' => 'required|numeric|min:0',
+            'min_sale_price' => 'required|numeric|min:0',
+            'sale_price' => 'required|numeric|min:0',
         ], [], [
             'name' => 'اسم المنتج',
             'product_code' => 'رمز المنتج',
@@ -112,33 +97,17 @@ class ProductForm extends Component
             'unit' => 'الوحدة',
             'capacity_kg' => 'السعة (كغ)',
             'category' => 'التصنيف',
+            'service_cost_price' => 'تكلفة المنتج (شيكل)',
+            'min_sale_price' => 'الحد الأدنى للبيع (شيكل)',
+            'sale_price' => 'سعر البيع (شيكل)',
         ]);
 
-        foreach (Product::billingCurrencies() as $cc) {
-            $b = $this->pricesByCurrency[$cc] ?? [];
-            $any = $this->currencyBlockHasAny($cc);
-            if (! $any) {
-                continue;
-            }
+        $min = (float) $this->min_sale_price;
+        $sale = (float) $this->sale_price;
+        if ($min > $sale) {
+            $this->addError('min_sale_price', 'الحد الأدنى للبيع يجب أن يكون أقل أو يساوي سعر البيع');
 
-            $rules = [
-                "pricesByCurrency.$cc.service_cost_price" => 'required|numeric|min:0',
-                "pricesByCurrency.$cc.min_sale_price" => 'required|numeric|min:0',
-                "pricesByCurrency.$cc.sale_price" => 'required|numeric|min:0',
-            ];
-            $this->validate($rules, [], [
-                "pricesByCurrency.$cc.service_cost_price" => "تكلفة الخدمة ({$cc})",
-                "pricesByCurrency.$cc.min_sale_price" => "الحد الأدنى للبيع ({$cc})",
-                "pricesByCurrency.$cc.sale_price" => "سعر البيع ({$cc})",
-            ]);
-
-            $min = (float) $b['min_sale_price'];
-            $sale = (float) $b['sale_price'];
-            if ($min > $sale) {
-                $this->addError("pricesByCurrency.$cc.min_sale_price", 'الحد الأدنى للبيع يجب أن يكون أقل أو يساوي سعر البيع');
-
-                return;
-            }
+            return;
         }
 
         $wasEditing = $this->productId !== null;
@@ -161,21 +130,17 @@ class ProductForm extends Component
                 $product = Product::query()->create($data);
             }
 
-            $product->currencyPrices()->delete();
-
-            foreach (Product::billingCurrencies() as $cc) {
-                if (! $this->currencyBlockHasAny($cc)) {
-                    continue;
-                }
-                $b = $this->pricesByCurrency[$cc];
-                ProductCurrencyPrice::query()->create([
+            ProductCurrencyPrice::query()->updateOrCreate(
+                [
                     'product_id' => $product->id,
-                    'currency_code' => $cc,
-                    'service_cost_price' => (float) $b['service_cost_price'],
-                    'min_sale_price' => (float) $b['min_sale_price'],
-                    'sale_price' => (float) $b['sale_price'],
-                ]);
-            }
+                    'currency_code' => self::PRICING_CURRENCY,
+                ],
+                [
+                    'service_cost_price' => (float) $this->service_cost_price,
+                    'min_sale_price' => (float) $this->min_sale_price,
+                    'sale_price' => (float) $this->sale_price,
+                ],
+            );
         });
 
         session()->flash('toast', $wasEditing ? 'تم تحديث المنتج' : 'تم إضافة المنتج');
@@ -185,13 +150,6 @@ class ProductForm extends Component
 
     public function render()
     {
-        $labels = [
-            'ILS' => 'ILS — شيكل',
-            'JOD' => 'JOD — دينار أردني',
-            'USD' => 'USD — دولار',
-            'EUR' => 'EUR — يورو',
-        ];
-
-        return view('livewire.product-form', compact('labels'));
+        return view('livewire.product-form');
     }
 }
