@@ -1,12 +1,21 @@
 <?php
 
 use App\Livewire\PurchaseOrderForm;
+use App\Models\Product;
 use App\Models\PurchaseOrder;
 use App\Models\Supplier;
 use App\Models\SupplierPayment;
 use App\Models\User;
 use App\Services\PurchaseOrderPaymentAllocationService;
 use Livewire\Livewire;
+
+function poTestProduct(string $name = 'منتج اختبار'): Product
+{
+    return Product::factory()->withIlsPricing()->create([
+        'name' => $name,
+        'is_stock_tracked' => false,
+    ]);
+}
 
 test('purchase order create shows payment collection when document is issued', function () {
     $user = User::factory()->create(['is_active' => true, 'role' => 'accountant']);
@@ -21,6 +30,7 @@ test('purchase order create shows payment collection when document is issued', f
 test('creating issued unpaid purchase order does not create supplier payment', function () {
     $user = User::factory()->create(['is_active' => true, 'role' => 'accountant']);
     $supplier = Supplier::factory()->create();
+    $product = poTestProduct('مواد طباعة');
 
     Livewire::actingAs($user)
         ->test(PurchaseOrderForm::class)
@@ -29,7 +39,7 @@ test('creating issued unpaid purchase order does not create supplier payment', f
         ->set('payment_collection', 'unpaid')
         ->set('document_date', now()->format('Y-m-d'))
         ->set('currency_code', 'ILS')
-        ->set('lines.0.title', 'مواد طباعة')
+        ->set('lines.0.product_id', (string) $product->id)
         ->set('lines.0.unit_price', '500')
         ->set('lines.0.quantity', '1')
         ->call('save')
@@ -46,6 +56,7 @@ test('creating issued unpaid purchase order does not create supplier payment', f
 test('creating issued paid purchase order creates full supplier payment', function () {
     $user = User::factory()->create(['is_active' => true, 'role' => 'accountant']);
     $supplier = Supplier::factory()->create();
+    $product = poTestProduct('حبر');
 
     Livewire::actingAs($user)
         ->test(PurchaseOrderForm::class)
@@ -56,7 +67,7 @@ test('creating issued paid purchase order creates full supplier payment', functi
         ->set('paid_at', now()->format('Y-m-d'))
         ->set('document_date', now()->format('Y-m-d'))
         ->set('currency_code', 'ILS')
-        ->set('lines.0.title', 'حبر')
+        ->set('lines.0.product_id', (string) $product->id)
         ->set('lines.0.unit_price', '800')
         ->set('lines.0.quantity', '1')
         ->call('save')
@@ -73,6 +84,7 @@ test('creating issued paid purchase order creates full supplier payment', functi
 test('creating issued partial purchase order creates partial supplier payment', function () {
     $user = User::factory()->create(['is_active' => true, 'role' => 'accountant']);
     $supplier = Supplier::factory()->create();
+    $product = poTestProduct('ورق');
 
     Livewire::actingAs($user)
         ->test(PurchaseOrderForm::class)
@@ -84,7 +96,7 @@ test('creating issued partial purchase order creates partial supplier payment', 
         ->set('paid_at', now()->format('Y-m-d'))
         ->set('document_date', now()->format('Y-m-d'))
         ->set('currency_code', 'ILS')
-        ->set('lines.0.title', 'ورق')
+        ->set('lines.0.product_id', (string) $product->id)
         ->set('lines.0.unit_price', '1000')
         ->set('lines.0.quantity', '1')
         ->call('save')

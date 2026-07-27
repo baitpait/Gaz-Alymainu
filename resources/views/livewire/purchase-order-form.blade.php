@@ -181,8 +181,7 @@
 
             <div style="border:1px solid #E2E8F0;border-radius:12px;overflow:hidden;">
                 <div style="display:flex;background:#F9F9FB;border-bottom:1px solid #E2E8F0;font-size:11px;font-weight:600;color:#9CA3AF;">
-                    <div style="width:220px;padding:8px 10px;">المنتج</div>
-                    <div style="flex:2;padding:8px 12px;">البند / الوصف</div>
+                    <div style="flex:2;padding:8px 12px;">المنتج</div>
                     <div style="width:130px;padding:8px 10px;text-align:center;">سعر الوحدة</div>
                     <div style="width:100px;padding:8px 10px;text-align:center;">الكمية</div>
                     <div style="width:120px;padding:8px 10px;text-align:left;" dir="ltr">المجموع</div>
@@ -193,10 +192,10 @@
                 <div wire:key="po-line-{{ $i }}"
                      style="display:flex;align-items:flex-start;padding:8px 12px;border-bottom:1px solid #F1F5F9;{{ $loop->last ? 'border-bottom:none;' : '' }}{{ $loop->even ? 'background:#FAFAFA;' : '' }}">
 
-                    <div style="width:220px;padding:0 8px 0 0;">
+                    <div style="flex:2;padding:0 8px 0 0;">
                         <select wire:model.live="lines.{{ $i }}.product_id"
-                                class="input select" style="padding:6px 8px;font-size:12px;width:100%;">
-                            <option value="">— بدون منتج —</option>
+                                class="input select" style="padding:7px 10px;font-size:13px;width:100%;">
+                            <option value="">— اختر منتجًا —</option>
                             @foreach($products as $p)
                             <option value="{{ $p->id }}">
                                 {{ $p->name }}@if($p->product_code) ({{ $p->product_code }})@endif
@@ -204,16 +203,6 @@
                             @endforeach
                         </select>
                         @error("lines.{$i}.product_id")<p class="field-error" style="font-size:10px;">{{ $message }}</p>@enderror
-                    </div>
-
-                    <div style="flex:2;padding:0 8px 0 0;">
-                        <input wire:model.live="lines.{{ $i }}.title"
-                               type="text" placeholder="اسم البند *"
-                               class="input" style="padding:7px 10px;font-size:13px;margin-bottom:4px;font-weight:600;">
-                        <input wire:model="lines.{{ $i }}.description"
-                               type="text" placeholder="وصف إضافي (اختياري)"
-                               class="input" style="padding:6px 10px;font-size:12px;background:#F9F9FB;color:#6B7280;">
-                        @error("lines.{$i}.title")<p class="field-error">{{ $message }}</p>@enderror
                     </div>
 
                     <div style="width:130px;padding:0 8px;">

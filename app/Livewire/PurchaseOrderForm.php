@@ -192,7 +192,7 @@ class PurchaseOrderForm extends Component
     private function recalcTotal(): void
     {
         $subtotal = collect($this->lines)
-            ->filter(fn ($l) => trim((string) ($l['title'] ?? '')) !== '')
+            ->filter(fn ($l) => trim((string) ($l['product_id'] ?? '')) !== '')
             ->sum(fn ($l) => (float) ($l['line_total'] ?? 0));
         $net = max(0, $subtotal - (float) ($this->discount_amount ?? 0));
         $this->total_amount = (string) round($net, 2);
@@ -253,6 +253,18 @@ class PurchaseOrderForm extends Component
 
         $this->syncLineTotalsFromInputs();
 
+        // Drop empty placeholder rows before validation
+        $this->lines = array_values(array_filter(
+            $this->lines,
+            fn ($l) => trim((string) ($l['product_id'] ?? '')) !== ''
+        ));
+        if ($this->lines === []) {
+            $this->addLine();
+            $this->addError('lines', 'أضف بنداً واحداً على الأقل.');
+
+            return;
+        }
+
         $rules = [
             'supplier_id' => 'required|exists:suppliers,id',
             'document_date' => 'required|date',
@@ -267,10 +279,9 @@ class PurchaseOrderForm extends Component
                 Rule::unique('purchase_orders', 'legacy_po_no')->ignore($this->purchaseOrderId),
             ],
             'lines' => 'array',
-            'lines.*.product_id' => ['nullable', 'integer', Rule::exists(Product::class, 'id')],
-            'lines.*.title' => 'required_with:lines|string|max:500',
-            'lines.*.quantity' => 'required_with:lines|numeric|min:0',
-            'lines.*.unit_price' => 'required_with:lines|numeric|min:0',
+            'lines.*.product_id' => ['required', 'integer', Rule::exists(Product::class, 'id')],
+            'lines.*.quantity' => 'required|numeric|min:0',
+            'lines.*.unit_price' => 'required|numeric|min:0',
         ];
 
         if (! $this->purchaseOrderId && $this->status === 'issued') {
@@ -285,9 +296,9 @@ class PurchaseOrderForm extends Component
         }
 
         $this->validate($rules, [
-            'lines.*.title.required_with' => 'اسم البند مطلوب',
-            'lines.*.quantity.required_with' => 'الكمية مطلوبة',
-            'lines.*.unit_price.required_with' => 'السعر مطلوب',
+            'lines.*.product_id.required' => 'اختر منتجاً للبند',
+            'lines.*.quantity.required' => 'الكمية مطلوبة',
+            'lines.*.unit_price.required' => 'السعر مطلوب',
         ], [
             'supplier_id' => 'المورد',
             'document_date' => 'تاريخ المستند',
@@ -300,9 +311,26 @@ class PurchaseOrderForm extends Component
             'payment_amount' => 'مبلغ الدفعة',
             'payment_method' => 'طريقة الدفع',
             'paid_at' => 'تاريخ الدفع',
+            'lines.*.product_id' => 'المنتج',
         ]);
 
-        $titledLines = array_values(array_filter($this->lines, fn ($l) => trim((string) ($l['title'] ?? '')) !== ''));
+        // Ensure title is synced from product (UI no longer edits title/description)
+        foreach ($this->lines as $i => $line) {
+            $pid = (int) ($line['product_id'] ?? 0);
+            if ($pid <= 0) {
+                continue;
+            }
+            $product = Product::query()->find($pid);
+            if ($product) {
+                $this->lines[$i]['title'] = $product->name;
+                $this->lines[$i]['description'] = '';
+            }
+        }
+
+        $titledLines = array_values(array_filter(
+            $this->lines,
+            fn ($l) => trim((string) ($l['product_id'] ?? '')) !== ''
+        ));
         if ($titledLines === []) {
             $this->addError('lines', 'أضف بنداً واحداً على الأقل.');
 
@@ -386,12 +414,12 @@ class PurchaseOrderForm extends Component
 
                 $po->lines()->delete();
                 foreach ($titledLines as $i => $line) {
-                    $pid = isset($line['product_id']) && $line['product_id'] !== '' ? (int) $line['product_id'] : null;
+                    $pid = (int) $line['product_id'];
                     $po->lines()->create([
                         'line_order' => $i,
                         'product_id' => $pid,
-                        'title' => $line['title'],
-                        'description' => ($line['description'] ?? '') !== '' ? $line['description'] : null,
+                        'title' => $line['title'] !== '' ? $line['title'] : (Product::query()->find($pid)?->name ?? 'منتج'),
+                        'description' => null,
                         'unit_price' => (float) ($line['unit_price'] ?? 0),
                         'quantity' => (float) ($line['quantity'] ?? 1),
                         'line_total' => (float) ($line['line_total'] ?? 0),
@@ -474,7 +502,7 @@ class PurchaseOrderForm extends Component
             ->get(['id', 'name', 'product_code']);
 
         $subtotal = collect($this->lines)
-            ->filter(fn ($l) => trim((string) ($l['title'] ?? '')) !== '')
+            ->filter(fn ($l) => trim((string) ($l['product_id'] ?? '')) !== '')
             ->sum(fn ($l) => (float) ($l['line_total'] ?? 0));
 
         $computedPaymentStatus = null;

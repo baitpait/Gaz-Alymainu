@@ -86,9 +86,13 @@ test('issued purchase with stocked product requires receiving warehouse', functi
     expect(StockBalance::query()->count())->toBe(0);
 });
 
-test('free-text purchase line without product does not require warehouse', function () {
+test('non stocked product purchase does not require warehouse or post inventory', function () {
     $user = User::factory()->create(['is_active' => true, 'role' => 'accountant']);
     $supplier = Supplier::factory()->create();
+    $product = Product::factory()->withIlsPricing()->create([
+        'name' => 'مصروف عام',
+        'is_stock_tracked' => false,
+    ]);
 
     $this->actingAs($user);
 
@@ -97,7 +101,8 @@ test('free-text purchase line without product does not require warehouse', funct
         ->set('status', 'issued')
         ->set('payment_collection', 'unpaid')
         ->set('document_date', now()->format('Y-m-d'))
-        ->set('lines.0.title', 'مصروف عام')
+        ->set('receiving_warehouse_id', '')
+        ->set('lines.0.product_id', (string) $product->id)
         ->set('lines.0.unit_price', '100')
         ->set('lines.0.quantity', '1')
         ->call('save')
@@ -106,5 +111,6 @@ test('free-text purchase line without product does not require warehouse', funct
 
     $po = PurchaseOrder::query()->where('supplier_id', $supplier->id)->first();
     expect($po->inventory_posted_at)->toBeNull()
-        ->and($po->lines()->first()->product_id)->toBeNull();
+        ->and($po->lines()->first()->product_id)->toBe($product->id)
+        ->and($po->lines()->first()->title)->toBe('مصروف عام');
 });
