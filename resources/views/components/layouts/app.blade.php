@@ -539,7 +539,7 @@
     @endunless
 
     {{-- ═══ المحتوى الرئيسي ═══ --}}
-    <main class="flex-1 p-6 min-w-0 @can('record-sales') pb-24 @endcan">
+    <main class="flex-1 p-6 min-w-0 @can('record-sales') pb-24 md:pb-6 @endcan">
         {{ $slot }}
     </main>
 </div>
@@ -550,8 +550,8 @@
 @endcan
 
 @can('record-sales')
-{{-- ═══ شريط التنقل السفلي (موبايل) ═══ --}}
-<nav class="fixed bottom-0 inset-x-0 z-40 bg-white border-t border-[#E2E4E9] shadow-[0_-2px_10px_rgba(0,0,0,0.05)] flex items-stretch">
+{{-- ═══ شريط التنقل السفلي — يظهر على الموبايل فقط ═══ --}}
+<nav class="fixed bottom-0 inset-x-0 z-40 bg-white border-t border-[#E2E4E9] shadow-[0_-2px_10px_rgba(0,0,0,0.05)] flex items-stretch md:hidden">
     <a href="{{ route('pos.index') }}" wire:navigate
        class="flex-1 flex flex-col items-center justify-center gap-1 py-2.5 transition {{ request()->routeIs('pos.*') ? 'text-[#C9A227]' : 'text-gray-400' }}">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
