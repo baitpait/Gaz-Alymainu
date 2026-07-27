@@ -1,52 +1,181 @@
 <x-layouts.app title="لوحة التحكم">
 @php
-    $supplierCount = \App\Models\Supplier::count();
+    $dash = app(\App\Services\DashboardSummaryService::class)->forDate();
+    $today = $dash['today'];
+    $fleet = $dash['fleet'];
+    $finance = $dash['finance'];
+    $alerts = $dash['alerts'];
+    $fmt = fn (float|int $n, int $dec = 2) => number_format((float) $n, $dec);
 @endphp
 
 {{-- رأس الصفحة --}}
-<div class="mb-7">
-    <h1 class="text-2xl font-bold text-[#1E293B]">لوحة التحكم</h1>
-    <p class="text-sm text-gray-400 mt-0.5">{{ now()->locale('ar')->isoFormat('dddd، D MMMM YYYY') }}</p>
+<div class="mb-6 flex flex-wrap items-end justify-between gap-3">
+    <div>
+        <h1 class="text-2xl font-bold text-[#1E293B]">لوحة التحكم</h1>
+        <p class="text-sm text-gray-400 mt-0.5">{{ now()->locale('ar')->isoFormat('dddd، D MMMM YYYY') }}</p>
+    </div>
+    <p class="text-xs text-gray-400" dir="ltr">{{ $dash['date'] }}</p>
 </div>
 
-{{-- بطاقات الإحصاء --}}
-<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+{{-- ═══ صف اليوم ═══ --}}
+<section class="mb-7">
+    <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-widest mb-3">اليوم — توزيع الغاز</h2>
+    <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
+        <a href="{{ route('sales.index') }}" wire:navigate class="card p-4 hover:shadow-md transition block" style="text-decoration:none;">
+            <div class="text-xs text-gray-400 mb-1">مبيعات اليوم</div>
+            <div class="text-2xl font-bold text-[#1E293B]" dir="ltr">{{ $fmt($today['sales_total']) }}</div>
+            <div class="text-[11px] text-gray-400 mt-1" dir="ltr">{{ $fmt($today['sales_qty'], 1) }} وحدة · {{ $today['sales_count'] }} عملية</div>
+        </a>
+        <a href="{{ route('sales.index') }}" wire:navigate class="card p-4 hover:shadow-md transition block" style="text-decoration:none;">
+            <div class="text-xs text-gray-400 mb-1">نقدي / على الحساب</div>
+            <div class="text-lg font-bold text-green-600" dir="ltr">{{ $fmt($today['sales_cash']) }}</div>
+            <div class="text-sm font-semibold text-[#1B6CA8] mt-0.5" dir="ltr">{{ $fmt($today['sales_credit']) }}</div>
+        </a>
+        <a href="{{ route('collections.index') }}" wire:navigate class="card p-4 hover:shadow-md transition block" style="text-decoration:none;">
+            <div class="text-xs text-gray-400 mb-1">تحصيلات اليوم</div>
+            <div class="text-2xl font-bold text-[#1E293B]" dir="ltr">{{ $fmt($today['collections_total']) }}</div>
+            <div class="text-[11px] text-gray-400 mt-1">نقدي {{ $fmt($today['collections_cash']) }} · شيك {{ $fmt($today['collections_cheque']) }}</div>
+        </a>
+        <a href="{{ route('driver-expenses.index') }}" wire:navigate class="card p-4 hover:shadow-md transition block" style="text-decoration:none;">
+            <div class="text-xs text-gray-400 mb-1">مصروفات السائقين</div>
+            <div class="text-2xl font-bold text-amber-600" dir="ltr">{{ $fmt($today['driver_expenses']) }}</div>
+            <div class="text-[11px] text-gray-400 mt-1">اليوم</div>
+        </a>
+        <a href="{{ route('cash-handovers.index') }}" wire:navigate class="card p-4 hover:shadow-md transition block border-r-4 border-[#E8590C]" style="text-decoration:none;">
+            <div class="text-xs text-gray-400 mb-1">كاش لدى السائقين</div>
+            <div class="text-2xl font-bold text-[#E8590C]" dir="ltr">{{ $fmt($today['drivers_cash_held']) }}</div>
+            <div class="text-[11px] text-gray-400 mt-1">شيكات {{ $fmt($today['drivers_cheque_held']) }} · لم يُسلَّم</div>
+        </a>
+    </div>
+</section>
 
-    <a href="{{ route('suppliers.index') }}" class="card p-5 hover:shadow-md transition-shadow group">
-        <div class="flex items-center justify-between mb-3">
-            <div class="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center text-purple-500 group-hover:bg-purple-100 transition">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                </svg>
-            </div>
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-300 group-hover:text-[#1B6CA8] transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-            </svg>
+{{-- ═══ المخزون والأسطول ═══ --}}
+<section class="mb-7">
+    <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-widest mb-3">المخزون والأسطول</h2>
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <a href="{{ route('reports.gas-stock-balances') }}" wire:navigate class="card p-4 hover:shadow-md transition block" style="text-decoration:none;">
+            <div class="text-xs text-gray-400 mb-1">أرصدة صفر (سيارات)</div>
+            <div class="text-2xl font-bold {{ $fleet['zero_vehicle_stock'] > 0 ? 'text-red-600' : 'text-[#1E293B]' }}">{{ $fleet['zero_vehicle_stock'] }}</div>
+            <div class="text-[11px] text-gray-400 mt-1">منخفض ≤2: {{ $fleet['low_vehicle_stock'] }}</div>
+        </a>
+        <a href="{{ route('stock-movements.index') }}" wire:navigate class="card p-4 hover:shadow-md transition block" style="text-decoration:none;">
+            <div class="text-xs text-gray-400 mb-1">تحميل / إرجاع اليوم</div>
+            <div class="text-2xl font-bold text-[#1E293B]">{{ $fleet['loads_today'] }} <span class="text-gray-300 font-normal">/</span> {{ $fleet['returns_today'] }}</div>
+            <div class="text-[11px] text-gray-400 mt-1">حركات مخزون</div>
+        </a>
+        <a href="{{ route('daily-prices.index') }}" wire:navigate class="card p-4 hover:shadow-md transition block" style="text-decoration:none;">
+            <div class="text-xs text-gray-400 mb-1">التسعير اليومي</div>
+            @if($fleet['pricing_complete'])
+                <div class="text-2xl font-bold text-green-600">مكتمل</div>
+            @else
+                <div class="text-2xl font-bold text-amber-600">ناقص</div>
+            @endif
+            <div class="text-[11px] text-gray-400 mt-1" dir="ltr">{{ $fleet['priced_today'] }} / {{ $fleet['tracked_products'] }}</div>
+        </a>
+        @can('view-driver-locations')
+        <a href="{{ route('drivers.map') }}" wire:navigate class="card p-4 hover:shadow-md transition block" style="text-decoration:none;">
+            <div class="text-xs text-gray-400 mb-1">سائقون على الخريطة</div>
+            <div class="text-2xl font-bold text-[#1B6CA8]">{{ $fleet['sharing_drivers'] }}</div>
+            <div class="text-[11px] text-gray-400 mt-1">من أصل {{ $fleet['active_drivers'] }} نشط</div>
+        </a>
+        @else
+        <div class="card p-4">
+            <div class="text-xs text-gray-400 mb-1">سائقون نشطون</div>
+            <div class="text-2xl font-bold text-[#1E293B]">{{ $fleet['active_drivers'] }}</div>
+            <div class="text-[11px] text-gray-400 mt-1">حسابات سائق فعّالة</div>
         </div>
-        <div class="text-3xl font-bold text-[#1E293B]">{{ number_format($supplierCount) }}</div>
-        <div class="text-sm text-gray-400 mt-0.5">إجمالي الموردين</div>
-    </a>
+        @endcan
+    </div>
+</section>
 
+{{-- ═══ اختصارات ═══ --}}
+<section class="mb-7">
+    <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-widest mb-3">اختصارات تشغيلية</h2>
+    <div class="flex flex-wrap gap-2">
+        @foreach($dash['shortcuts'] as $sc)
+            @if($sc['gate'] === null || auth()->user()->can($sc['gate']))
+            <a href="{{ $sc['href'] }}" wire:navigate
+               class="inline-flex items-center px-3.5 py-2 rounded-lg text-sm font-semibold bg-white border border-[#E2E8F0] text-[#1E293B] hover:border-[#1B6CA8] hover:text-[#1B6CA8] transition"
+               style="text-decoration:none;">
+                {{ $sc['label'] }}
+            </a>
+            @endif
+        @endforeach
+        <a href="{{ route('financial-summary') }}" wire:navigate
+           class="inline-flex items-center px-3.5 py-2 rounded-lg text-sm font-semibold bg-[#1B6CA8]/10 border border-[#1B6CA8]/20 text-[#1B6CA8] hover:bg-[#1B6CA8]/15 transition"
+           style="text-decoration:none;">
+            الصناديق النقدية
+        </a>
+    </div>
+</section>
 
-</div>
+{{-- ═══ يحتاج انتباه ═══ --}}
+@if(count($alerts) > 0)
+<section class="mb-7">
+    <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-widest mb-3">يحتاج انتباه</h2>
+    <div class="card divide-y divide-[#E2E8F0] overflow-hidden">
+        @foreach($alerts as $alert)
+            @php
+                $tone = match($alert['level']) {
+                    'danger' => 'text-red-600',
+                    'warn' => 'text-amber-700',
+                    default => 'text-[#1E293B]',
+                };
+            @endphp
+            @if($alert['href'])
+            <a href="{{ $alert['href'] }}" wire:navigate class="flex items-center justify-between gap-3 px-4 py-3 hover:bg-gray-50 transition" style="text-decoration:none;">
+                <span class="text-sm {{ $tone }}">{{ $alert['text'] }}</span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+            </a>
+            @else
+            <div class="px-4 py-3 text-sm {{ $tone }}">{{ $alert['text'] }}</div>
+            @endif
+        @endforeach
+    </div>
+</section>
+@endif
 
-{{-- ═══ الملخص المالي (مخفي افتراضياً) — الصفحة الكاملة: «الصناديق النقدية» ═══ --}}
+{{-- ═══ ذمم وصناديق مختصرة ═══ --}}
+<section class="mb-7">
+    <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-widest mb-3">ملخص مالي مختصر ({{ $finance['currency'] }})</h2>
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <a href="{{ route('reports.client-receivables-aging') }}" wire:navigate class="card p-4 hover:shadow-md transition block" style="text-decoration:none;">
+            <div class="text-xs text-gray-400 mb-1">ذمم عملاء تقريبية</div>
+            <div class="text-xl font-bold text-[#1E293B]" dir="ltr">{{ $fmt($finance['client_receivable']) }}</div>
+            <div class="text-[11px] text-gray-400 mt-1">فواتير − دفعات (بدون تسويات)</div>
+        </a>
+        <a href="{{ route('reports.supplier-receivables-aging') }}" wire:navigate class="card p-4 hover:shadow-md transition block" style="text-decoration:none;">
+            <div class="text-xs text-gray-400 mb-1">التزامات موردين</div>
+            <div class="text-xl font-bold text-[#1E293B]" dir="ltr">{{ $fmt($finance['supplier_payable']) }}</div>
+            <div class="text-[11px] text-gray-400 mt-1">مشتريات − دفعات</div>
+        </a>
+        <a href="{{ route('financial-summary') }}" wire:navigate class="card p-4 hover:shadow-md transition block" style="text-decoration:none;">
+            <div class="text-xs text-gray-400 mb-1">الصندوق الرئيسي</div>
+            <div class="text-xl font-bold text-green-700" dir="ltr">{{ $fmt($finance['main_cash']) }}</div>
+            <div class="text-[11px] text-gray-400 mt-1">شيكات مُسلّمة {{ $fmt($finance['main_cheque']) }}</div>
+        </a>
+        <div class="card p-4">
+            <div class="text-xs text-gray-400 mb-1">مسودات معلّقة</div>
+            <div class="text-xl font-bold text-[#1E293B]">
+                <a href="{{ route('invoices.index') }}" wire:navigate class="hover:text-[#1B6CA8]" style="text-decoration:none;">{{ $finance['draft_invoices'] }}</a>
+                <span class="text-gray-300 font-normal">/</span>
+                <a href="{{ route('purchase-orders.index') }}" wire:navigate class="hover:text-[#1B6CA8]" style="text-decoration:none;">{{ $finance['draft_purchase_orders'] }}</a>
+            </div>
+            <div class="text-[11px] text-gray-400 mt-1">فواتير / مشتريات</div>
+        </div>
+    </div>
+</section>
+
+{{-- ═══ تفاصيل الصناديق (مطوي) ═══ --}}
 <div x-data="{ open: false }" class="mb-8">
-
     <div class="flex items-center justify-between mb-3">
-        <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-widest">الملخص المالي</h2>
+        <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-widest">تفاصيل الصناديق النقدية</h2>
         <div class="flex items-center gap-2">
             <a href="{{ route('financial-summary') }}"
-               class="text-xs font-semibold text-[#1B6CA8] hover:underline">صفحة الصناديق النقدية</a>
+               class="text-xs font-semibold text-[#1B6CA8] hover:underline">صفحة كاملة</a>
             <button @click="open = !open"
                     type="button"
                     class="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border border-[#E2E8F0] bg-white text-gray-500 hover:border-[#1B6CA8] hover:text-[#1B6CA8] transition select-none">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          x-show="!open" d="M15 12a3 3 0 11-6 0 3 3 0 016 0M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          x-show="open"  d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.542 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
-                </svg>
                 <span x-text="open ? 'إخفاء الأرقام' : 'إظهار الأرقام'"></span>
             </button>
         </div>
