@@ -33,26 +33,67 @@
         </div>
     </div>
     @auth
-    <div class="flex items-center gap-3 shrink-0">
-        <div class="hidden sm:block text-left">
-            <div class="text-xs font-semibold text-[#1E293B]">{{ auth()->user()->full_name }}</div>
-            <div class="text-[10px] text-gray-400">
-                {{ match(auth()->user()->role) { 'manager' => 'مدير', 'accountant' => 'محاسب', 'driver' => 'سائق', default => 'مشاهد' } }}
+    <div class="relative shrink-0" x-data="{ open: false }">
+        <button type="button"
+                @click="open = !open"
+                class="flex items-center gap-2.5 rounded-lg px-1.5 py-1 hover:bg-gray-50 transition"
+                aria-haspopup="menu"
+                :aria-expanded="open.toString()">
+            <div class="hidden sm:block text-left">
+                <div class="text-xs font-semibold text-[#1E293B]">{{ auth()->user()->full_name }}</div>
+                <div class="text-[10px] text-gray-400">
+                    {{ match(auth()->user()->role) { 'manager' => 'مدير', 'accountant' => 'محاسب', 'driver' => 'سائق', default => 'مشاهد' } }}
+                </div>
             </div>
-        </div>
-        <div class="w-8 h-8 rounded-full bg-[#1B6CA8]/15 flex items-center justify-center text-[#1B6CA8] font-bold text-sm">
-            {{ mb_substr(auth()->user()->full_name, 0, 1) }}
-        </div>
-        <form method="POST" action="{{ route('logout') }}" class="mr-1">
-            @csrf
-            <button type="submit" title="خروج"
-                    class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div class="w-8 h-8 rounded-full bg-[#1B6CA8]/15 flex items-center justify-center text-[#1B6CA8] font-bold text-sm shrink-0">
+                {{ mb_substr(auth()->user()->full_name, 0, 1) }}
+            </div>
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-gray-400 shrink-0 transition"
+                 :class="open && 'rotate-180'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+        </button>
+
+        <div x-show="open"
+             x-cloak
+             @click.outside="open = false"
+             x-transition:enter="transition ease-out duration-100"
+             x-transition:enter-start="opacity-0 scale-95"
+             x-transition:enter-end="opacity-100 scale-100"
+             x-transition:leave="transition ease-in duration-75"
+             x-transition:leave-start="opacity-100 scale-100"
+             x-transition:leave-end="opacity-0 scale-95"
+             class="absolute left-0 top-full mt-2 w-52 rounded-xl border border-[#E2E8F0] bg-white shadow-lg py-1.5 z-50 origin-top-left"
+             role="menu">
+            <div class="px-3 py-2 border-b border-[#E2E8F0] sm:hidden">
+                <div class="text-xs font-semibold text-[#1E293B]">{{ auth()->user()->full_name }}</div>
+                <div class="text-[10px] text-gray-400">
+                    {{ match(auth()->user()->role) { 'manager' => 'مدير', 'accountant' => 'محاسب', 'driver' => 'سائق', default => 'مشاهد' } }}
+                </div>
+            </div>
+            <a href="{{ route('profile') }}" wire:navigate
+               @click="open = false"
+               role="menuitem"
+               class="flex items-center gap-2.5 px-3 py-2.5 text-sm text-[#1E293B] hover:bg-gray-50 transition"
+               style="text-decoration:none;">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                 </svg>
-            </button>
-        </form>
+                الملف الشخصي
+            </a>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" role="menuitem"
+                        class="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-red-600 hover:bg-red-50 transition text-right">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                    </svg>
+                    تسجيل الخروج
+                </button>
+            </form>
+        </div>
     </div>
     @endauth
 </header>

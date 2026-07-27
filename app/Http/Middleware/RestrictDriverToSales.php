@@ -18,6 +18,7 @@ class RestrictDriverToSales
         'collections.index',
         'driver-expenses.index',
         'location.share',
+        'profile',
         'logout',
     ];
 

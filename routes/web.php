@@ -38,6 +38,7 @@ Route::get('/', fn () => redirect()->route('dashboard'));
 
 Route::middleware(['auth', 'driver.sales', 'block.sales'])->group(function () {
     Route::get('/dashboard', fn () => view('dashboard'))->name('dashboard');
+    Route::get('/profile', fn () => view('profile.show'))->name('profile');
     Route::get('/financial-summary', fn () => view('financial-summary'))->name('financial-summary');
 
     Route::get('/clients', fn () => view('clients.index'))->name('clients.index');

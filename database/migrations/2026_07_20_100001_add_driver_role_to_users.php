@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -12,8 +13,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // SQLite لا يدعم MODIFY ENUM — عمود role نصّي والتحقق في التطبيق.
         if (Schema::getConnection()->getDriverName() === 'sqlite') {
+            // SQLite stores ENUM as CHECK — rebuild as free string so 'driver' is allowed in tests.
+            Schema::table('users', function (Blueprint $table) {
+                $table->string('role_new', 32)->default('viewer');
+            });
+            DB::table('users')->update(['role_new' => DB::raw('role')]);
+            Schema::table('users', function (Blueprint $table) {
+                $table->dropColumn('role');
+            });
+            Schema::table('users', function (Blueprint $table) {
+                $table->renameColumn('role_new', 'role');
+            });
+
             return;
         }
 
