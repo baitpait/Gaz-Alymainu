@@ -52,17 +52,19 @@ php artisan serve
 
 ---
 
-## نشر الإنتاج — `profile.baitpait.com`
-
-إعداد موثَّق من لوحة الاستضافة (Enduser Panel)، المستخدم `baitpait`، الخادم `104.207.65.64`:
+## نشر الإنتاج — `gaz.baitpait.space`
 
 | البند | المسار أو القيمة |
 |--------|------------------|
-| الدومين | `https://profile.baitpait.com` |
-| جذر الويب (Document root) | `/home/baitpait/public_html/profile/public` |
-| جذر Laravel (هنا `artisan` و`composer.json`) | `/home/baitpait/public_html/profile` |
+| الدومين | `https://gaz.baitpait.space` |
+| مستخدم نظام التشغيل | `sarfesak` |
+| جذر الويب (Document root) | `/home/sarfesak/public_html/gaz/public` |
+| جذر Laravel (`artisan` + `composer.json`) | `/home/sarfesak/public_html/gaz` |
+| مستودع GitHub | [baitpait/Gaz-Alymainu](https://github.com/baitpait/Gaz-Alymainu) |
 
-**مهم:** أوامر الشل (`php artisan`، `composer install`) تُنفَّذ من **الجذر الثاني** (أعلى من `public`)، وليس من داخل `public` فقط. إذا لم يوجد `artisan` تحت `profile` فالنسخة على الخادم ناقصة أو المشروع منشور تحت مجلد آخر — ابحث بـ `find /home/baitpait/public_html -name artisan`.
+**مهم:** أوامر الشل (`php artisan`، `composer install`) تُنفَّذ من جذر Laravel (أعلى من `public`)، وليس من داخل `public` فقط. إذا لم يوجد `artisan` تحت `gaz` فالنسخة ناقصة — ابحث بـ `find /home/sarfesak/public_html -name artisan`.
+
+التفاصيل الكاملة: `docs/08_DEPLOYMENT_AND_OPERATIONS_AR.md`.
 
 ---
 
@@ -98,6 +100,7 @@ php artisan export:mysql-data
 
 **نظام السائقين والمخزون ونقطة البيع:** `docs/14_GAS_DRIVER_INVENTORY_SYSTEM_AR.md`  
 **تتبّع مواقع السائقين (خريطة):** `docs/15_DRIVER_LOCATION_TRACKING_AR.md`  
+**نشر gaz.baitpait.space (أوامر سريعة):** `docs/16_SERVER_DEPLOY_GAZ_BAITPAIT_SPACE_AR.md`  
 **النسخ الاحتياطي والاسترجاع:** `docs/DATABASE_BACKUP_AND_RESTORE_AR.md`  
 **النشر والتشغيل (إنتاج):** `docs/08_DEPLOYMENT_AND_OPERATIONS_AR.md`  
 **PDF المستندات (Browsershot):** `docs/13_DOCUMENT_PDF_BROWSERSHOT_AR.md`  
@@ -176,7 +179,7 @@ branding/                   ← الشعار والهوية البصرية
 
 ## Git Workflow
 
-المستودع على GitHub: [baitpait/prfile](https://github.com/baitpait/prfile)
+المستودع على GitHub: [baitpait/Gaz-Alymainu](https://github.com/baitpait/Gaz-Alymainu)
 
 ```
 main          ← الفرع الرئيسي (محمي)
@@ -186,3 +189,4 @@ fix/*         ← إصلاحات
 ```
 
 **Conventional Commits:** `feat:`, `fix:`, `chore:`, `test:`, `docs:`
+**Remote الإنتاج:** `alymainu` / `origin` → `https://github.com/baitpait/Gaz-Alymainu.git`

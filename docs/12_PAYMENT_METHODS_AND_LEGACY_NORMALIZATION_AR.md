@@ -106,7 +106,7 @@ php artisan payments:normalize-methods
 ## 7) النشر على الإنتاج
 
 ```bash
-cd /home/baitpait/public_html/profile
+cd /home/sarfesak/public_html/gaz
 git pull origin main
 composer install --no-dev --optimize-autoloader
 php artisan payments:normalize-methods --dry-run

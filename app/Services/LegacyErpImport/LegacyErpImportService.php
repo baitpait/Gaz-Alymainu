@@ -160,7 +160,7 @@ final class LegacyErpImportService
 
         $log('إنشاء مستخدم افتراضي للتسجيل أثناء الاستيراد…');
 
-        $host = parse_url((string) config('app.url'), PHP_URL_HOST) ?: 'profile-media.local';
+        $host = parse_url((string) config('app.url'), PHP_URL_HOST) ?: 'gaz.local';
         $email = 'legacy-erp-import@'.$host;
 
         return (int) User::query()->firstOrCreate(
@@ -189,7 +189,7 @@ final class LegacyErpImportService
         $defaultRole = (string) config('legacy_erp_import.default_role', 'accountant');
 
         foreach ($legacy->table('users')->whereNull('deleted_at')->orderBy('id')->cursor() as $row) {
-            $email = $this->normalizeEmail($row->email ?? null) ?: 'erp_user_'.$row->id.'@profile-media.local';
+            $email = $this->normalizeEmail($row->email ?? null) ?: 'erp_user_'.$row->id.'@gaz.local';
             $existing = User::query()->where('email', $email)->first();
             if ($existing) {
                 $this->userMap[(int) $row->id] = (int) $existing->id;

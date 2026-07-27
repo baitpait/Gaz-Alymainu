@@ -3,7 +3,7 @@
 **الحالة:** مُغلق (مُصلَح)  
 **التاريخ:** 2026-06-29  
 **Commit الإصلاح:** `50ceee1` — `fix: normalize legacy payment methods on supplier and client payment edit`  
-**مثال:** `https://profile.baitpait.com/supplier-payments/413/edit`
+**مثال:** `https://gaz.baitpait.space/supplier-payments/413/edit`
 
 ---
 
@@ -38,7 +38,7 @@
 ### 3.1 قراءة القيمة المخزّنة
 
 ```bash
-cd /home/baitpait/public_html/profile
+cd /home/sarfesak/public_html/gaz
 php artisan tinker --execute="echo App\Models\SupplierPayment::find(413)?->method ?? 'not found';"
 ```
 

@@ -132,7 +132,7 @@ php artisan test --filter=PartyDirectoryListTest
 ## 6) النشر
 
 ```bash
-cd /home/baitpait/public_html/profile
+cd /home/sarfesak/public_html/gaz
 git pull origin main   # يجب أن يتضمن commit d0260ae+
 php artisan view:clear
 php artisan view:cache

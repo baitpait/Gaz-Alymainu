@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
             || filter_var(env('SEED_DEV_ADMIN', false), FILTER_VALIDATE_BOOLEAN);
 
         if ($allowDevAdmin) {
-            $email = env('DEV_ADMIN_EMAIL', 'admin@profile-media.local');
+            $email = env('DEV_ADMIN_EMAIL', 'admin@gaz.local');
             $password = env('DEV_ADMIN_PASSWORD', 'password');
 
             User::query()->updateOrCreate(

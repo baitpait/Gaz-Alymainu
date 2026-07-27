@@ -160,13 +160,13 @@ class ExportLocalDataToMysqlFileCommand extends Command
 الملف لا يحتوي على CREATE TABLE — الجداول يجب أن تكون موجودة مسبقاً (migrate).
 
 1) على السيرفر:
-   cd /home/baitpait/public_html/profile
+   cd /home/sarfesak/public_html/gaz
    php artisan migrate --force
 
 2) افرغ صفوف الجداول إن لزم (أو قاعدة جديدة) لتجنب duplicate entry.
 
 3) استيراد الملف:
-   mysql -u baitpait_profile -p baitpait_profile < profile_media_DATA_ONLY_inserts.sql
+   mysql -u sarfesak_gaz -p sarfesak_gaz < profile_media_DATA_ONLY_inserts.sql
 
    أو من phpMyAdmin: استيراد → اختر الملف.
 

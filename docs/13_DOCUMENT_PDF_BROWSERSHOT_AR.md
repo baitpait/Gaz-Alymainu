@@ -1,6 +1,6 @@
 # PDF المستندات — Browsershot (تطابق 100% مع الطباعة)
 
-> **الحالة:** مُفعَّل على الإنتاج (`profile.baitpait.com`) — يولّد PDF من **نفس قالب Blade** المستخدم في معاينة الطباعة.
+> **الحالة:** مُفعَّل على الإنتاج (`gaz.baitpait.space`) — يولّد PDF من **نفس قالب Blade** المستخدم في معاينة الطباعة.
 
 ---
 
@@ -60,14 +60,14 @@ Controller (InvoicePdfController, …)
 
 ```env
 BROWSERSHOT_NODE=/usr/bin/node
-PUPPETEER_CACHE_DIR=/home/baitpait/public_html/profile/storage/app/puppeteer-cache
+PUPPETEER_CACHE_DIR=/home/sarfesak/public_html/gaz/storage/app/puppeteer-cache
 BROWSERSHOT_NO_SANDBOX=true
 ```
 
 اختياري:
 
 ```env
-BROWSERSHOT_TEMP_PATH=/home/baitpait/public_html/profile/storage/app/browsershot-tmp
+BROWSERSHOT_TEMP_PATH=/home/sarfesak/public_html/gaz/storage/app/browsershot-tmp
 BROWSERSHOT_PDF_DELAY_MS=1500
 BROWSERSHOT_PHP_TIMEOUT=120
 ```
@@ -79,17 +79,17 @@ BROWSERSHOT_PHP_TIMEOUT=120
 ## 5) نشر كامل على السيرفر (مرجع سريع)
 
 ```bash
-cd /home/baitpait/public_html/profile
+cd /home/sarfesak/public_html/gaz
 git pull origin main
 composer install --no-dev --optimize-autoloader
 
 mkdir -p storage/app/puppeteer-cache
-export PUPPETEER_CACHE_DIR=/home/baitpait/public_html/profile/storage/app/puppeteer-cache
+export PUPPETEER_CACHE_DIR=/home/sarfesak/public_html/gaz/storage/app/puppeteer-cache
 npm ci
 npm run browsershot:install
 npm run build
 
-chown -R baitpait:baitpait storage bootstrap/cache node_modules
+chown -R sarfesak:sarfesak storage bootstrap/cache node_modules
 chmod -R ug+rwx storage bootstrap/cache
 
 php artisan route:cache
@@ -112,7 +112,7 @@ php artisan storage:doctor
 | `Route [invoices.pdf] not defined` | كاش مسارات قديم | `php artisan route:clear && route:cache` |
 | PDF 500 على الإنتاج | Chromium أو مكتبات Linux ناقصة | `npm run browsershot:install` + حزم `t64` على Ubuntu 24.04 |
 | أزرار طباعة/PDF فوق بعض | `position: fixed` مكرر في القوالب | موحّد في `<x-print-page-actions>` |
-| 500 `tempnam()` على `/invoices` | ملكية `storage` لـ root/webuzo بدل `baitpait` | `chown baitpait` + `config/view.php` + `App\Filesystem\Filesystem` |
+| 500 `tempnam()` على `/invoices` | ملكية `storage` لـ root/webuzo بدلمستخدم نظام التشغيل | `sarfesak` | `chown baitpait` + `config/view.php` + `App\Filesystem\Filesystem` |
 
 ---
 

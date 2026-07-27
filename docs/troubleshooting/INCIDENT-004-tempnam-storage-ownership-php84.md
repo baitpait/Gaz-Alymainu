@@ -1,7 +1,7 @@
 # INCIDENT-004 — `tempnam(): file created in the system's temporary directory` (500)
 
 **التاريخ:** 2026-07-01  
-**البيئة:** `profile.baitpait.com` — Ubuntu 24.04، PHP 8.4.12، Webuzo  
+**البيئة:** `gaz.baitpait.space` — Ubuntu 24.04، PHP 8.4.12، Webuzo  
 **الأعراض:** HTTP 500 على `/invoices` وصفحات Livewire أخرى؛ Symfony Exception مع `ErrorException` في `Illuminate\Filesystem\Filesystem.php:222`.
 
 ---
@@ -18,8 +18,8 @@ Laravel يرفع الإشعار إلى `ErrorException` → **500**.
 
 1. تشغيل `php artisan view:cache` / `config:cache` كـ **`root`** على السيرفر.
 2. ملفات `storage/` و`bootstrap/cache` أصبحت مملوكة لـ `root` أو لـ **`webuzo`** (pool عام).
-3. موقع `profile.baitpait.com` يعمل تحت مستخدم **`baitpait`** (مالك `/home/baitpait/`).
-4. `webuzo` يمرّ `storage:doctor` من SSH، لكن **المتصفح** يفشل لأن `baitpait` لا يكتب في المجلد.
+3. موقع `gaz.baitpait.space` يعمل تحت مستخدم **`baitpait`** (مالك `/home/baitpait/`).
+4. `webuzo` يمرّ `storage:doctor` من SSH، لكن **المتصفح** يفشل لأنمستخدم نظام التشغيل | `sarfesak` لا يكتب في المجلد.
 
 ---
 
@@ -29,7 +29,7 @@ Laravel يرفع الإشعار إلى `ErrorException` → **500**.
 stat -c '%U:%G %a' storage/framework/views
 # المتوقع بعد الإصلاح: baitpait:baitpait 775
 
-su -s /bin/bash baitpait -c 'touch storage/framework/views/.write-test && echo OK'
+su -s /bin/bash sarfesak -c 'touch storage/framework/views/.write-test && echo OK'
 
 php artisan storage:doctor
 ```
@@ -45,16 +45,16 @@ grep open_basedir /usr/local/emps/etc/php.ini
 ## 4) الحل
 
 ```bash
-cd /home/baitpait/public_html/profile
+cd /home/sarfesak/public_html/gaz
 
-chown -R baitpait:baitpait storage bootstrap/cache node_modules
+chown -R sarfesak:sarfesak storage bootstrap/cache node_modules
 chmod -R ug+rwx storage bootstrap/cache
 
 php artisan optimize:clear
 php artisan config:cache
 php artisan route:cache
 
-chown -R baitpait:baitpait storage bootstrap/cache
+chown -R sarfesak:sarfesak storage bootstrap/cache
 ```
 
 **لا تستخدم** `chown webuzo` لمواقع تحت `/home/baitpait/`.
@@ -78,7 +78,7 @@ Commit: `c298f37`, `76073fb`.
 
 | ❌ تجنّب | ✅ افعل |
 |---------|--------|
-| `php artisan …` كـ root دون `chown` | `chown -R baitpait:baitpait storage bootstrap/cache` بعد كل نشر |
+| `php artisan …` كـ root دون `chown` | `chown -R sarfesak:sarfesak storage bootstrap/cache` بعد كل نشر |
 | افتراض أن `webuzo` = مستخدم الموقع | تحقق: `stat` على `storage/framework/views` |
 | `config:cache` فقط بعد `git pull` | `route:cache` + `config:cache` + `optimize:clear` عند الحاجة |
 

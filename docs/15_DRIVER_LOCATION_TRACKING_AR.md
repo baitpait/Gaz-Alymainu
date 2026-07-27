@@ -57,7 +57,7 @@ GOOGLE_MAPS_DEFAULT_LNG=35.2034
 
 في Google Cloud Console:
 1. فعّل **Maps JavaScript API**.
-2. قيّد المفتاح بـ Application restrictions → HTTP referrers (`http://127.0.0.1:8001/*`, نطاق الإنتاج).
+2. قيّد المفتاح بـ HTTP referrers: `https://gaz.baitpait.space/*` وللتطوير `http://127.0.0.1:8001/*`.
 3. لا ترفع مفتاحاً حقيقياً إلى Git.
 
 ---

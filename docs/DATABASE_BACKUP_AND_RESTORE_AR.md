@@ -6,7 +6,7 @@
 |--------|--------|
 | **Laravel محلي (SQLite)** | الملف `database/database.sqlite` — كل جداول التطبيق على الجهاز. |
 | **تصدير MySQL (بيانات فقط)** | أوامر `INSERT` فقط، بدون `CREATE TABLE` — للاستيراد على السيرفر بعد `migrate`. |
-| **ERP القديم (MariaDB)** | ملف dump في `database/backups/legacy_erp_baitpait_profileMedia_2026-05-12.sql` والنسخة النظيفة لـ phpMyAdmin: `*_phpmyadmin_clean.sql`. |
+| **ERP القديم (MariaDB)** | ملف dump في `database/backups/legacy_erp_sarfesak_gazMedia_2026-05-12.sql` والنسخة النظيفة لـ phpMyAdmin: `*_phpmyadmin_clean.sql`. |
 
 ## نسخ يدوية سريعة (محلي)
 
@@ -42,14 +42,14 @@ php artisan export:mysql-data --sqlite=/المسار/database.sqlite --output=~/
 بعد تشغيل المشروع على الإنتاج، خذ نسخة دورية:
 
 ```bash
-mysqldump -u baitpait_profile -p baitpait_profile > backup_profile_$(date +%Y%m%d).sql
+mysqldump -u sarfesak_gaz -p sarfesak_gaz > backup_profile_$(date +%Y%m%d).sql
 ```
 
 (يُفضّل جدولة عبر cron أو أداة النسخ في لوحة الاستضافة.)
 
-## ERP القديم (`baitpait_profileMedia`)
+## ERP القديم (`sarfesak_gazMedia`)
 
-- الاستيراد إلى قاعدة **منفصلة** عن `baitpait_profile`.
+- الاستيراد إلى قاعدة **منفصلة** عن `sarfesak_gaz`.
 - استخدم الملف `*_phpmyadmin_clean.sql` في phpMyAdmin لتفادي أول سطرين غير SQL.
 - ترحيل البيانات إلى Laravel: `php artisan legacy-erp:import` بعد ضبط `LEGACY_ERP_*` في `.env`.
 

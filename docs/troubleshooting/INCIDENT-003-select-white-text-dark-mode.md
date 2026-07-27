@@ -37,7 +37,7 @@ select.input option {
 
 | الخطوة | الأمر / الإجراء |
 |--------|-----------------|
-| التحقق من CSS | `curl -I https://profile.baitpait.com/build/assets/app-*.css` → 200 |
+| التحقق من CSS | `curl -I https://gaz.baitpait.space/build/assets/app-*.css` → 200 |
 | Computed styles | F12 → `color` على `<select>` — إن كان `rgb(255,255,255)` → Dark Mode |
 | اختبار سريع | نفس الصفحة بوضع فاتح في المتصفح |
 
@@ -46,7 +46,7 @@ select.input option {
 ## 3) النشر
 
 ```bash
-cd /home/baitpait/public_html/profile
+cd /home/sarfesak/public_html/gaz
 git pull origin main
 npm ci && npm run build
 php artisan view:cache

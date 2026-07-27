@@ -1,7 +1,7 @@
 # INCIDENT-005 — كود PHP ظاهر للزبون على تعديل الفاتورة (`updatedLines` + APP_DEBUG)
 
 **التاريخ:** 2026-07-04  
-**البيئة:** `profile.baitpait.com` — Ubuntu 24.04، PHP 8.4.12، Livewire 4  
+**البيئة:** `gaz.baitpait.space` — Ubuntu 24.04، PHP 8.4.12، Livewire 4  
 **التقرير:** زبون (فاتورة #758) — `/invoices/758/edit`  
 **الحالة:** **مُغلق** — commit `44be136` + `APP_DEBUG=false` على الإنتاج
 
@@ -58,7 +58,7 @@ public function updatedLines(mixed $value, string $key): void
 ## 4) التشخيص
 
 ```bash
-cd /home/baitpait/public_html/profile
+cd /home/sarfesak/public_html/gaz
 
 grep APP_DEBUG .env
 tail -80 storage/logs/laravel.log | grep updatedLines
@@ -90,7 +90,7 @@ public function updatedLines(mixed $value, ?string $key = null): void
 git pull origin main
 sed -i 's/^APP_DEBUG=true/APP_DEBUG=false/' .env
 php artisan config:cache
-chown -R baitpait:baitpait storage bootstrap/cache
+chown -R sarfesak:sarfesak storage bootstrap/cache
 ```
 
 ---
@@ -112,7 +112,7 @@ grep "updatedLines" storage/logs/laravel.log | tail -3
 
 | القاعدة | التفاصيل |
 |---------|----------|
-| `APP_DEBUG=false` | **إلزامي** على `profile.baitpait.com` |
+| `APP_DEBUG=false` | **إلزامي** على `gaz.baitpait.space` |
 | Livewire nested hooks | أي `updated{Property}($value, $key)` لمصفوفات — `$key` قد يكون `null` |
 | بعد `git pull` | `config:cache` + `chown baitpait` |
 

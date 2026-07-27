@@ -10,6 +10,18 @@
 ---
 -->
 
+## [2026-07-27 12:05] - تهيئة نشر gaz.baitpait.space + إعادة تسمية المستودع (مكتمل ✅)
+- **الهدف:** تجهيز المشروع للنشر على الدومين الجديد واستبدال كل إشارات prfile/profile القديمة.
+- **التغييرات:**
+  - الدومين: `https://gaz.baitpait.space`
+  - المسار: `/home/sarfesak/public_html/gaz` (Document root: `.../gaz/public`)
+  - المستودع: `baitpait/Gaz-Alymainu`
+  - تحديث `README.md`، `docs/08_DEPLOYMENT_AND_OPERATIONS_AR.md`، الحوادث، `.env.example`، قالب `.env.production`.
+  - بذرة المدير الافتراضية: `admin@gaz.local`
+- **تنبيه:** على السيرفر اضبط `DB_*` و`APP_KEY` و`GOOGLE_MAPS_API_KEY`، ثم `migrate` + `npm run build` + كاش الإنتاج. Document Root = مجلد `public`.
+
+---
+
 ## [2026-05-10] - تهيئة حزمة المشروع والدستور
 - **الهدف:** تأسيس مجلد مستقل باسم غاز اليمين مع دستور معاد صياغته وتقارير ووثائق وبرومبت مبرمج.
 - **التغييرات:** إضافة `.cursorrules` ومجلد `docs/` و`database/README.md`.
@@ -58,8 +70,8 @@
 
 ---
 
-## [2026-05-12] - ترحيل ERP القديم + نشر أول مرة على profile.baitpait.com
-- **الهدف:** نشر التطبيق على الإنتاج، استيراد بيانات ERP القديمة (`baitpait_profileMedia`) إلى مخطط Laravel، وتجهيز ملف SQL جاهز لاستيراد phpMyAdmin.
+## [2026-05-12] - ترحيل ERP القديم + نشر أول مرة على gaz.baitpait.space
+- **الهدف:** نشر التطبيق على الإنتاج، استيراد بيانات ERP القديمة (`sarfesak_gazMedia`) إلى مخطط Laravel، وتجهيز ملف SQL جاهز لاستيراد phpMyAdmin.
 - **التغييرات:**
   - `app/Console/Commands/ExportLocalDataToMysqlFileCommand.php` (أمر `export:mysql-data` يدعم `--sqlite` و`--output`، يصدّر INSERT فقط بدون سكيما).
   - `app/Services/LegacyErpImport/LegacyErpImportService.php` + `app/Console/Commands/ImportLegacyErpCommand.php` (ترحيل من ERP بـ idempotency عبر `legacy_match_key`, `legacy_invoice_no`, ...).
@@ -68,7 +80,7 @@
   - `database/backups/` لنسخ SQL و SQLite (مستثناة من Git).
   - `docs/DATABASE_BACKUP_AND_RESTORE_AR.md` و`docs/08_DEPLOYMENT_AND_OPERATIONS_AR.md`.
   - إعادة تسمية هجرة `purchase_orders` إلى `094927` لتفادي خطأ FK في MySQL.
-- **الأدوات:** Laravel artisan، MySQL/MariaDB، phpMyAdmin، Git/GitHub (`baitpait/prfile`).
+- **الأدوات:** Laravel artisan، MySQL/MariaDB، phpMyAdmin، Git/GitHub (`baitpait/Gaz-Alymainu`).
 - **تنبيه:** عند `migrate:fresh` على بيئة فيها بيانات، خذ نسخة احتياطية أولاً. ملف ERP الخام لا يُستورد داخل قاعدة Laravel — يبقى في قاعدة منفصلة ويُرحَّل عبر `legacy-erp:import`.
 
 ---
@@ -134,7 +146,7 @@
 ---
 
 ## [2026-07-01] - نشر PDF على الإنتاج + إصلاحات النشر (مكتمل ✅)
-- **الهدف:** تفعيل PDF المطابق للطباعة على `profile.baitpait.com` وإغلاق حوادث النشر.
+- **الهدف:** تفعيل PDF المطابق للطباعة على `gaz.baitpait.space` وإغلاق حوادث النشر.
 - **ما تم إنجازه:**
 
 ### ميزات PDF والواجهة
@@ -143,7 +155,7 @@
 - إصلاح تراكب أزرار الطباعة/PDF (`position: fixed` مكرر).
 - إصلاح deadlock PDF محلياً: تضمين الشعار `base64` في HTML (لا طلب HTTP لنفس `artisan serve`).
 
-### نشر الإنتاج (`profile.baitpait.com`)
+### نشر الإنتاج (`gaz.baitpait.space`)
 - `git pull` + `composer install` + `npm ci` + `npm run browsershot:install` + `npm run build`.
 - متغيرات `.env`: `BROWSERSHOT_NODE`, `PUPPETEER_CACHE_DIR`, `BROWSERSHOT_NO_SANDBOX=true`.
 - تثبيت مكتبات Chromium على **Ubuntu 24.04** (حزم `*t64`: `libatk1.0-0t64`, `libasound2t64`, …).
@@ -176,7 +188,7 @@
 - `docs/troubleshooting/INCIDENT-005-invoice-edit-updatedlines-app-debug.md`
 - تحديث `docs/08_DEPLOYMENT_AND_OPERATIONS_AR.md` §11 و§8
 
-- **تنبيه:** بعد كل نشر كـ root: `chown -R baitpait:baitpait storage bootstrap/cache`. لا تفترض أن `webuzo` = مستخدم الموقع.
+- **تنبيه:** بعد كل نشر كـ root: `chown -R sarfesak:sarfesak storage bootstrap/cache`. لا تفترض أن `webuzo` = مستخدم الموقع.
 
 ---
 
@@ -193,7 +205,7 @@
 - **نشر الإنتاج:**
   - `git pull` → `44be136`
   - `APP_DEBUG=false` + `php artisan config:cache`
-  - `chown -R baitpait:baitpait storage bootstrap/cache`
+  - `chown -R sarfesak:sarfesak storage bootstrap/cache`
 - **Commit:** `44be136`
 - **تنبيه:** **دائماً** `APP_DEBUG=false` على الإنتاج. أي `updated{ArrayProperty}` في Livewire يجب أن يقبل `$key` nullable.
 
