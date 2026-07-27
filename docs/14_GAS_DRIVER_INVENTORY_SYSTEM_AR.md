@@ -115,7 +115,7 @@
 - تقارير الغاز: `/reports/gas-{sales|collections|driver-cash|stock-balances|stock-movements|driver-performance}`.
 
 ### الوسائط (Middleware)
-- **`RestrictDriverToSales`** (`driver.sales`): يحصر السائق في `pos.index`, `collections.index`, `driver-expenses.index`, `logout` فقط.
+- **`RestrictDriverToSales`** (`driver.sales`): يحصر السائق في `pos.index`, `collections.index`, `driver-expenses.index`, `location.share`, `profile`, `logout` فقط.
 - **`BlockSalesModule`** (`block.sales`): يحجب مسارات المبيعات القديمة (نظام الوسائط الإعلامي السابق).
 
 ### واجهة موبايل أولاً (Mobile-first)

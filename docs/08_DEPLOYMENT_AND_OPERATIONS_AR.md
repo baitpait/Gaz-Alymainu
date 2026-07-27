@@ -153,16 +153,23 @@ cd /home/sarfesak/public_html/gaz && git pull origin main && \
 
 | البريد | الدور | ملاحظة |
 |--------|------|--------|
-| `admin@baitpait.com` | manager | غيّر كلمة المرور فور الدخول. كلمة المرور المؤقتة المضبوطة عند التصدير: `TempPass2026!` |
+| `gaz@baitpait.com` | manager | حساب الإنتاج الحالي (يُفضّل تدوير كلمة المرور دورياً) |
+| `admin@baitpait.com` | manager (إن بقي) | قديم بعد الترحيل — تحقق من القاعدة |
 | `legacy-erp-import@localhost` | manager (تقني) | لا يُستخدم للدخول؛ موجود لربط `recorded_by_user_id` بسجلات ERP. |
 
-لإعادة تعيين كلمة مرور من السيرفر:
+### إعادة تعيين كلمة المرور (صحيح — Bcrypt)
+
+**لا تستخدم** `User::where()->update(['password'=>…])` — يتجاوز الـ cast ويكتب النص صريحاً فيسبب:
+
+`This password does not use the Bcrypt algorithm` عند تسجيل الدخول.
+
+**الصحيح:**
 
 ```bash
-php artisan tinker --execute='\App\Models\User::where("email","admin@baitpait.com")->update(["password"=>"كلمة_جديدة_قوية"]);'
+cd /home/sarfesak/public_html/gaz && php artisan tinker --execute='$u=\App\Models\User::where("email","gaz@baitpait.com")->first(); $u->password="كلمة_جديدة_قوية"; $u->save(); echo "ok";'
 ```
 
-(الـ cast يشفّر تلقائياً.)
+أو عبر الملف الشخصي في الواجهة: قائمة الحساب → **الملف الشخصي**.
 
 ---
 

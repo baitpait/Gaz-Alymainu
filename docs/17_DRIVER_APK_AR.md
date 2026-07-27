@@ -76,14 +76,24 @@ npx cap open android
 
 في Android Studio: **Build → Build Bundle(s) / APK(s) → APK**.
 
-APK debug:
+APK debug (يحتاج JDK من Android Studio إن لم يكن `java` في PATH):
+
 ```bash
+export JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home"
 cd mobile/android && ./gradlew assembleDebug
 # المخرج: android/app/build/outputs/apk/debug/app-debug.apk
+# نسخ لسطح المكتب:
+# cp android/app/build/outputs/apk/debug/app-debug.apk ~/Desktop/Gaz-Alymainu-driver.apk
 ```
 
-أيقونة الـ APK من `public/branding/logo.png` (ملفات `mipmap-*`).  
-واجهة السائق: تبويب **موقعي** مخفي؛ الموقع يُرسل تلقائياً بدون صفحة يدوية.
+| بند | قيمة |
+|-----|------|
+| اسم التطبيق | **غاز اليمني** (`app_name` / `capacitor.config.ts` → `appName`) |
+| applicationId | `space.baitpait.gaz.driver` |
+| الأيقونة | من `public/branding/logo.png` إلى `mipmap-*/ic_launcher*.png` (خلفية تكيفية `#FFFFFF`) |
+
+واجهة السائق: تبويب **موقعي** مخفي؛ الموقع يُرسل تلقائياً بدون صفحة يدوية.  
+توثيق جلسة الواجهة/الـ APK: `docs/18_SESSION_UI_DASHBOARD_APK_2026_07_27_AR.md`.
 
 ---
 
