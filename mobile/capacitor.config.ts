@@ -14,6 +14,7 @@ const config: CapacitorConfig = {
     url: serverUrl,
     cleartext: serverUrl.startsWith('http://'),
     androidScheme: 'https',
+    allowNavigation: ['gaz.baitpait.space', '*.baitpait.space'],
   },
   android: {
     allowMixedContent: false,

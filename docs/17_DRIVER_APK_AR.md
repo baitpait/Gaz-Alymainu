@@ -38,11 +38,15 @@
 
 | Method | المسار | الغرض |
 |--------|--------|--------|
+| POST | `/api/apk/bootstrap-session` | دخول APK بدون CSRF → `{ session_url, token? }` |
+| GET | `/apk/session/{code}` | فتح جلسة ويب لمرة واحدة (يتجنب 419) |
 | POST | `/api/driver/login` | `{ email, password }` → `{ token }` |
 | POST | `/api/driver/location` | `{ latitude, longitude, accuracy? }` |
 | POST | `/api/driver/logout` | إيقاف المشاركة + حذف token |
 | GET | `/api/driver/me` | التحقق من الحساب |
 | POST | `/driver/device-token` | (جلسة ويب) إصدار token للـ WebView |
+
+> **ملاحظة 419:** نموذج `/login` داخل WebView يمرّ عبر `bootstrap-session` ثم تنقّل كامل إلى `/apk/session/{code}` حتى تُحفظ كوكيز الجلسة. لا حاجة لإعادة بناء APK بعد نشر هذا المسار على السيرفر.
 
 ---
 

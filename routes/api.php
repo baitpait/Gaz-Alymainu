@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\DriverAuthController;
 use App\Http\Controllers\Api\DriverLocationController;
+use App\Http\Controllers\Auth\ApkWebSessionController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -9,6 +10,9 @@ use Illuminate\Support\Facades\Route;
 | Driver mobile API (Capacitor APK — background GPS)
 |--------------------------------------------------------------------------
 */
+
+Route::post('/apk/bootstrap-session', [ApkWebSessionController::class, 'bootstrap'])
+    ->middleware('throttle:10,1');
 
 Route::prefix('driver')->group(function (): void {
     Route::post('/login', [DriverAuthController::class, 'login'])

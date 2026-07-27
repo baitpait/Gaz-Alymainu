@@ -57,8 +57,9 @@
                 تسجيل الدخول إلى لوحة التحكم
             </p>
 
-            <form method="POST" action="{{ route('login') }}" class="space-y-4">
+            <form id="login-form" method="POST" action="{{ route('login') }}" class="space-y-4">
                 @csrf
+                <p id="apk-login-error" class="text-xs text-center hidden" style="color:#f87171;"></p>
 
                 {{-- البريد --}}
                 <div>
@@ -130,6 +131,95 @@
 </div>
 
 @include('components.layouts.footer', ['dark' => true])
+
+{{-- Capacitor: تجنب 419 — API بدون CSRF ثم تنقّل كامل لفتح جلسة الويب --}}
+<script>
+(function () {
+    function isNativeApk() {
+        try {
+            return Boolean(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+        } catch (e) {
+            return false;
+        }
+    }
+
+    if (!isNativeApk()) {
+        return;
+    }
+
+    var form = document.getElementById('login-form');
+    var errEl = document.getElementById('apk-login-error');
+    if (!form) {
+        return;
+    }
+
+    form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        var btn = form.querySelector('[type="submit"]');
+        var email = form.email && form.email.value;
+        var password = form.password && form.password.value;
+        var remember = form.remember && form.remember.checked;
+
+        if (errEl) {
+            errEl.classList.add('hidden');
+            errEl.textContent = '';
+        }
+        if (btn) {
+            btn.disabled = true;
+            btn.style.opacity = '0.7';
+        }
+
+        try {
+            var res = await fetch('/api/apk/bootstrap-session', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email: email, password: password, remember: Boolean(remember) }),
+            });
+            var data = await res.json().catch(function () { return {}; });
+
+            if (!res.ok) {
+                var msg = (data && data.message) ? data.message : 'فشل تسجيل الدخول.';
+                if (errEl) {
+                    errEl.textContent = msg;
+                    errEl.classList.remove('hidden');
+                } else {
+                    alert(msg);
+                }
+                if (btn) {
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                }
+                return;
+            }
+
+            if (data.token && window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Preferences) {
+                try {
+                    await window.Capacitor.Plugins.Preferences.set({ key: 'driver_api_token', value: data.token });
+                    await window.Capacitor.Plugins.Preferences.set({
+                        key: 'driver_api_base',
+                        value: window.location.origin + '/api',
+                    });
+                } catch (prefErr) { /* تجاهل */ }
+            }
+
+            window.location.href = data.session_url;
+        } catch (netErr) {
+            if (errEl) {
+                errEl.textContent = 'تعذّر الاتصال بالخادم. تحقق من الإنترنت.';
+                errEl.classList.remove('hidden');
+            }
+            if (btn) {
+                btn.disabled = false;
+                btn.style.opacity = '1';
+            }
+        }
+    });
+})();
+</script>
 
 </body>
 </html>

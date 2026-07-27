@@ -12,14 +12,16 @@ import com.getcapacitor.BridgeActivity;
 public class MainActivity extends BridgeActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
         CookieManager cookieManager = CookieManager.getInstance();
         cookieManager.setAcceptCookie(true);
+        CookieManager.setAcceptFileSchemeCookies(true);
+
+        super.onCreate(savedInstanceState);
 
         WebView webView = this.bridge != null ? this.bridge.getWebView() : null;
         if (webView != null) {
             cookieManager.setAcceptThirdPartyCookies(webView, true);
         }
+        cookieManager.flush();
     }
 }
