@@ -4,7 +4,6 @@
     $today = $dash['today'];
     $fleet = $dash['fleet'];
     $finance = $dash['finance'];
-    $alerts = $dash['alerts'];
     $fmt = fn (float|int $n, int $dec = 2) => number_format((float) $n, $dec);
 @endphp
 
@@ -87,53 +86,6 @@
         @endcan
     </div>
 </section>
-
-{{-- ═══ اختصارات ═══ --}}
-<section class="mb-7">
-    <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-widest mb-3">اختصارات تشغيلية</h2>
-    <div class="flex flex-wrap gap-2">
-        @foreach($dash['shortcuts'] as $sc)
-            @if($sc['gate'] === null || auth()->user()->can($sc['gate']))
-            <a href="{{ $sc['href'] }}" wire:navigate
-               class="inline-flex items-center px-3.5 py-2 rounded-lg text-sm font-semibold bg-white border border-[#E2E8F0] text-[#1E293B] hover:border-[#1B6CA8] hover:text-[#1B6CA8] transition"
-               style="text-decoration:none;">
-                {{ $sc['label'] }}
-            </a>
-            @endif
-        @endforeach
-        <a href="{{ route('financial-summary') }}" wire:navigate
-           class="inline-flex items-center px-3.5 py-2 rounded-lg text-sm font-semibold bg-[#1B6CA8]/10 border border-[#1B6CA8]/20 text-[#1B6CA8] hover:bg-[#1B6CA8]/15 transition"
-           style="text-decoration:none;">
-            الصناديق النقدية
-        </a>
-    </div>
-</section>
-
-{{-- ═══ يحتاج انتباه ═══ --}}
-@if(count($alerts) > 0)
-<section class="mb-7">
-    <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-widest mb-3">يحتاج انتباه</h2>
-    <div class="card divide-y divide-[#E2E8F0] overflow-hidden">
-        @foreach($alerts as $alert)
-            @php
-                $tone = match($alert['level']) {
-                    'danger' => 'text-red-600',
-                    'warn' => 'text-amber-700',
-                    default => 'text-[#1E293B]',
-                };
-            @endphp
-            @if($alert['href'])
-            <a href="{{ $alert['href'] }}" wire:navigate class="flex items-center justify-between gap-3 px-4 py-3 hover:bg-gray-50 transition" style="text-decoration:none;">
-                <span class="text-sm {{ $tone }}">{{ $alert['text'] }}</span>
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-            </a>
-            @else
-            <div class="px-4 py-3 text-sm {{ $tone }}">{{ $alert['text'] }}</div>
-            @endif
-        @endforeach
-    </div>
-</section>
-@endif
 
 {{-- ═══ ذمم وصناديق مختصرة ═══ --}}
 <section class="mb-7">

@@ -17,8 +17,9 @@ test('dashboard page shows gas ops sections for manager', function () {
         ->assertOk()
         ->assertSee('اليوم — توزيع الغاز')
         ->assertSee('المخزون والأسطول')
-        ->assertSee('اختصارات تشغيلية')
         ->assertSee('ملخص مالي مختصر')
+        ->assertDontSee('اختصارات تشغيلية')
+        ->assertDontSee('يحتاج انتباه')
         ->assertDontSee('إجمالي الموردين');
 });
 

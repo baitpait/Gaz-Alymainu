@@ -49,8 +49,6 @@ class DashboardSummaryService
             'today' => $this->todayOps($day),
             'fleet' => $this->fleetAndStock($day, $dayStart, $dayEnd),
             'finance' => $this->financeBrief(),
-            'alerts' => $this->alerts($day),
-            'shortcuts' => $this->shortcuts(),
         ];
     }
 
@@ -185,83 +183,6 @@ class DashboardSummaryService
             'main_cheque' => round((float) ($main['cheque'] ?? 0), 2),
             'draft_invoices' => (int) Invoice::query()->where('status', 'draft')->count(),
             'draft_purchase_orders' => (int) PurchaseOrder::query()->where('status', 'draft')->count(),
-        ];
-    }
-
-    /**
-     * @return list<array{level: string, text: string, href: string|null}>
-     */
-    private function alerts(string $day): array
-    {
-        $items = [];
-
-        $tracked = Product::query()->where('is_stock_tracked', true)->count();
-        $priced = ProductDailyPrice::query()
-            ->whereDate('price_date', $day)
-            ->where('currency_code', DailyPriceService::DEFAULT_CURRENCY)
-            ->pluck('product_id')
-            ->unique()
-            ->count();
-        if ($tracked > 0 && $priced < $tracked) {
-            $items[] = [
-                'level' => 'warn',
-                'text' => 'التسعير اليومي غير مكتمل ('.$priced.' من '.$tracked.' أصناف).',
-                'href' => route('daily-prices.index'),
-            ];
-        }
-
-        $zero = StockBalance::query()
-            ->where('quantity', '<=', 0)
-            ->whereHas('warehouse', fn ($q) => $q->where('type', WarehouseType::Vehicle->value)->where('is_active', true))
-            ->count();
-        if ($zero > 0) {
-            $items[] = [
-                'level' => 'danger',
-                'text' => $zero.' رصيد صفر في سيارات — راجع المخزون.',
-                'href' => route('reports.gas-stock-balances'),
-            ];
-        }
-
-        $heavyCash = [];
-        foreach ($this->activeDrivers() as $driver) {
-            $bal = $this->cashBoxes->balance($driver->id);
-            if ($bal >= 200) {
-                $heavyCash[] = ['name' => $driver->full_name, 'cash' => $bal];
-            }
-        }
-        usort($heavyCash, fn ($a, $b) => $b['cash'] <=> $a['cash']);
-        foreach (array_slice($heavyCash, 0, 3) as $row) {
-            $items[] = [
-                'level' => 'warn',
-                'text' => 'كاش لدى '.$row['name'].': '.number_format($row['cash'], 2).' ₪ — لم يُسلَّم بالكامل.',
-                'href' => route('cash-handovers.index'),
-            ];
-        }
-
-        $draftInvoices = (int) Invoice::query()->where('status', 'draft')->count();
-        if ($draftInvoices > 0) {
-            $items[] = [
-                'level' => 'info',
-                'text' => $draftInvoices.' فاتورة مسودة معلّقة.',
-                'href' => route('invoices.index'),
-            ];
-        }
-
-        return array_slice($items, 0, 8);
-    }
-
-    /**
-     * @return list<array{label: string, href: string, gate: string|null}>
-     */
-    private function shortcuts(): array
-    {
-        return [
-            ['label' => 'نقطة البيع', 'href' => route('pos.index'), 'gate' => 'record-sales'],
-            ['label' => 'سحب الكاش', 'href' => route('cash-handovers.index'), 'gate' => 'manage-cash-handover'],
-            ['label' => 'حركات المخزون', 'href' => route('stock-movements.index'), 'gate' => 'view-inventory'],
-            ['label' => 'خريطة السائقين', 'href' => route('drivers.map'), 'gate' => 'view-driver-locations'],
-            ['label' => 'التسعير اليومي', 'href' => route('daily-prices.index'), 'gate' => 'manage-daily-prices'],
-            ['label' => 'مركز التقارير', 'href' => route('reports.index'), 'gate' => 'view-period-reports'],
         ];
     }
 
