@@ -82,6 +82,9 @@ cd mobile/android && ./gradlew assembleDebug
 # المخرج: android/app/build/outputs/apk/debug/app-debug.apk
 ```
 
+أيقونة الـ APK من `public/branding/logo.png` (ملفات `mipmap-*`).  
+واجهة السائق: تبويب **موقعي** مخفي؛ الموقع يُرسل تلقائياً بدون صفحة يدوية.
+
 ---
 
 ## 5) الإعداد على السيرفر

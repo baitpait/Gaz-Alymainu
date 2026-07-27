@@ -7,4 +7,9 @@ local.properties
 *.apk
 *.aab
 *.png
+!assets/icon.png
+!assets/splash.png
+!android/app/src/main/res/mipmap-*/ic_launcher.png
+!android/app/src/main/res/mipmap-*/ic_launcher_round.png
+!android/app/src/main/res/mipmap-*/ic_launcher_foreground.png
 .DS_Store

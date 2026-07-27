@@ -469,10 +469,11 @@ Route::middleware(['auth', 'driver.sales', 'block.sales'])->group(function () {
         return view('collections.index');
     })->name('collections.index');
 
+    // صفحة «موقعي» مخفية — المشاركة تلقائية عبر Beacon / APK؛ التوجيه لنقطة البيع
     Route::get('/my-location', function () {
         abort_unless(auth()->user()->can('share-location'), 403);
 
-        return view('location.index');
+        return redirect()->route('pos.index');
     })->name('location.share');
 
     Route::post('/driver/device-token', [DriverDeviceTokenController::class, 'store'])
