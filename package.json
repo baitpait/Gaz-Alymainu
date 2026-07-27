@@ -5,7 +5,7 @@
     "scripts": {
         "build": "vite build",
         "dev": "vite",
-        "branding:export": "node scripts/export-branding.mjs"
+        "browsershot:install": "puppeteer browsers install chrome"
     },
     "devDependencies": {
         "@tailwindcss/vite": "^4.0.0",

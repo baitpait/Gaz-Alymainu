@@ -31,7 +31,7 @@ body { font-family: xbriyaz, sans-serif; color: #3D3D3D; font-size: 10pt; direct
 <body>
 
 @php
-    $logoPath = public_path('branding/logo-print.png');
+    $logoPath = public_path('branding/logo.png');
     $logoExists = file_exists($logoPath);
 @endphp
 

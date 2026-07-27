@@ -16,7 +16,7 @@
     {{-- الشريط العلوي --}}
     <nav class="bg-white border-b border-[#E0E0E0] px-6 py-3 flex items-center justify-between">
         <div class="flex items-center gap-3">
-            <img src="{{ asset('branding/logo.png') }}" alt="{{ config('app.name') }}" class="h-9 w-9 object-contain shrink-0" onerror="this.style.display='none'">
+            <img src="{{ asset('branding/logo.png') }}" alt="{{ config('app.name') }}" class="h-9 w-auto" onerror="this.style.display='none'">
             <span class="text-lg font-bold text-[#3D3D3D]">{{ config('app.name', 'غاز اليمني') }}</span>
             <span class="text-xs text-[#C9A227] font-medium">توزيع الغاز</span>
         </div>

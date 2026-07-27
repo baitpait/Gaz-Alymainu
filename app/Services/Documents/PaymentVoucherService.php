@@ -31,7 +31,7 @@ class PaymentVoucherService
             ),
             'methodLabel' => PaymentMethod::label($payment->method),
             'companyName' => config('app.company_display_name', config('app.name', 'غاز اليمني')),
-            'logoPath' => public_path('branding/logo-print.png'),
+            'logoPath' => public_path('branding/logo.png'),
             'pdfUrl' => route('payments.pdf', $payment),
         ];
     }
@@ -54,7 +54,7 @@ class PaymentVoucherService
             ),
             'methodLabel' => PaymentMethod::label($payment->method),
             'companyName' => config('app.company_display_name', config('app.name', 'غاز اليمني')),
-            'logoPath' => public_path('branding/logo-print.png'),
+            'logoPath' => public_path('branding/logo.png'),
             'pdfUrl' => route('supplier-payments.pdf', $payment),
         ];
     }

@@ -38,9 +38,9 @@
         {{-- رأس الصفحة --}}
         <div class="text-center mb-8">
             <div class="flex items-center justify-center gap-3 mb-4">
-                <img src="{{ asset('branding/logo-mark-light.png') }}" alt="{{ $appName }}"
+                <img src="{{ asset('branding/logo.png') }}" alt="{{ $appName }}"
                      class="h-14 w-auto drop-shadow-lg"
-                     onerror="this.src='{{ asset('branding/logo.png') }}';this.onerror=null;">
+                     onerror="this.style.display='none'">
             </div>
             <h1 class="text-2xl font-black text-white tracking-tight">{{ $appName }}</h1>
             <p class="text-sm mt-1" style="color:#C9A227;">{{ config('app.company_display_name', 'Gaz Al-Yamani') }}</p>
@@ -123,7 +123,7 @@
 
         {{-- تذييل --}}
         <p class="text-center text-xs mt-6" style="color:rgba(255,255,255,0.2);">
-            © {{ date('Y') }} Gaz Alymainu — جميع الحقوق محفوظة
+            © {{ date('Y') }} {{ config('app.company_display_name', 'Gaz Al-Yamani') }} — جميع الحقوق محفوظة
         </p>
 
     </div>
