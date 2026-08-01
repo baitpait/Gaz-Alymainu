@@ -18,59 +18,76 @@
         <label class="label">السائق</label>
         <select wire:model.live="driverUserId" class="input min-w-56">
             <option value="">— اختر السائق —</option>
+            <option value="all">كل السائقين</option>
             @foreach($drivers as $d)
             <option value="{{ $d->id }}">{{ $d->full_name }}</option>
             @endforeach
         </select>
+        @error('driverUserId')<p class="field-error">{{ $message }}</p>@enderror
     </div>
     @endunless
 </div>
 
-@if($driverUserId)
-<div class="grid grid-cols-2 gap-3 mb-6">
-    <div class="card p-4 border-r-4 border-green-500">
-        <p class="text-xs text-gray-400">الرصيد النقدي المتاح</p>
-        <p class="text-2xl font-black text-green-600 mt-1" dir="ltr">{{ number_format($balance, 2) }} ش</p>
+@if($hasSelection)
+    @if($showAll)
+    <div class="grid grid-cols-1 gap-3 mb-6 sm:grid-cols-2 sm:max-w-lg">
+        <div class="card p-4 border-r-4 border-red-500">
+            <p class="text-xs text-gray-400">إجمالي مصروفات كل السائقين</p>
+            <p class="text-2xl font-black text-red-600 mt-1" dir="ltr">{{ number_format($totalExpenses, 2) }} ش</p>
+        </div>
     </div>
-    <div class="card p-4 border-r-4 border-red-500">
-        <p class="text-xs text-gray-400">إجمالي المصروفات</p>
-        <p class="text-2xl font-black text-red-600 mt-1" dir="ltr">{{ number_format($totalExpenses, 2) }} ش</p>
+    <div class="card p-4 mb-6 bg-[#F9F9FB] border border-[#E2E8F0]">
+        <p class="text-sm text-gray-500">لعرض الرصيد وتسجيل مصروف جديد، اختر سائقًا محددًا من القائمة.</p>
     </div>
-</div>
+    @else
+    <div class="grid grid-cols-2 gap-3 mb-6">
+        <div class="card p-4 border-r-4 border-green-500">
+            <p class="text-xs text-gray-400">الرصيد النقدي المتاح</p>
+            <p class="text-2xl font-black text-green-600 mt-1" dir="ltr">{{ number_format($balance, 2) }} ش</p>
+        </div>
+        <div class="card p-4 border-r-4 border-red-500">
+            <p class="text-xs text-gray-400">إجمالي المصروفات</p>
+            <p class="text-2xl font-black text-red-600 mt-1" dir="ltr">{{ number_format($totalExpenses, 2) }} ش</p>
+        </div>
+    </div>
 
-<div class="card p-5 mb-6 max-w-lg">
-    <p class="text-sm font-bold text-[#1E293B] mb-3">تسجيل مصروف</p>
-    <div class="mb-3">
-        <label class="label">التصنيف</label>
-        <select wire:model="category" class="input">
-            @foreach($categories as $value => $label)
-            <option value="{{ $value }}">{{ $label }}</option>
-            @endforeach
-        </select>
-        @error('category')<p class="field-error">{{ $message }}</p>@enderror
+    <div class="card p-5 mb-6 max-w-lg">
+        <p class="text-sm font-bold text-[#1E293B] mb-3">تسجيل مصروف</p>
+        <div class="mb-3">
+            <label class="label">التصنيف</label>
+            <select wire:model="category" class="input">
+                @foreach($categories as $value => $label)
+                <option value="{{ $value }}">{{ $label }}</option>
+                @endforeach
+            </select>
+            @error('category')<p class="field-error">{{ $message }}</p>@enderror
+        </div>
+        <div class="mb-3">
+            <label class="label">المبلغ (ش)</label>
+            <input wire:model="amount" type="number" step="0.01" min="0" dir="ltr" class="input font-mono">
+            @error('amount')<p class="field-error">{{ $message }}</p>@enderror
+        </div>
+        <div class="mb-3">
+            <label class="label">ملاحظات</label>
+            <input wire:model="notes" type="text" class="input" maxlength="2000" placeholder="اختياري">
+        </div>
+        <button type="button" wire:click="save" wire:loading.attr="disabled" class="btn btn-primary w-full justify-center">
+            تسجيل المصروف
+        </button>
     </div>
-    <div class="mb-3">
-        <label class="label">المبلغ (ش)</label>
-        <input wire:model="amount" type="number" step="0.01" min="0" dir="ltr" class="input font-mono">
-        @error('amount')<p class="field-error">{{ $message }}</p>@enderror
-    </div>
-    <div class="mb-3">
-        <label class="label">ملاحظات</label>
-        <input wire:model="notes" type="text" class="input" maxlength="2000" placeholder="اختياري">
-    </div>
-    <button type="button" wire:click="save" wire:loading.attr="disabled" class="btn btn-primary w-full justify-center">
-        تسجيل المصروف
-    </button>
-</div>
+    @endif
 
 <div class="card overflow-hidden">
     <div class="px-5 py-3 border-b border-[#E2E8F0] bg-[#F9F9FB]">
-        <p class="text-sm font-bold text-[#1E293B]">آخر المصروفات</p>
+        <p class="text-sm font-bold text-[#1E293B]">{{ $showAll ? 'آخر مصروفات كل السائقين' : 'آخر المصروفات' }}</p>
     </div>
     <div class="overflow-x-auto [-webkit-overflow-scrolling:touch]">
         <table class="data-table">
             <thead><tr>
                 <th>الوقت</th>
+                @if($showAll)
+                <th>السائق</th>
+                @endif
                 <th>التصنيف</th>
                 <th class="text-left" dir="ltr">المبلغ</th>
                 <th>سجّلها</th>
@@ -80,13 +97,16 @@
                 @forelse($history as $h)
                 <tr>
                     <td class="text-sm text-gray-500" dir="ltr">{{ $h->spent_at?->format('Y-m-d H:i') }}</td>
+                    @if($showAll)
+                    <td class="font-semibold text-sm">{{ $h->driver?->full_name ?? '—' }}</td>
+                    @endif
                     <td><span class="badge badge-yellow">{{ $h->category?->label() ?? '—' }}</span></td>
                     <td class="text-left font-mono text-sm font-semibold text-red-600" dir="ltr">{{ number_format((float) $h->amount, 2) }} ش</td>
                     <td class="text-sm text-gray-500">{{ $h->recordedBy?->full_name ?? '—' }}</td>
                     <td class="text-sm text-gray-500">{{ $h->notes ?? '—' }}</td>
                 </tr>
                 @empty
-                <tr><td colspan="5">
+                <tr><td colspan="{{ $showAll ? 6 : 5 }}">
                     <div class="text-center py-12 text-gray-300"><p class="text-sm">لا توجد مصروفات بعد</p></div>
                 </td></tr>
                 @endforelse
@@ -97,7 +117,7 @@
 
 @else
 <div class="card p-12 text-center text-gray-300">
-    <p class="text-sm">اختر سائقًا لعرض مصروفاته.</p>
+    <p class="text-sm">اختر سائقًا أو «كل السائقين» لعرض المصروفات.</p>
 </div>
 @endif
 

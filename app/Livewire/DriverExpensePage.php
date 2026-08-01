@@ -12,11 +12,12 @@ use Livewire\Component;
 
 /**
  * مصروفات السائق/السيارة: تسجيل مصروف يُخصم من الرصيد النقدي لصندوق السائق.
- * مستقلة تمامًا عن وحدة المصروفات العامة.
+ * للمحاسب/المدير: يمكن عرض كل السائقين أو سائق واحد؛ التسجيل يبقى لسائق محدد فقط.
  */
 class DriverExpensePage extends Component
 {
-    public ?int $driverUserId = null;
+    /** معرف السائق، أو "all" لعرض الجميع، أو فارغ قبل الاختيار. */
+    public string $driverUserId = '';
 
     public string $amount = '';
 
@@ -30,13 +31,35 @@ class DriverExpensePage extends Component
 
         $user = auth()->user();
         if ($user->isDriver()) {
-            $this->driverUserId = $user->id;
+            $this->driverUserId = (string) $user->id;
         }
     }
 
     public function updatedDriverUserId(): void
     {
         $this->amount = '';
+        $this->notes = '';
+        $this->resetErrorBag();
+    }
+
+    /**
+     * هل العرض الحالي لكل السائقين؟
+     */
+    public function showingAllDrivers(): bool
+    {
+        return $this->driverUserId === 'all';
+    }
+
+    /**
+     * معرف السائق المختار للتسجيل/الرصيد الفردي، أو null.
+     */
+    public function selectedDriverId(): ?int
+    {
+        if ($this->driverUserId === '' || $this->driverUserId === 'all') {
+            return null;
+        }
+
+        return ctype_digit($this->driverUserId) ? (int) $this->driverUserId : null;
     }
 
     public function save(CashBoxService $cashBox): void
@@ -45,11 +68,17 @@ class DriverExpensePage extends Component
 
         $user = auth()->user();
         if ($user->isDriver()) {
-            $this->driverUserId = $user->id;
+            $this->driverUserId = (string) $user->id;
+        }
+
+        if ($this->showingAllDrivers()) {
+            $this->addError('driverUserId', 'اختر سائقًا محددًا لتسجيل مصروف.');
+
+            return;
         }
 
         $this->validate([
-            'driverUserId' => 'required|exists:users,id',
+            'driverUserId' => 'required|integer|exists:users,id',
             'amount' => 'required|numeric|gt:0',
             'category' => 'required|in:fuel,maintenance,other',
             'notes' => 'nullable|string|max:2000',
@@ -59,15 +88,17 @@ class DriverExpensePage extends Component
             'category' => 'التصنيف',
         ]);
 
+        $driverId = (int) $this->driverUserId;
+
         // السيارة المسندة للسائق (إن وُجدت) لربط المصروف بها.
         $vehicleId = Warehouse::query()
             ->where('type', 'vehicle')
-            ->where('assigned_user_id', $this->driverUserId)
+            ->where('assigned_user_id', $driverId)
             ->value('id');
 
         try {
             $cashBox->recordExpense(
-                (int) $this->driverUserId,
+                $driverId,
                 (float) $this->amount,
                 DriverExpenseCategory::from($this->category),
                 $vehicleId ? (int) $vehicleId : null,
@@ -99,17 +130,27 @@ class DriverExpensePage extends Component
                 ->get(['id', 'full_name']);
         }
 
-        $balance = $this->driverUserId ? $cashBox->balance($this->driverUserId) : null;
-        $totalExpenses = $this->driverUserId ? $cashBox->totalDriverExpenses($this->driverUserId) : 0;
+        $showAll = $this->showingAllDrivers();
+        $driverId = $this->selectedDriverId();
+        $hasSelection = $showAll || $driverId !== null;
 
-        $history = $this->driverUserId
-            ? DriverExpense::query()
-                ->where('driver_user_id', $this->driverUserId)
-                ->with('recordedBy')
-                ->latest('spent_at')
-                ->limit(30)
-                ->get()
-            : collect();
+        $balance = $driverId ? $cashBox->balance($driverId) : null;
+        $totalExpenses = $showAll
+            ? (float) DriverExpense::query()->sum('amount')
+            : ($driverId ? $cashBox->totalDriverExpenses($driverId) : 0.0);
+
+        $historyQuery = DriverExpense::query()
+            ->with(['recordedBy', 'driver'])
+            ->latest('spent_at')
+            ->limit($showAll ? 50 : 30);
+
+        if ($driverId) {
+            $historyQuery->where('driver_user_id', $driverId);
+        } elseif (! $showAll) {
+            $historyQuery->whereRaw('1 = 0');
+        }
+
+        $history = $hasSelection ? $historyQuery->get() : collect();
 
         return view('livewire.driver-expense-page', [
             'drivers' => $drivers,
@@ -118,6 +159,9 @@ class DriverExpensePage extends Component
             'categories' => DriverExpenseCategory::options(),
             'history' => $history,
             'isDriver' => $user->isDriver(),
+            'showAll' => $showAll,
+            'hasSelection' => $hasSelection,
+            'driverId' => $driverId,
         ]);
     }
 }
