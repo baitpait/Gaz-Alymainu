@@ -129,14 +129,17 @@ erDiagram
 - `app/Services/DashboardSummaryService.php` — تجميع مؤشرات اليوم والمخزون والذمم المختصرة (ILS) مع حماية من الأعطال.
 - `resources/views/dashboard.blade.php` — عرض اللوحة.
 - `resources/views/financial-summary.blade.php` — صفحة «الصناديق النقدية» الكاملة.
+- `resources/views/market-debt/index.blade.php` + `MarketDebtPage` — شاشة **دين السوق** (بلا عملاء).
 - `resources/views/partials/currency-boxes-full.blade.php` — تفاصيل صناديق السائقين والصندوق الرئيسي (مطوي في اللوحة).
-- توثيق الجلسة: `docs/18_SESSION_UI_DASHBOARD_APK_2026_07_27_AR.md`.
+- توثيق الجلسات: `docs/18_SESSION_UI_DASHBOARD_APK_2026_07_27_AR.md`، `docs/19_SESSION_MOBILE_MARKET_DEBT_SALES_VOID_2026_08_01_AR.md`.
 
 **أقسام اللوحة (الحالية):**
 
 1. اليوم — توزيع الغاز (مبيعات، تحصيل، مصروفات سائقين، كاش غير مُسلَّم).
 2. المخزون والأسطول (أرصدة صفر، تحميل/إرجاع، تسعير يومي، مواقع).
 3. ملخص مالي مختصر (ILS) + رابط للصناديق.
+
+**صفحات مالية مكمّلة (خارج اللوحة):** `/financial-summary` (صناديق)، `/market-debt` (دين السوق المجمع).
 4. تفاصيل الصناديق (مطوي؛ Alpine `open: false` افتراضياً).
 
 **سلوك قديم ملغى من الواجهة:** بطاقة «عدد الموردين» وحدها؛ اختصارات تشغيلية؛ قائمة «يحتاج انتباه».

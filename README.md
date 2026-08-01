@@ -103,6 +103,7 @@ php artisan export:mysql-data
 **نشر gaz.baitpait.space (أوامر سريعة):** `docs/16_SERVER_DEPLOY_GAZ_BAITPAIT_SPACE_AR.md`  
 **تطبيق السائق APK:** `docs/17_DRIVER_APK_AR.md`  
 **جلسة واجهة/لوحة/APK (2026-07-27):** `docs/18_SESSION_UI_DASHBOARD_APK_2026_07_27_AR.md`  
+**جلسة موبايل / دين السوق / حذف مبيعات (2026-08-01):** `docs/19_SESSION_MOBILE_MARKET_DEBT_SALES_VOID_2026_08_01_AR.md`  
 **سجل المشروع:** `docs/PROJECT_LOG.md`
 **النسخ الاحتياطي والاسترجاع:** `docs/DATABASE_BACKUP_AND_RESTORE_AR.md`  
 **النشر والتشغيل (إنتاج):** `docs/08_DEPLOYMENT_AND_OPERATIONS_AR.md`  

@@ -98,6 +98,8 @@
 | `view-inventory` / `view-sales` | أي مستخدم فعّال |
 | `manage-drivers` | المدير |
 | `record-sales` | السائق أو المحاسب |
+| `view-sales` | أي مستخدم نشط |
+| `delete-sales` | المحاسب/المدير فقط (إلغاء بيع + إرجاع مخزون) |
 | `manage-cash-handover` | السائق أو المحاسب |
 | `manage-driver-expenses` | السائق أو المحاسب |
 
@@ -109,10 +111,23 @@
 المجموعة محميّة بـ `['auth', 'driver.sales', 'block.sales']`:
 - `/pos` (`pos.index`) — نقطة البيع.
 - `/collections` (`collections.index`) — التحصيل المستقل.
-- `/driver-expenses` (`driver-expenses.index`) — مصروفات السائق.
+- `/driver-expenses` (`driver-expenses.index`) — مصروفات السائق (فلتر «كل السائقين» للمحاسب).
 - `/cash-handovers` (`cash-handovers.index`) — **سحب الكاش**.
-- `/sales`, `/warehouses`, `/drivers`, `/daily-prices`, `/stock-movements`.
+- `/sales` — سجل المبيعات (حذف/إلغاء للمحاسب عبر `delete-sales`).
+- `/market-debt` — **دين السوق** (افتتاحي + آجل − تحصيل نقدي؛ بلا عملاء).
+- `/warehouses`, `/drivers`, `/daily-prices`, `/stock-movements`.
 - تقارير الغاز: `/reports/gas-{sales|collections|driver-cash|stock-balances|stock-movements|driver-performance}`.
+
+### دين السوق (Market debt — بلا زبائن)
+- **الخدمة:** `App\Services\MarketDebtService`.
+- **الإعدادات:** جدول `market_debt_settings` (مبلغ افتتاحي + تاريخ بداية).
+- **المعادلة:** `افتتاحي + Σ sales(credit) − Σ collections(cash)` من `as_of_date`؛ الشيك خارج الحساب؛ السالب = فائض تحصيل.
+- **الواجهة:** `MarketDebtPage` تحت المالية في الشريط الجانبي.
+- **توثيق الجلسة:** `docs/19_SESSION_MOBILE_MARKET_DEBT_SALES_VOID_2026_08_01_AR.md`.
+
+### إلغاء بيع
+- `SalesService::voidSale()` داخل معاملة: إرجاع كمية عبر `InventoryService::restoreForVoidedSale()` ثم soft-delete.
+- يظهر في واجهة `/sales` للمحاسب فقط.
 
 ### الوسائط (Middleware)
 - **`RestrictDriverToSales`** (`driver.sales`): يحصر السائق في `pos.index`, `collections.index`, `driver-expenses.index`, `location.share`, `profile`, `logout` فقط.
