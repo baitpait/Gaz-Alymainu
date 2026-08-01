@@ -190,6 +190,34 @@ class InventoryService
     }
 
     /**
+     * إرجاع كمية بيع ملغى إلى المخزن/السيارة مع حركة تسوية في السجل.
+     */
+    public function restoreForVoidedSale(
+        Warehouse $warehouse,
+        Product $product,
+        float $quantity,
+        ?int $recordedByUserId = null,
+        ?string $notes = null,
+    ): StockMovement {
+        $this->assertPositive($quantity);
+
+        return DB::transaction(function () use ($warehouse, $product, $quantity, $recordedByUserId, $notes) {
+            $this->applyDelta($warehouse->id, $product->id, $quantity);
+
+            return StockMovement::create([
+                'type' => StockMovementType::Adjustment,
+                'to_warehouse_id' => $warehouse->id,
+                'product_id' => $product->id,
+                'quantity' => $quantity,
+                'moved_at' => Carbon::now(),
+                'driver_user_id' => $warehouse->assigned_user_id,
+                'recorded_by_user_id' => $recordedByUserId,
+                'notes' => $notes,
+            ]);
+        });
+    }
+
+    /**
      * تسوية جرد: ضبط الرصيد إلى كمية جديدة مطلقة وتسجيل الفرق.
      */
     public function adjustToQuantity(

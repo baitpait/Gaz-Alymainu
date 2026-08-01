@@ -1,4 +1,4 @@
-<div>
+<div @can('delete-sales') x-data="{ deletingId: null }" @else x-data @endcan>
 
 <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
     <div>
@@ -90,6 +90,9 @@
                 <th class="text-left" dir="ltr">الكمية</th>
                 <th class="text-left" dir="ltr">السعر</th>
                 <th class="text-left" dir="ltr">الإجمالي</th>
+                @can('delete-sales')
+                <th class="w-28"></th>
+                @endcan
             </tr></thead>
             <tbody>
                 @forelse($rows as $s)
@@ -107,9 +110,20 @@
                     <td class="text-left font-mono text-sm" dir="ltr">{{ rtrim(rtrim(number_format((float) $s->quantity, 4), '0'), '.') }}</td>
                     <td class="text-left font-mono text-sm" dir="ltr">{{ number_format((float) $s->unit_price, 2) }}</td>
                     <td class="text-left font-mono text-sm font-semibold" dir="ltr">{{ number_format((float) $s->total_amount, 2) }}</td>
+                    @can('delete-sales')
+                    <td>
+                        <div class="flex items-center justify-end">
+                            <button type="button"
+                                    @click="deletingId = {{ $s->id }}"
+                                    class="btn btn-ghost py-1 px-2 text-xs text-red-500 hover:bg-red-50">
+                                حذف
+                            </button>
+                        </div>
+                    </td>
+                    @endcan
                 </tr>
                 @empty
-                <tr><td colspan="7">
+                <tr><td colspan="{{ auth()->user()->can('delete-sales') ? 8 : 7 }}">
                     <div class="text-center py-16 text-gray-300"><p class="text-sm">لا توجد مبيعات</p></div>
                 </td></tr>
                 @endforelse
@@ -119,5 +133,23 @@
 
     <x-list-pagination :paginator="$rows" />
 </div>
+
+@can('delete-sales')
+<div x-show="deletingId !== null" x-cloak
+     class="fixed inset-0 z-[60] flex items-center justify-center">
+    <div class="fixed inset-0 bg-black/40 backdrop-blur-[2px]" @click="deletingId = null"></div>
+    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4 z-10 p-6">
+        <h3 class="text-center font-bold text-[#1E293B] mb-2">حذف البيع؟</h3>
+        <p class="text-center text-sm text-gray-500 mb-6">
+            سيُحذف السجل وتُعاد الكمية إلى مخزن/سيارة البيع. يتأثر صندوق السائق ودين السوق تلقائياً.
+        </p>
+        <div class="flex gap-2">
+            <button type="button" @click="deletingId = null" class="btn btn-secondary flex-1">إلغاء</button>
+            <button type="button" class="btn btn-primary flex-1 bg-red-600 hover:bg-red-700 border-red-600"
+                    x-on:click="$wire.deleteRecord(deletingId); deletingId = null">حذف</button>
+        </div>
+    </div>
+</div>
+@endcan
 
 </div>

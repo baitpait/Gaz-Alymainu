@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::create('stock_movements', function (Blueprint $table) {
             $table->id();
-            $table->enum('type', ['purchase_in', 'load', 'return', 'adjustment']);
+            $table->enum('type', ['purchase_in', 'load', 'return', 'transfer', 'sale_out', 'adjustment']);
             $table->foreignId('from_warehouse_id')->nullable()->constrained('warehouses')->nullOnDelete();
             $table->foreignId('to_warehouse_id')->nullable()->constrained('warehouses')->nullOnDelete();
             $table->foreignId('product_id')->constrained()->restrictOnDelete();

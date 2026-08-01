@@ -18,6 +18,7 @@ use Livewire\WithPagination;
 /**
  * Business Purpose: Paginated sales register with apply/clear filters matching other list pages
  * (search, payment type, product, driver, warehouse, date range) for managers and drivers.
+ * Accountants may void a sale (soft-delete + restore stock).
  */
 class SaleList extends Component
 {
@@ -49,6 +50,26 @@ class SaleList extends Component
     public function mount(): void
     {
         abort_unless(Gate::allows('view-sales'), 403);
+    }
+
+    /**
+     * Business Purpose: Void a sale so inventory returns and cash/market debt totals exclude it.
+     */
+    public function deleteRecord(int $id, \App\Services\SalesService $sales): void
+    {
+        abort_unless(Gate::allows('delete-sales'), 403);
+
+        $sale = Sale::query()->findOrFail($id);
+
+        try {
+            $sales->voidSale($sale, auth()->id());
+        } catch (\RuntimeException $e) {
+            $this->dispatch('toast', message: $e->getMessage());
+
+            return;
+        }
+
+        $this->dispatch('toast', message: 'تم حذف البيع وإرجاع الكمية للمخزن');
     }
 
     /**

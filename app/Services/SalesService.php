@@ -69,4 +69,36 @@ class SalesService
             ]);
         });
     }
+
+    /**
+     * إلغاء بيع: إرجاع الكمية للمخزن/السيارة ثم حذف منطقي للسجل.
+     * يؤثر تلقائياً على صندوق السائق ودين السوق لأنهما يُحسبان من المبيعات غير المحذوفة.
+     */
+    public function voidSale(Sale $sale, ?int $voidedByUserId = null): void
+    {
+        if ($sale->trashed()) {
+            throw new RuntimeException('هذا البيع محذوف مسبقاً.');
+        }
+
+        $sale->loadMissing(['warehouse', 'product']);
+
+        $warehouse = $sale->warehouse;
+        $product = $sale->product;
+
+        if (! $warehouse || ! $product) {
+            throw new RuntimeException('تعذّر إلغاء البيع: المخزن أو الصنف غير موجود.');
+        }
+
+        DB::transaction(function () use ($sale, $warehouse, $product, $voidedByUserId) {
+            $this->inventory->restoreForVoidedSale(
+                $warehouse,
+                $product,
+                (float) $sale->quantity,
+                $voidedByUserId,
+                'إلغاء بيع #'.$sale->id,
+            );
+
+            $sale->delete();
+        });
+    }
 }
