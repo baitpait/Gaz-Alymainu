@@ -16,26 +16,28 @@
 </div>
 
 <div class="card overflow-hidden">
-    <table class="data-table">
-        <thead><tr>
-            <th>الصنف</th>
-            <th>السعة</th>
-            <th class="text-left" dir="ltr">الرصيد</th>
-        </tr></thead>
-        <tbody>
-            @forelse($balances as $b)
-            <tr>
-                <td class="font-semibold">{{ $b->product?->name ?? '—' }}</td>
-                <td class="text-gray-500 text-sm">{{ $b->product?->capacity_kg ? $b->product->capacity_kg.' كغ' : '—' }}</td>
-                <td class="text-left font-mono text-sm" dir="ltr">{{ rtrim(rtrim(number_format((float) $b->quantity, 4), '0'), '.') }}</td>
-            </tr>
-            @empty
-            <tr><td colspan="3">
-                <div class="text-center py-16 text-gray-300"><p class="text-sm">لا يوجد مخزون في هذا المخزن بعد</p></div>
-            </td></tr>
-            @endforelse
-        </tbody>
-    </table>
+    <div class="overflow-x-auto [-webkit-overflow-scrolling:touch]">
+        <table class="data-table">
+            <thead><tr>
+                <th>الصنف</th>
+                <th>السعة</th>
+                <th class="text-left" dir="ltr">الرصيد</th>
+            </tr></thead>
+            <tbody>
+                @forelse($balances as $b)
+                <tr>
+                    <td class="font-semibold">{{ $b->product?->name ?? '—' }}</td>
+                    <td class="text-gray-500 text-sm">{{ $b->product?->capacity_kg ? $b->product->capacity_kg.' كغ' : '—' }}</td>
+                    <td class="text-left font-mono text-sm" dir="ltr">{{ rtrim(rtrim(number_format((float) $b->quantity, 4), '0'), '.') }}</td>
+                </tr>
+                @empty
+                <tr><td colspan="3">
+                    <div class="text-center py-16 text-gray-300"><p class="text-sm">لا يوجد مخزون في هذا المخزن بعد</p></div>
+                </td></tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
 </div>
 
 </div>

@@ -158,37 +158,39 @@
                     </div>
                 </div>
                 @if($allOrders->isNotEmpty())
-                <table class="data-table">
-                    <thead><tr><th>رقم / تاريخ</th><th>الحالة</th><th>المبلغ</th><th class="w-32"></th></tr></thead>
-                    <tbody>
-                        @foreach($allOrders->take(10) as $po)
-                        @php $s = $po->status; @endphp
-                        <tr>
-                            <td>
-                                <p class="font-semibold text-[#1E293B] text-sm">{{ $po->legacy_po_no ?? '#'.$po->id }}</p>
-                                <p class="text-xs text-gray-400" dir="ltr">{{ $po->document_date?->format('Y-m-d') }}</p>
-                            </td>
-                            <td>
-                                <span class="badge {{ $s==='issued' ? 'badge-green' : ($s==='draft' ? 'badge-yellow' : 'badge-red') }}">
-                                    {{ $s==='issued' ? 'صادر' : ($s==='draft' ? 'مسودة' : 'ملغى') }}
-                                </span>
-                            </td>
-                            <td class="font-bold text-sm" dir="ltr">
-                                {{ number_format((float) $po->total_amount, 2) }}
-                                <span class="text-xs text-gray-400 font-normal">{{ $po->currency_code }}</span>
-                            </td>
-                            <td>
-                                <div class="flex items-center gap-1 justify-end flex-wrap">
-                                    <a href="{{ route('purchase-orders.show', $po) }}" wire:navigate class="btn btn-ghost py-1 px-2 text-xs text-gray-500 hover:bg-gray-50" style="text-decoration:none;">عرض</a>
-                                    @if(auth()->user()->isAccountant())
-                                    <a href="{{ route('purchase-orders.edit', $po) }}" wire:navigate class="btn btn-ghost py-1 px-2 text-xs text-blue-600 hover:bg-blue-50" style="text-decoration:none;">تعديل</a>
-                                    @endif
-                                </div>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                <div class="overflow-x-auto [-webkit-overflow-scrolling:touch]">
+                    <table class="data-table">
+                        <thead><tr><th>رقم / تاريخ</th><th>الحالة</th><th>المبلغ</th><th class="w-32"></th></tr></thead>
+                        <tbody>
+                            @foreach($allOrders->take(10) as $po)
+                            @php $s = $po->status; @endphp
+                            <tr>
+                                <td>
+                                    <p class="font-semibold text-[#1E293B] text-sm">{{ $po->legacy_po_no ?? '#'.$po->id }}</p>
+                                    <p class="text-xs text-gray-400" dir="ltr">{{ $po->document_date?->format('Y-m-d') }}</p>
+                                </td>
+                                <td>
+                                    <span class="badge {{ $s==='issued' ? 'badge-green' : ($s==='draft' ? 'badge-yellow' : 'badge-red') }}">
+                                        {{ $s==='issued' ? 'صادر' : ($s==='draft' ? 'مسودة' : 'ملغى') }}
+                                    </span>
+                                </td>
+                                <td class="font-bold text-sm" dir="ltr">
+                                    {{ number_format((float) $po->total_amount, 2) }}
+                                    <span class="text-xs text-gray-400 font-normal">{{ $po->currency_code }}</span>
+                                </td>
+                                <td>
+                                    <div class="flex items-center gap-1 justify-end flex-wrap">
+                                        <a href="{{ route('purchase-orders.show', $po) }}" wire:navigate class="btn btn-ghost py-1 px-2 text-xs text-gray-500 hover:bg-gray-50" style="text-decoration:none;">عرض</a>
+                                        @if(auth()->user()->isAccountant())
+                                        <a href="{{ route('purchase-orders.edit', $po) }}" wire:navigate class="btn btn-ghost py-1 px-2 text-xs text-blue-600 hover:bg-blue-50" style="text-decoration:none;">تعديل</a>
+                                        @endif
+                                    </div>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
                 @else
                 <div class="text-center py-10 text-gray-300">
                     <p class="text-sm">لا توجد أوامر شراء لهذا المورد</p>
@@ -207,30 +209,32 @@
                     </div>
                 </div>
                 @if($allPayments->isNotEmpty())
-                <table class="data-table">
-                    <thead><tr><th>التاريخ</th><th>الطريقة</th><th>المبلغ</th><th class="w-32"></th></tr></thead>
-                    <tbody>
-                        @foreach($allPayments->take(10) as $pay)
-                        @php $m = $pay->method ?? ''; @endphp
-                        <tr>
-                            <td class="text-gray-500 font-mono text-xs" dir="ltr">{{ $pay->paid_at?->format('Y-m-d') ?? '—' }}</td>
-                            <td><span class="badge badge-blue">{{ $m==='cash'?'نقداً':($m==='bank'?'بنك':($m==='check'?'شيك':($m==='transfer'?'تحويل':$m))) }}</span></td>
-                            <td class="font-bold text-green-600 text-sm" dir="ltr">
-                                {{ number_format((float) $pay->amount, 2) }}
-                                <span class="text-xs text-gray-400 font-normal">{{ $pay->currency_code }}</span>
-                            </td>
-                            <td>
-                                <div class="flex items-center gap-1 justify-end flex-wrap">
-                                    <a href="{{ route('supplier-payments.show', $pay) }}" wire:navigate class="btn btn-ghost py-1 px-2 text-xs text-gray-500 hover:bg-gray-50" style="text-decoration:none;">عرض</a>
-                                    @if(auth()->user()->isAccountant())
-                                    <a href="{{ route('supplier-payments.edit', $pay) }}" wire:navigate class="btn btn-ghost py-1 px-2 text-xs text-blue-600 hover:bg-blue-50" style="text-decoration:none;">تعديل</a>
-                                    @endif
-                                </div>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                <div class="overflow-x-auto [-webkit-overflow-scrolling:touch]">
+                    <table class="data-table">
+                        <thead><tr><th>التاريخ</th><th>الطريقة</th><th>المبلغ</th><th class="w-32"></th></tr></thead>
+                        <tbody>
+                            @foreach($allPayments->take(10) as $pay)
+                            @php $m = $pay->method ?? ''; @endphp
+                            <tr>
+                                <td class="text-gray-500 font-mono text-xs" dir="ltr">{{ $pay->paid_at?->format('Y-m-d') ?? '—' }}</td>
+                                <td><span class="badge badge-blue">{{ $m==='cash'?'نقداً':($m==='bank'?'بنك':($m==='check'?'شيك':($m==='transfer'?'تحويل':$m))) }}</span></td>
+                                <td class="font-bold text-green-600 text-sm" dir="ltr">
+                                    {{ number_format((float) $pay->amount, 2) }}
+                                    <span class="text-xs text-gray-400 font-normal">{{ $pay->currency_code }}</span>
+                                </td>
+                                <td>
+                                    <div class="flex items-center gap-1 justify-end flex-wrap">
+                                        <a href="{{ route('supplier-payments.show', $pay) }}" wire:navigate class="btn btn-ghost py-1 px-2 text-xs text-gray-500 hover:bg-gray-50" style="text-decoration:none;">عرض</a>
+                                        @if(auth()->user()->isAccountant())
+                                        <a href="{{ route('supplier-payments.edit', $pay) }}" wire:navigate class="btn btn-ghost py-1 px-2 text-xs text-blue-600 hover:bg-blue-50" style="text-decoration:none;">تعديل</a>
+                                        @endif
+                                    </div>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
                 @else
                 <div class="text-center py-10 text-gray-300">
                     <p class="text-sm">لا توجد دفعات لهذا المورد</p>

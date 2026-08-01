@@ -24,68 +24,70 @@
     <div wire:loading.delay class="h-0.5 bg-[#1B6CA8]/20 relative overflow-hidden">
         <div class="absolute inset-y-0 right-0 w-1/3 bg-[#1B6CA8] animate-pulse"></div>
     </div>
-    <table class="data-table">
-        <thead><tr>
-            <th>الاسم</th>
-            <th>النوع</th>
-            <th>السائق / اللوحة</th>
-            <th>الحالة</th>
-            @if(auth()->user()->isAccountant())
-            <th class="w-44"></th>
-            @endif
-        </tr></thead>
-        <tbody>
-            @forelse($rows as $w)
-            <tr>
-                <td class="font-semibold">
-                    {{ $w->name }}
-                    @if($w->code)<span class="text-gray-400 font-mono text-xs mr-1" dir="ltr">{{ $w->code }}</span>@endif
-                </td>
-                <td>
-                    @if($w->isVehicle())
-                        <span class="rounded px-2 py-0.5 bg-blue-50 text-blue-600 text-xs">{{ $w->type->label() }}</span>
-                    @else
-                        <span class="rounded px-2 py-0.5 bg-[#F7F8FA] border border-[#E2E8F0] text-xs">{{ $w->type->label() }}</span>
-                    @endif
-                </td>
-                <td class="text-sm text-gray-500">
-                    @if($w->isVehicle())
-                        {{ $w->driver?->full_name ?? '—' }}
-                        @if($w->vehicle_plate)<span class="font-mono text-xs mr-1" dir="ltr">({{ $w->vehicle_plate }})</span>@endif
-                    @else
-                        —
-                    @endif
-                </td>
-                <td>
-                    @if($w->is_active)
-                        <span class="text-green-600 text-xs">نشط</span>
-                    @else
-                        <span class="text-gray-400 text-xs">غير نشط</span>
-                    @endif
-                </td>
+    <div class="overflow-x-auto [-webkit-overflow-scrolling:touch]">
+        <table class="data-table">
+            <thead><tr>
+                <th>الاسم</th>
+                <th>النوع</th>
+                <th>السائق / اللوحة</th>
+                <th>الحالة</th>
                 @if(auth()->user()->isAccountant())
-                <td>
-                    <div class="flex items-center gap-1 justify-end flex-wrap">
-                        <a href="{{ route('warehouses.stock', $w) }}" wire:navigate class="btn btn-ghost py-1 px-2 text-xs text-[#1B6CA8] hover:bg-[#1B6CA8]/10" style="text-decoration:none;">المخزون</a>
-                        @can('update', $w)
-                        <a href="{{ route('warehouses.edit', $w) }}" wire:navigate class="btn btn-ghost py-1 px-2 text-xs text-blue-600 hover:bg-blue-50" style="text-decoration:none;">تعديل</a>
-                        @endcan
-                        @can('delete', $w)
-                        <button type="button" @click="deletingId = {{ $w->id }}" class="btn btn-ghost py-1 px-2 text-xs text-red-500 hover:bg-red-50">حذف</button>
-                        @endcan
-                    </div>
-                </td>
+                <th class="w-44"></th>
                 @endif
-            </tr>
-            @empty
-            <tr><td colspan="{{ auth()->user()->isAccountant() ? 5 : 4 }}">
-                <div class="text-center py-16 text-gray-300">
-                    <p class="text-sm">{{ $search ? 'لا توجد نتائج' : 'لا توجد مخازن بعد' }}</p>
-                </div>
-            </td></tr>
-            @endforelse
-        </tbody>
-    </table>
+            </tr></thead>
+            <tbody>
+                @forelse($rows as $w)
+                <tr>
+                    <td class="font-semibold">
+                        {{ $w->name }}
+                        @if($w->code)<span class="text-gray-400 font-mono text-xs mr-1" dir="ltr">{{ $w->code }}</span>@endif
+                    </td>
+                    <td>
+                        @if($w->isVehicle())
+                            <span class="rounded px-2 py-0.5 bg-blue-50 text-blue-600 text-xs">{{ $w->type->label() }}</span>
+                        @else
+                            <span class="rounded px-2 py-0.5 bg-[#F7F8FA] border border-[#E2E8F0] text-xs">{{ $w->type->label() }}</span>
+                        @endif
+                    </td>
+                    <td class="text-sm text-gray-500">
+                        @if($w->isVehicle())
+                            {{ $w->driver?->full_name ?? '—' }}
+                            @if($w->vehicle_plate)<span class="font-mono text-xs mr-1" dir="ltr">({{ $w->vehicle_plate }})</span>@endif
+                        @else
+                            —
+                        @endif
+                    </td>
+                    <td>
+                        @if($w->is_active)
+                            <span class="text-green-600 text-xs">نشط</span>
+                        @else
+                            <span class="text-gray-400 text-xs">غير نشط</span>
+                        @endif
+                    </td>
+                    @if(auth()->user()->isAccountant())
+                    <td>
+                        <div class="flex items-center gap-1 justify-end flex-wrap">
+                            <a href="{{ route('warehouses.stock', $w) }}" wire:navigate class="btn btn-ghost py-1 px-2 text-xs text-[#1B6CA8] hover:bg-[#1B6CA8]/10" style="text-decoration:none;">المخزون</a>
+                            @can('update', $w)
+                            <a href="{{ route('warehouses.edit', $w) }}" wire:navigate class="btn btn-ghost py-1 px-2 text-xs text-blue-600 hover:bg-blue-50" style="text-decoration:none;">تعديل</a>
+                            @endcan
+                            @can('delete', $w)
+                            <button type="button" @click="deletingId = {{ $w->id }}" class="btn btn-ghost py-1 px-2 text-xs text-red-500 hover:bg-red-50">حذف</button>
+                            @endcan
+                        </div>
+                    </td>
+                    @endif
+                </tr>
+                @empty
+                <tr><td colspan="{{ auth()->user()->isAccountant() ? 5 : 4 }}">
+                    <div class="text-center py-16 text-gray-300">
+                        <p class="text-sm">{{ $search ? 'لا توجد نتائج' : 'لا توجد مخازن بعد' }}</p>
+                    </div>
+                </td></tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
 
     <x-list-pagination :paginator="$rows" />
 </div>

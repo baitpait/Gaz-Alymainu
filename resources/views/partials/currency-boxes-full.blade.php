@@ -123,24 +123,26 @@
                 نقد: {{ number_format($driversCashHeld, 2) }} · شيكات: {{ number_format($driversChequeHeld, 2) }}
             </p>
         </div>
-        <table class="data-table">
-            <thead><tr>
-                <th>السائق</th>
-                <th class="text-left" dir="ltr">الرصيد النقدي</th>
-                <th class="text-left" dir="ltr">رصيد الشيكات</th>
-            </tr></thead>
-            <tbody>
-                @forelse($driverBoxes as $box)
-                <tr>
-                    <td class="font-medium">{{ $box['name'] }}</td>
-                    <td class="text-left font-mono text-sm font-semibold {{ $box['cash'] > 0 ? 'text-green-600' : 'text-gray-400' }}" dir="ltr">{{ number_format($box['cash'], 2) }}</td>
-                    <td class="text-left font-mono text-sm font-semibold {{ $box['cheque'] > 0 ? 'text-blue-600' : 'text-gray-400' }}" dir="ltr">{{ number_format($box['cheque'], 2) }}</td>
-                </tr>
-                @empty
-                <tr><td colspan="3"><div class="text-center py-10 text-gray-300 text-sm">لا يوجد سائقون نشطون</div></td></tr>
-                @endforelse
-            </tbody>
-        </table>
+        <div class="overflow-x-auto [-webkit-overflow-scrolling:touch]">
+            <table class="data-table">
+                <thead><tr>
+                    <th>السائق</th>
+                    <th class="text-left" dir="ltr">الرصيد النقدي</th>
+                    <th class="text-left" dir="ltr">رصيد الشيكات</th>
+                </tr></thead>
+                <tbody>
+                    @forelse($driverBoxes as $box)
+                    <tr>
+                        <td class="font-medium">{{ $box['name'] }}</td>
+                        <td class="text-left font-mono text-sm font-semibold {{ $box['cash'] > 0 ? 'text-green-600' : 'text-gray-400' }}" dir="ltr">{{ number_format($box['cash'], 2) }}</td>
+                        <td class="text-left font-mono text-sm font-semibold {{ $box['cheque'] > 0 ? 'text-blue-600' : 'text-gray-400' }}" dir="ltr">{{ number_format($box['cheque'], 2) }}</td>
+                    </tr>
+                    @empty
+                    <tr><td colspan="3"><div class="text-center py-10 text-gray-300 text-sm">لا يوجد سائقون نشطون</div></td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
 
     {{-- الحركات المالية — الشيكات --}}
@@ -148,30 +150,32 @@
         <div class="px-5 py-3 border-b border-[#E2E8F0] bg-[#F9F9FB]">
             <p class="text-sm font-bold text-[#1E293B]">الحركات المالية — الشيكات</p>
         </div>
-        <table class="data-table">
-            <thead><tr>
-                <th>الوقت</th>
-                <th>السائق</th>
-                <th>النوع</th>
-                <th class="text-left" dir="ltr">المبلغ</th>
-                <th>رقم الشيك</th>
-                <th>ملاحظات</th>
-            </tr></thead>
-            <tbody>
-                @forelse($chequeMoves as $m)
-                <tr>
-                    <td class="text-sm text-gray-500" dir="ltr">{{ $m['at']?->format('Y-m-d H:i') }}</td>
-                    <td class="text-sm">{{ $m['driver'] }}</td>
-                    <td><span class="badge {{ $m['badge'] }}">{{ $m['type'] }}</span></td>
-                    <td class="text-left font-mono text-sm font-semibold" dir="ltr">{{ number_format($m['amount'], 2) }}</td>
-                    <td class="text-sm text-gray-500 font-mono" dir="ltr">{{ $m['cheque'] ?? '—' }}</td>
-                    <td class="text-sm text-gray-500">{{ $m['notes'] ?? '—' }}</td>
-                </tr>
-                @empty
-                <tr><td colspan="6"><div class="text-center py-10 text-gray-300 text-sm">لا توجد حركات شيكات</div></td></tr>
-                @endforelse
-            </tbody>
-        </table>
+        <div class="overflow-x-auto [-webkit-overflow-scrolling:touch]">
+            <table class="data-table">
+                <thead><tr>
+                    <th>الوقت</th>
+                    <th>السائق</th>
+                    <th>النوع</th>
+                    <th class="text-left" dir="ltr">المبلغ</th>
+                    <th>رقم الشيك</th>
+                    <th>ملاحظات</th>
+                </tr></thead>
+                <tbody>
+                    @forelse($chequeMoves as $m)
+                    <tr>
+                        <td class="text-sm text-gray-500" dir="ltr">{{ $m['at']?->format('Y-m-d H:i') }}</td>
+                        <td class="text-sm">{{ $m['driver'] }}</td>
+                        <td><span class="badge {{ $m['badge'] }}">{{ $m['type'] }}</span></td>
+                        <td class="text-left font-mono text-sm font-semibold" dir="ltr">{{ number_format($m['amount'], 2) }}</td>
+                        <td class="text-sm text-gray-500 font-mono" dir="ltr">{{ $m['cheque'] ?? '—' }}</td>
+                        <td class="text-sm text-gray-500">{{ $m['notes'] ?? '—' }}</td>
+                    </tr>
+                    @empty
+                    <tr><td colspan="6"><div class="text-center py-10 text-gray-300 text-sm">لا توجد حركات شيكات</div></td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
 
     {{-- مصروفات السائقين (تُخصم من الصندوق النقدي) --}}
@@ -179,28 +183,30 @@
         <div class="px-5 py-3 border-b border-[#E2E8F0] bg-[#F9F9FB]">
             <p class="text-sm font-bold text-[#1E293B]">مصروفات السائقين</p>
         </div>
-        <table class="data-table">
-            <thead><tr>
-                <th>الوقت</th>
-                <th>السائق</th>
-                <th>التصنيف</th>
-                <th class="text-left" dir="ltr">المبلغ</th>
-                <th>ملاحظات</th>
-            </tr></thead>
-            <tbody>
-                @forelse($recentExpenses as $ex)
-                <tr>
-                    <td class="text-sm text-gray-500" dir="ltr">{{ $ex->spent_at?->format('Y-m-d H:i') }}</td>
-                    <td class="text-sm">{{ $ex->driver?->full_name ?? '—' }}</td>
-                    <td><span class="badge badge-yellow">{{ $ex->category?->label() ?? '—' }}</span></td>
-                    <td class="text-left font-mono text-sm font-semibold text-red-600" dir="ltr">{{ number_format((float) $ex->amount, 2) }}</td>
-                    <td class="text-sm text-gray-500">{{ $ex->notes ?? '—' }}</td>
-                </tr>
-                @empty
-                <tr><td colspan="5"><div class="text-center py-10 text-gray-300 text-sm">لا توجد مصروفات</div></td></tr>
-                @endforelse
-            </tbody>
-        </table>
+        <div class="overflow-x-auto [-webkit-overflow-scrolling:touch]">
+            <table class="data-table">
+                <thead><tr>
+                    <th>الوقت</th>
+                    <th>السائق</th>
+                    <th>التصنيف</th>
+                    <th class="text-left" dir="ltr">المبلغ</th>
+                    <th>ملاحظات</th>
+                </tr></thead>
+                <tbody>
+                    @forelse($recentExpenses as $ex)
+                    <tr>
+                        <td class="text-sm text-gray-500" dir="ltr">{{ $ex->spent_at?->format('Y-m-d H:i') }}</td>
+                        <td class="text-sm">{{ $ex->driver?->full_name ?? '—' }}</td>
+                        <td><span class="badge badge-yellow">{{ $ex->category?->label() ?? '—' }}</span></td>
+                        <td class="text-left font-mono text-sm font-semibold text-red-600" dir="ltr">{{ number_format((float) $ex->amount, 2) }}</td>
+                        <td class="text-sm text-gray-500">{{ $ex->notes ?? '—' }}</td>
+                    </tr>
+                    @empty
+                    <tr><td colspan="5"><div class="text-center py-10 text-gray-300 text-sm">لا توجد مصروفات</div></td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
 
 @endif

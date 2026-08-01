@@ -25,44 +25,46 @@
     <div wire:loading.delay class="h-0.5 bg-[#1B6CA8]/20 relative overflow-hidden">
         <div class="absolute inset-y-0 right-0 w-1/3 bg-[#1B6CA8] animate-pulse"></div>
     </div>
-    <table class="data-table">
-        <thead><tr>
-            <th>الاسم</th>
-            <th dir="ltr" class="text-right">البريد</th>
-            <th>الهاتف</th>
-            <th>السيارة</th>
-            <th>الحالة</th>
-            <th class="w-28"></th>
-        </tr></thead>
-        <tbody>
-            @forelse($rows as $u)
-            <tr>
-                <td class="font-semibold">{{ $u->full_name }}</td>
-                <td class="text-gray-500 text-sm" dir="ltr">{{ $u->email }}</td>
-                <td class="text-gray-500 text-sm" dir="ltr">{{ $u->employee?->phone_primary ?? '—' }}</td>
-                <td class="text-gray-500 text-sm">{{ $u->assignedVehicle?->name ?? '—' }}</td>
-                <td>
-                    @if($u->is_active)
-                        <span class="text-green-600 text-xs">نشط</span>
-                    @else
-                        <span class="text-gray-400 text-xs">موقوف</span>
-                    @endif
-                </td>
-                <td>
-                    <div class="flex items-center gap-1 justify-end">
-                        <a href="{{ route('drivers.edit', $u) }}" wire:navigate class="btn btn-ghost py-1 px-2 text-xs text-blue-600 hover:bg-blue-50" style="text-decoration:none;">تعديل</a>
+    <div class="overflow-x-auto [-webkit-overflow-scrolling:touch]">
+        <table class="data-table">
+            <thead><tr>
+                <th>الاسم</th>
+                <th dir="ltr" class="text-right">البريد</th>
+                <th>الهاتف</th>
+                <th>السيارة</th>
+                <th>الحالة</th>
+                <th class="w-28"></th>
+            </tr></thead>
+            <tbody>
+                @forelse($rows as $u)
+                <tr>
+                    <td class="font-semibold">{{ $u->full_name }}</td>
+                    <td class="text-gray-500 text-sm" dir="ltr">{{ $u->email }}</td>
+                    <td class="text-gray-500 text-sm" dir="ltr">{{ $u->employee?->phone_primary ?? '—' }}</td>
+                    <td class="text-gray-500 text-sm">{{ $u->assignedVehicle?->name ?? '—' }}</td>
+                    <td>
+                        @if($u->is_active)
+                            <span class="text-green-600 text-xs">نشط</span>
+                        @else
+                            <span class="text-gray-400 text-xs">موقوف</span>
+                        @endif
+                    </td>
+                    <td>
+                        <div class="flex items-center gap-1 justify-end">
+                            <a href="{{ route('drivers.edit', $u) }}" wire:navigate class="btn btn-ghost py-1 px-2 text-xs text-blue-600 hover:bg-blue-50" style="text-decoration:none;">تعديل</a>
+                        </div>
+                    </td>
+                </tr>
+                @empty
+                <tr><td colspan="6">
+                    <div class="text-center py-16 text-gray-300">
+                        <p class="text-sm">{{ $search ? 'لا توجد نتائج' : 'لا يوجد سائقون بعد' }}</p>
                     </div>
-                </td>
-            </tr>
-            @empty
-            <tr><td colspan="6">
-                <div class="text-center py-16 text-gray-300">
-                    <p class="text-sm">{{ $search ? 'لا توجد نتائج' : 'لا يوجد سائقون بعد' }}</p>
-                </div>
-            </td></tr>
-            @endforelse
-        </tbody>
-    </table>
+                </td></tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
 
     <x-list-pagination :paginator="$rows" />
 </div>

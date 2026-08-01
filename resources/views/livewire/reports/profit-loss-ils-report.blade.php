@@ -58,26 +58,28 @@
 
     <div class="card overflow-hidden">
         <div class="px-4 py-3 border-b text-sm font-bold text-gray-500">تفصيل حسب العملة الأصلية</div>
-        <table class="data-table text-sm">
-            <thead>
-                <tr>
-                    <th dir="ltr">عملة</th>
-                    <th>مبيعات/إيراد</th>
-                    <th>مشتريات</th>
-                    <th>صافي أصلي</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($sourceRows as $cur => $row)
-                <tr>
-                    <td dir="ltr">{{ $cur }}</td>
-                    <td class="font-mono" dir="ltr">{{ number_format($row['sales'], 2) }}</td>
-                    <td class="font-mono" dir="ltr">{{ number_format($row['purchases'], 2) }}</td>
-                    <td class="font-mono font-semibold {{ $row['net_profit'] >= 0 ? 'text-green-600' : 'text-red-600' }}" dir="ltr">{{ number_format($row['net_profit'], 2) }}</td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+        <div class="overflow-x-auto [-webkit-overflow-scrolling:touch]">
+            <table class="data-table text-sm">
+                <thead>
+                    <tr>
+                        <th dir="ltr">عملة</th>
+                        <th>مبيعات/إيراد</th>
+                        <th>مشتريات</th>
+                        <th>صافي أصلي</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($sourceRows as $cur => $row)
+                    <tr>
+                        <td dir="ltr">{{ $cur }}</td>
+                        <td class="font-mono" dir="ltr">{{ number_format($row['sales'], 2) }}</td>
+                        <td class="font-mono" dir="ltr">{{ number_format($row['purchases'], 2) }}</td>
+                        <td class="font-mono font-semibold {{ $row['net_profit'] >= 0 ? 'text-green-600' : 'text-red-600' }}" dir="ltr">{{ number_format($row['net_profit'], 2) }}</td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
     </div>
     @else
     <div class="text-center py-16 text-gray-400">لا توجد حركات في هذه الفترة.</div>

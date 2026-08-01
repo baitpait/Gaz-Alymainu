@@ -61,30 +61,32 @@
 
     <div class="card overflow-hidden">
         <h2 class="text-base font-semibold text-[#1E293B] px-5 py-4 border-b border-[#E2E8F0]">البنود</h2>
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>البند</th>
-                    <th class="text-left" dir="ltr">الكمية</th>
-                    <th class="text-left" dir="ltr">سعر الوحدة</th>
-                    <th class="text-left" dir="ltr">الإجمالي</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($purchaseOrder->lines as $line)
-                <tr>
-                    <td class="text-gray-400 text-xs">{{ $loop->iteration }}</td>
-                    <td class="font-medium">{{ $line->title }}</td>
-                    <td class="font-mono text-xs" dir="ltr">{{ (int) $line->quantity }}</td>
-                    <td class="font-mono text-xs" dir="ltr">{{ number_format((float) $line->unit_price, 2) }}</td>
-                    <td class="font-mono text-xs font-semibold" dir="ltr">{{ number_format((float) $line->line_total, 2) }}</td>
-                </tr>
-                @empty
-                <tr><td colspan="5" class="text-center py-10 text-gray-300 text-sm">لا توجد بنود مسجّلة</td></tr>
-                @endforelse
-            </tbody>
-        </table>
+        <div class="overflow-x-auto [-webkit-overflow-scrolling:touch]">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>البند</th>
+                        <th class="text-left" dir="ltr">الكمية</th>
+                        <th class="text-left" dir="ltr">سعر الوحدة</th>
+                        <th class="text-left" dir="ltr">الإجمالي</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($purchaseOrder->lines as $line)
+                    <tr>
+                        <td class="text-gray-400 text-xs">{{ $loop->iteration }}</td>
+                        <td class="font-medium">{{ $line->title }}</td>
+                        <td class="font-mono text-xs" dir="ltr">{{ (int) $line->quantity }}</td>
+                        <td class="font-mono text-xs" dir="ltr">{{ number_format((float) $line->unit_price, 2) }}</td>
+                        <td class="font-mono text-xs font-semibold" dir="ltr">{{ number_format((float) $line->line_total, 2) }}</td>
+                    </tr>
+                    @empty
+                    <tr><td colspan="5" class="text-center py-10 text-gray-300 text-sm">لا توجد بنود مسجّلة</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <div class="flex justify-end gap-2 mt-6">

@@ -87,32 +87,34 @@
 
 <div class="card overflow-hidden">
     <div wire:loading.delay class="h-0.5 bg-[#1B6CA8]/20 relative overflow-hidden"><div class="absolute inset-y-0 right-0 w-1/3 bg-[#1B6CA8] animate-pulse"></div></div>
-    <table class="data-table">
-        <thead><tr>
-            <th>التاريخ</th>
-            <th>النوع</th>
-            <th>الصنف</th>
-            <th>من</th>
-            <th>إلى</th>
-            <th class="text-left" dir="ltr">الكمية</th>
-        </tr></thead>
-        <tbody>
-            @forelse($rows as $m)
-            <tr>
-                <td class="text-sm text-gray-500" dir="ltr">{{ $m->moved_at?->format('Y-m-d') }}</td>
-                <td><span class="rounded px-2 py-0.5 bg-[#F7F8FA] border border-[#E2E8F0] text-xs">{{ $m->type->label() }}</span></td>
-                <td class="font-semibold text-sm">{{ $m->product?->name ?? '—' }}</td>
-                <td class="text-sm text-gray-500">{{ $m->fromWarehouse?->name ?? '—' }}</td>
-                <td class="text-sm text-gray-500">{{ $m->toWarehouse?->name ?? '—' }}</td>
-                <td class="text-left font-mono text-sm" dir="ltr">{{ rtrim(rtrim(number_format((float) $m->quantity, 4), '0'), '.') }}</td>
-            </tr>
-            @empty
-            <tr><td colspan="6">
-                <div class="text-center py-16 text-gray-300"><p class="text-sm">لا توجد حركات بعد</p></div>
-            </td></tr>
-            @endforelse
-        </tbody>
-    </table>
+    <div class="overflow-x-auto [-webkit-overflow-scrolling:touch]">
+        <table class="data-table">
+            <thead><tr>
+                <th>التاريخ</th>
+                <th>النوع</th>
+                <th>الصنف</th>
+                <th>من</th>
+                <th>إلى</th>
+                <th class="text-left" dir="ltr">الكمية</th>
+            </tr></thead>
+            <tbody>
+                @forelse($rows as $m)
+                <tr>
+                    <td class="text-sm text-gray-500" dir="ltr">{{ $m->moved_at?->format('Y-m-d') }}</td>
+                    <td><span class="rounded px-2 py-0.5 bg-[#F7F8FA] border border-[#E2E8F0] text-xs">{{ $m->type->label() }}</span></td>
+                    <td class="font-semibold text-sm">{{ $m->product?->name ?? '—' }}</td>
+                    <td class="text-sm text-gray-500">{{ $m->fromWarehouse?->name ?? '—' }}</td>
+                    <td class="text-sm text-gray-500">{{ $m->toWarehouse?->name ?? '—' }}</td>
+                    <td class="text-left font-mono text-sm" dir="ltr">{{ rtrim(rtrim(number_format((float) $m->quantity, 4), '0'), '.') }}</td>
+                </tr>
+                @empty
+                <tr><td colspan="6">
+                    <div class="text-center py-16 text-gray-300"><p class="text-sm">لا توجد حركات بعد</p></div>
+                </td></tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
 
     <x-list-pagination :paginator="$rows" />
 </div>

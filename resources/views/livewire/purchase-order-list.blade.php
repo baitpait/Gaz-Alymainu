@@ -78,64 +78,66 @@
 
 <div class="card overflow-hidden">
     <div wire:loading.delay class="h-0.5 bg-[#1B6CA8]/20 relative overflow-hidden"><div class="absolute inset-y-0 right-0 w-1/3 bg-[#1B6CA8] animate-pulse"></div></div>
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th>التاريخ</th>
-                <th>المورد</th>
-                <th>رقم المستند</th>
-                <th>المستند</th>
-                <th>الدفع</th>
-                <th class="text-left" dir="ltr">المبلغ</th>
-                <th class="w-36"></th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($rows as $po)
-            <tr>
-                <td class="text-gray-500 font-mono text-xs" dir="ltr">{{ $po->document_date?->format('Y-m-d') ?? '—' }}</td>
-                <td class="font-semibold">{{ $po->supplier?->displayName() ?? '—' }}</td>
-                <td class="font-mono text-xs" dir="ltr">{{ $po->legacy_po_no ?? '#'.$po->id }}</td>
-                <td>
-                    @php $st = $po->status; @endphp
-                    <span class="badge {{ $st==='issued' ? 'badge-green' : ($st==='draft' ? 'badge-yellow' : 'badge-red') }}">
-                        {{ $st==='issued' ? 'صادر' : ($st==='draft' ? 'مسودة' : 'ملغى') }}
-                    </span>
-                </td>
-                <td>
-                    @include('livewire.partials.invoice-payment-status-badge', [
-                        'paymentStatus' => $paymentStatuses[$po->id] ?? null,
-                    ])
-                </td>
-                <td class="font-mono font-semibold text-xs" dir="ltr">
-                    {{ number_format((float) $po->total_amount, 2) }}
-                    <span class="text-gray-400 font-normal">{{ $po->currency_code }}</span>
-                </td>
-                <td>
-                    <div class="flex items-center gap-1 justify-end flex-wrap">
-                        <button type="button" wire:click="openView({{ $po->id }})" class="btn btn-ghost py-1 px-2 text-xs text-gray-500 hover:bg-gray-50">عرض</button>
-                        <x-document-export-buttons
-                            :print-url="route('purchase-orders.print', $po->id)"
-                            :pdf-url="route('purchase-orders.pdf', $po->id)"
-                        />
-                        @can('update', $po)
-                        <a href="{{ route('purchase-orders.edit', $po) }}" wire:navigate class="btn btn-ghost py-1 px-2 text-xs text-blue-600 hover:bg-blue-50" style="text-decoration:none;">تعديل</a>
-                        @endcan
-                        @can('delete', $po)
-                        <button type="button" wire:click="confirmDelete({{ $po->id }})" class="btn btn-ghost py-1 px-2 text-xs text-red-500 hover:bg-red-50">حذف</button>
-                        @endcan
+    <div class="overflow-x-auto [-webkit-overflow-scrolling:touch]">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>التاريخ</th>
+                    <th>المورد</th>
+                    <th>رقم المستند</th>
+                    <th>المستند</th>
+                    <th>الدفع</th>
+                    <th class="text-left" dir="ltr">المبلغ</th>
+                    <th class="w-36"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($rows as $po)
+                <tr>
+                    <td class="text-gray-500 font-mono text-xs" dir="ltr">{{ $po->document_date?->format('Y-m-d') ?? '—' }}</td>
+                    <td class="font-semibold">{{ $po->supplier?->displayName() ?? '—' }}</td>
+                    <td class="font-mono text-xs" dir="ltr">{{ $po->legacy_po_no ?? '#'.$po->id }}</td>
+                    <td>
+                        @php $st = $po->status; @endphp
+                        <span class="badge {{ $st==='issued' ? 'badge-green' : ($st==='draft' ? 'badge-yellow' : 'badge-red') }}">
+                            {{ $st==='issued' ? 'صادر' : ($st==='draft' ? 'مسودة' : 'ملغى') }}
+                        </span>
+                    </td>
+                    <td>
+                        @include('livewire.partials.invoice-payment-status-badge', [
+                            'paymentStatus' => $paymentStatuses[$po->id] ?? null,
+                        ])
+                    </td>
+                    <td class="font-mono font-semibold text-xs" dir="ltr">
+                        {{ number_format((float) $po->total_amount, 2) }}
+                        <span class="text-gray-400 font-normal">{{ $po->currency_code }}</span>
+                    </td>
+                    <td>
+                        <div class="flex items-center gap-1 justify-end flex-wrap">
+                            <button type="button" wire:click="openView({{ $po->id }})" class="btn btn-ghost py-1 px-2 text-xs text-gray-500 hover:bg-gray-50">عرض</button>
+                            <x-document-export-buttons
+                                :print-url="route('purchase-orders.print', $po->id)"
+                                :pdf-url="route('purchase-orders.pdf', $po->id)"
+                            />
+                            @can('update', $po)
+                            <a href="{{ route('purchase-orders.edit', $po) }}" wire:navigate class="btn btn-ghost py-1 px-2 text-xs text-blue-600 hover:bg-blue-50" style="text-decoration:none;">تعديل</a>
+                            @endcan
+                            @can('delete', $po)
+                            <button type="button" wire:click="confirmDelete({{ $po->id }})" class="btn btn-ghost py-1 px-2 text-xs text-red-500 hover:bg-red-50">حذف</button>
+                            @endcan
+                        </div>
+                    </td>
+                </tr>
+                @empty
+                <tr><td colspan="7">
+                    <div class="text-center py-16 text-gray-300">
+                        <p class="text-sm">{{ $search || $this->hasActivePurchaseOrderFilters() ? 'لا توجد نتائج للبحث أو الفلتر' : 'لا توجد فواتير مشتريات بعد — أضف مستنداً أو استورد من XML' }}</p>
                     </div>
-                </td>
-            </tr>
-            @empty
-            <tr><td colspan="7">
-                <div class="text-center py-16 text-gray-300">
-                    <p class="text-sm">{{ $search || $this->hasActivePurchaseOrderFilters() ? 'لا توجد نتائج للبحث أو الفلتر' : 'لا توجد فواتير مشتريات بعد — أضف مستنداً أو استورد من XML' }}</p>
-                </div>
-            </td></tr>
-            @endforelse
-        </tbody>
-    </table>
+                </td></tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
 
     <x-list-pagination :paginator="$rows" />
 </div>

@@ -34,49 +34,51 @@
 </form>
 
 <div class="card overflow-hidden">
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th>الاسم</th>
-                <th>القسم</th>
-                <th>النوع</th>
-                <th>الراتب الأساسي</th>
-                <th>الحالة</th>
-                <th class="w-32"></th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($rows as $emp)
-            <tr>
-                <td>
-                    <div class="font-medium">{{ $emp->displayName() }}</div>
-                    @if($emp->employee_code)<div class="text-xs text-gray-400" dir="ltr">{{ $emp->employee_code }}</div>@endif
-                </td>
-                <td class="text-sm text-gray-600">{{ $emp->department ?? '—' }}</td>
-                <td>
-                    <span class="badge {{ $emp->pay_frequency === 'part_time' ? 'badge-yellow' : 'badge-green' }}">
-                        {{ App\Models\Employee::employmentTypeLabel($emp->pay_frequency) }}
-                    </span>
-                </td>
-                <td class="font-mono text-sm" dir="ltr">{{ number_format((float)$emp->base_salary_amount, 2) }} {{ $emp->base_salary_currency }}</td>
-                <td>
-                    <span class="badge {{ $emp->is_active ? 'badge-green' : 'badge-yellow' }}">{{ $emp->is_active ? 'نشط' : 'متوقف' }}</span>
-                </td>
-                <td>
-                    <div class="flex items-center gap-1 justify-end">
-                        <a href="{{ route('employees.show', $emp) }}" wire:navigate class="btn btn-ghost py-1 px-2 text-xs">عرض</a>
-                        @can('update', $emp)
-                        <a href="{{ route('employees.edit', $emp) }}" wire:navigate class="btn btn-ghost py-1 px-2 text-xs text-blue-600">تعديل</a>
-                        <button type="button" wire:click="confirmDelete({{ $emp->id }})" class="btn btn-ghost py-1 px-2 text-xs text-red-500">حذف</button>
-                        @endcan
-                    </div>
-                </td>
-            </tr>
-            @empty
-            <tr><td colspan="6" class="text-center py-16 text-gray-300">لا يوجد موظفون</td></tr>
-            @endforelse
-        </tbody>
-    </table>
+    <div class="overflow-x-auto [-webkit-overflow-scrolling:touch]">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>الاسم</th>
+                    <th>القسم</th>
+                    <th>النوع</th>
+                    <th>الراتب الأساسي</th>
+                    <th>الحالة</th>
+                    <th class="w-32"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($rows as $emp)
+                <tr>
+                    <td>
+                        <div class="font-medium">{{ $emp->displayName() }}</div>
+                        @if($emp->employee_code)<div class="text-xs text-gray-400" dir="ltr">{{ $emp->employee_code }}</div>@endif
+                    </td>
+                    <td class="text-sm text-gray-600">{{ $emp->department ?? '—' }}</td>
+                    <td>
+                        <span class="badge {{ $emp->pay_frequency === 'part_time' ? 'badge-yellow' : 'badge-green' }}">
+                            {{ App\Models\Employee::employmentTypeLabel($emp->pay_frequency) }}
+                        </span>
+                    </td>
+                    <td class="font-mono text-sm" dir="ltr">{{ number_format((float)$emp->base_salary_amount, 2) }} {{ $emp->base_salary_currency }}</td>
+                    <td>
+                        <span class="badge {{ $emp->is_active ? 'badge-green' : 'badge-yellow' }}">{{ $emp->is_active ? 'نشط' : 'متوقف' }}</span>
+                    </td>
+                    <td>
+                        <div class="flex items-center gap-1 justify-end">
+                            <a href="{{ route('employees.show', $emp) }}" wire:navigate class="btn btn-ghost py-1 px-2 text-xs">عرض</a>
+                            @can('update', $emp)
+                            <a href="{{ route('employees.edit', $emp) }}" wire:navigate class="btn btn-ghost py-1 px-2 text-xs text-blue-600">تعديل</a>
+                            <button type="button" wire:click="confirmDelete({{ $emp->id }})" class="btn btn-ghost py-1 px-2 text-xs text-red-500">حذف</button>
+                            @endcan
+                        </div>
+                    </td>
+                </tr>
+                @empty
+                <tr><td colspan="6" class="text-center py-16 text-gray-300">لا يوجد موظفون</td></tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
     <div class="p-4 border-t border-[#E2E8F0]"><x-list-pagination :paginator="$rows" /></div>
 </div>
 

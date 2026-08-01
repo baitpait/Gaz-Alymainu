@@ -32,20 +32,22 @@
             <p class="text-sm font-bold text-[#1E293B]">{{ $warehouseName }}</p>
             <span class="text-xs text-gray-400">إجمالي: <span class="font-mono" dir="ltr">{{ rtrim(rtrim(number_format($items->sum('quantity'), 2), '0'), '.') }}</span></span>
         </div>
-        <table class="data-table">
-            <thead><tr>
-                <th>الصنف</th>
-                <th class="text-left w-40" dir="ltr">الكمية</th>
-            </tr></thead>
-            <tbody>
-                @foreach($items as $b)
-                <tr>
-                    <td class="font-semibold text-sm">{{ $b->product->name }}</td>
-                    <td class="font-mono text-left text-base font-bold {{ $b->quantity > 0 ? 'text-[#16A34A]' : 'text-red-500' }}" dir="ltr">{{ rtrim(rtrim(number_format((float) $b->quantity, 2), '0'), '.') }}</td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+        <div class="overflow-x-auto [-webkit-overflow-scrolling:touch]">
+            <table class="data-table">
+                <thead><tr>
+                    <th>الصنف</th>
+                    <th class="text-left w-40" dir="ltr">الكمية</th>
+                </tr></thead>
+                <tbody>
+                    @foreach($items as $b)
+                    <tr>
+                        <td class="font-semibold text-sm">{{ $b->product->name }}</td>
+                        <td class="font-mono text-left text-base font-bold {{ $b->quantity > 0 ? 'text-[#16A34A]' : 'text-red-500' }}" dir="ltr">{{ rtrim(rtrim(number_format((float) $b->quantity, 2), '0'), '.') }}</td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
     </div>
     @endforeach
     @endif

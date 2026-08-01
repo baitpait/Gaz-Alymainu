@@ -24,52 +24,54 @@
     <div wire:loading.delay class="h-0.5 bg-[#1B6CA8]/20 relative overflow-hidden">
         <div class="absolute inset-y-0 right-0 w-1/3 bg-[#1B6CA8] animate-pulse"></div>
     </div>
-    <table class="data-table">
-        <thead><tr>
-            <th>الاسم</th>
-            <th class="font-mono text-xs" dir="ltr">الرمز</th>
-            <th class="text-left" dir="ltr">سعر البيع (ILS)</th>
-            @if(auth()->user()->isAccountant() || auth()->user()->isManager())
-            <th class="w-44"></th>
-            @endif
-        </tr></thead>
-        <tbody>
-            @forelse($rows as $p)
-            @php
-                $ils = $p->currencyPrices->firstWhere('currency_code', 'ILS');
-            @endphp
-            <tr>
-                <td class="font-semibold">{{ $p->name }}</td>
-                <td class="text-gray-500 font-mono text-xs" dir="ltr">{{ $p->product_code ?? '—' }}</td>
-                <td class="font-mono text-sm" dir="ltr">
-                    @if($ils && $ils->sale_price !== null)
-                        {{ number_format((float) $ils->sale_price, 2) }}
-                    @else
-                        —
-                    @endif
-                </td>
+    <div class="overflow-x-auto [-webkit-overflow-scrolling:touch]">
+        <table class="data-table">
+            <thead><tr>
+                <th>الاسم</th>
+                <th class="font-mono text-xs" dir="ltr">الرمز</th>
+                <th class="text-left" dir="ltr">سعر البيع (ILS)</th>
                 @if(auth()->user()->isAccountant() || auth()->user()->isManager())
-                <td>
-                    <div class="flex items-center gap-1 justify-end flex-wrap">
-                        @can('update', $p)
-                        <a href="{{ route('products.edit', $p) }}" wire:navigate class="btn btn-ghost py-1 px-2 text-xs text-blue-600 hover:bg-blue-50" style="text-decoration:none;">تعديل</a>
-                        @endcan
-                        @can('delete', $p)
-                        <button type="button" @click="deletingId = {{ $p->id }}" class="btn btn-ghost py-1 px-2 text-xs text-red-500 hover:bg-red-50">حذف</button>
-                        @endcan
-                    </div>
-                </td>
+                <th class="w-44"></th>
                 @endif
-            </tr>
-            @empty
-            <tr><td colspan="{{ auth()->user()->isAccountant() || auth()->user()->isManager() ? 4 : 3 }}">
-                <div class="text-center py-16 text-gray-300">
-                    <p class="text-sm">{{ $search ? 'لا توجد نتائج' : 'لا توجد منتجات بعد' }}</p>
-                </div>
-            </td></tr>
-            @endforelse
-        </tbody>
-    </table>
+            </tr></thead>
+            <tbody>
+                @forelse($rows as $p)
+                @php
+                    $ils = $p->currencyPrices->firstWhere('currency_code', 'ILS');
+                @endphp
+                <tr>
+                    <td class="font-semibold">{{ $p->name }}</td>
+                    <td class="text-gray-500 font-mono text-xs" dir="ltr">{{ $p->product_code ?? '—' }}</td>
+                    <td class="font-mono text-sm" dir="ltr">
+                        @if($ils && $ils->sale_price !== null)
+                            {{ number_format((float) $ils->sale_price, 2) }}
+                        @else
+                            —
+                        @endif
+                    </td>
+                    @if(auth()->user()->isAccountant() || auth()->user()->isManager())
+                    <td>
+                        <div class="flex items-center gap-1 justify-end flex-wrap">
+                            @can('update', $p)
+                            <a href="{{ route('products.edit', $p) }}" wire:navigate class="btn btn-ghost py-1 px-2 text-xs text-blue-600 hover:bg-blue-50" style="text-decoration:none;">تعديل</a>
+                            @endcan
+                            @can('delete', $p)
+                            <button type="button" @click="deletingId = {{ $p->id }}" class="btn btn-ghost py-1 px-2 text-xs text-red-500 hover:bg-red-50">حذف</button>
+                            @endcan
+                        </div>
+                    </td>
+                    @endif
+                </tr>
+                @empty
+                <tr><td colspan="{{ auth()->user()->isAccountant() || auth()->user()->isManager() ? 4 : 3 }}">
+                    <div class="text-center py-16 text-gray-300">
+                        <p class="text-sm">{{ $search ? 'لا توجد نتائج' : 'لا توجد منتجات بعد' }}</p>
+                    </div>
+                </td></tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
 
     <x-list-pagination :paginator="$rows" />
 </div>

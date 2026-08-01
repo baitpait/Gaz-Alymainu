@@ -25,39 +25,41 @@
 
 <div class="card overflow-hidden">
     <div wire:loading.delay class="h-0.5 bg-[#1B6CA8]/20 relative overflow-hidden"><div class="absolute inset-y-0 right-0 w-1/3 bg-[#1B6CA8] animate-pulse"></div></div>
-    <table class="data-table">
-        <thead><tr><th>التاريخ</th><th>الوصف</th><th>المبلغ</th><th class="w-24"></th></tr></thead>
-        <tbody>
-            @forelse($rows as $exp)
-            <tr>
-                <td class="text-gray-500 font-mono text-xs" dir="ltr">{{ $exp->expense_date?->format('Y-m-d') ?? '—' }}</td>
-                <td class="font-medium">{{ $exp->description }}</td>
-                <td class="font-mono font-semibold text-xs text-red-600" dir="ltr">
-                    {{ number_format((float)$exp->amount,2) }}
-                    <span class="text-gray-400 font-normal">{{ $exp->currency_code }}</span>
-                </td>
-                <td>
-                    <div class="flex items-center gap-1 justify-end">
-                        <a href="{{ route('expenses.show', $exp->id) }}" wire:navigate class="btn btn-ghost py-1 px-2 text-xs text-gray-500 hover:bg-gray-50" style="text-decoration:none;">عرض</a>
-                        @if(auth()->user()->isAccountant())
-                        <a href="{{ route('expenses.edit', $exp->id) }}" wire:navigate class="btn btn-ghost py-1 px-2 text-xs text-blue-600 hover:bg-blue-50" style="text-decoration:none;">تعديل</a>
-                        @endif
-                        @if(auth()->user()->isManager())
-                        <button type="button" @click="deletingId = {{ $exp->id }}" class="btn btn-ghost py-1 px-2 text-xs text-red-500 hover:bg-red-50">حذف</button>
-                        @endif
+    <div class="overflow-x-auto [-webkit-overflow-scrolling:touch]">
+        <table class="data-table">
+            <thead><tr><th>التاريخ</th><th>الوصف</th><th>المبلغ</th><th class="w-24"></th></tr></thead>
+            <tbody>
+                @forelse($rows as $exp)
+                <tr>
+                    <td class="text-gray-500 font-mono text-xs" dir="ltr">{{ $exp->expense_date?->format('Y-m-d') ?? '—' }}</td>
+                    <td class="font-medium">{{ $exp->description }}</td>
+                    <td class="font-mono font-semibold text-xs text-red-600" dir="ltr">
+                        {{ number_format((float)$exp->amount,2) }}
+                        <span class="text-gray-400 font-normal">{{ $exp->currency_code }}</span>
+                    </td>
+                    <td>
+                        <div class="flex items-center gap-1 justify-end">
+                            <a href="{{ route('expenses.show', $exp->id) }}" wire:navigate class="btn btn-ghost py-1 px-2 text-xs text-gray-500 hover:bg-gray-50" style="text-decoration:none;">عرض</a>
+                            @if(auth()->user()->isAccountant())
+                            <a href="{{ route('expenses.edit', $exp->id) }}" wire:navigate class="btn btn-ghost py-1 px-2 text-xs text-blue-600 hover:bg-blue-50" style="text-decoration:none;">تعديل</a>
+                            @endif
+                            @if(auth()->user()->isManager())
+                            <button type="button" @click="deletingId = {{ $exp->id }}" class="btn btn-ghost py-1 px-2 text-xs text-red-500 hover:bg-red-50">حذف</button>
+                            @endif
+                        </div>
+                    </td>
+                </tr>
+                @empty
+                <tr><td colspan="4">
+                    <div class="text-center py-16 text-gray-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 13l-5 5m0 0l-5-5m5 5V6"/></svg>
+                        <p class="text-sm">{{ $search || $this->hasActiveListFilters() ? 'لا توجد نتائج للبحث أو الفلتر' : 'لا توجد مصروفات بعد' }}</p>
                     </div>
-                </td>
-            </tr>
-            @empty
-            <tr><td colspan="4">
-                <div class="text-center py-16 text-gray-300">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 13l-5 5m0 0l-5-5m5 5V6"/></svg>
-                    <p class="text-sm">{{ $search || $this->hasActiveListFilters() ? 'لا توجد نتائج للبحث أو الفلتر' : 'لا توجد مصروفات بعد' }}</p>
-                </div>
-            </td></tr>
-            @endforelse
-        </tbody>
-    </table>
+                </td></tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
 
     <x-list-pagination :paginator="$rows" />
 </div>

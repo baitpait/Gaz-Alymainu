@@ -67,30 +67,32 @@
     <div class="px-5 py-3 border-b border-[#E2E8F0] bg-[#F9F9FB]">
         <p class="text-sm font-bold text-[#1E293B]">آخر المصروفات</p>
     </div>
-    <table class="data-table">
-        <thead><tr>
-            <th>الوقت</th>
-            <th>التصنيف</th>
-            <th class="text-left" dir="ltr">المبلغ</th>
-            <th>سجّلها</th>
-            <th>ملاحظات</th>
-        </tr></thead>
-        <tbody>
-            @forelse($history as $h)
-            <tr>
-                <td class="text-sm text-gray-500" dir="ltr">{{ $h->spent_at?->format('Y-m-d H:i') }}</td>
-                <td><span class="badge badge-yellow">{{ $h->category?->label() ?? '—' }}</span></td>
-                <td class="text-left font-mono text-sm font-semibold text-red-600" dir="ltr">{{ number_format((float) $h->amount, 2) }} ش</td>
-                <td class="text-sm text-gray-500">{{ $h->recordedBy?->full_name ?? '—' }}</td>
-                <td class="text-sm text-gray-500">{{ $h->notes ?? '—' }}</td>
-            </tr>
-            @empty
-            <tr><td colspan="5">
-                <div class="text-center py-12 text-gray-300"><p class="text-sm">لا توجد مصروفات بعد</p></div>
-            </td></tr>
-            @endforelse
-        </tbody>
-    </table>
+    <div class="overflow-x-auto [-webkit-overflow-scrolling:touch]">
+        <table class="data-table">
+            <thead><tr>
+                <th>الوقت</th>
+                <th>التصنيف</th>
+                <th class="text-left" dir="ltr">المبلغ</th>
+                <th>سجّلها</th>
+                <th>ملاحظات</th>
+            </tr></thead>
+            <tbody>
+                @forelse($history as $h)
+                <tr>
+                    <td class="text-sm text-gray-500" dir="ltr">{{ $h->spent_at?->format('Y-m-d H:i') }}</td>
+                    <td><span class="badge badge-yellow">{{ $h->category?->label() ?? '—' }}</span></td>
+                    <td class="text-left font-mono text-sm font-semibold text-red-600" dir="ltr">{{ number_format((float) $h->amount, 2) }} ش</td>
+                    <td class="text-sm text-gray-500">{{ $h->recordedBy?->full_name ?? '—' }}</td>
+                    <td class="text-sm text-gray-500">{{ $h->notes ?? '—' }}</td>
+                </tr>
+                @empty
+                <tr><td colspan="5">
+                    <div class="text-center py-12 text-gray-300"><p class="text-sm">لا توجد مصروفات بعد</p></div>
+                </td></tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
 </div>
 
 @else

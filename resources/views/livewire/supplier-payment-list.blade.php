@@ -23,47 +23,49 @@
 
 <div class="card overflow-hidden">
     <div wire:loading.delay class="h-0.5 bg-[#1B6CA8]/20 relative overflow-hidden"><div class="absolute inset-y-0 right-0 w-1/3 bg-[#1B6CA8] animate-pulse"></div></div>
-    <table class="data-table">
-        <thead><tr><th>التاريخ</th><th>المورد</th><th>طريقة الدفع</th><th>المرجع</th><th class="text-left" dir="ltr">المبلغ</th><th class="w-24"></th></tr></thead>
-        <tbody>
-            @forelse($rows as $pay)
-            @php $methods = ['cash'=>'نقدي','bank'=>'بنكي','check'=>'شيك','transfer'=>'تحويل']; @endphp
-            <tr>
-                <td class="text-gray-500 font-mono text-xs" dir="ltr">{{ $pay->paid_at?->format('Y-m-d') ?? '—' }}</td>
-                <td class="font-semibold">{{ $pay->supplier?->displayName() ?? '—' }}</td>
-                <td>
-                    <span class="badge badge-blue">{{ $pay->method ? ($methods[$pay->method] ?? $pay->method) : '—' }}</span>
-                </td>
-                <td class="text-gray-500 font-mono text-xs" dir="ltr">{{ $pay->bank_reference ?? '—' }}</td>
-                <td class="font-mono font-semibold text-xs text-purple-700" dir="ltr">
-                    {{ number_format((float)$pay->amount,2) }}
-                    <span class="text-gray-400 font-normal">{{ $pay->currency_code }}</span>
-                </td>
-                <td>
-                    <div class="flex items-center gap-1 justify-end">
-                        <a href="{{ route('supplier-payments.show', $pay->id) }}" wire:navigate class="btn btn-ghost py-1 px-2 text-xs text-gray-500 hover:bg-gray-50" style="text-decoration:none;">عرض</a>
-                        <x-document-export-buttons
-                            :print-url="route('supplier-payments.print', $pay->id)"
-                            :pdf-url="route('supplier-payments.pdf', $pay->id)"
-                        />
-                        @if(auth()->user()->isAccountant())
-                        <a href="{{ route('supplier-payments.edit', $pay->id) }}" wire:navigate class="btn btn-ghost py-1 px-2 text-xs text-blue-600 hover:bg-blue-50" style="text-decoration:none;">تعديل</a>
-                        @endif
-                        @if(auth()->user()->isManager())
-                        <button type="button" @click="deletingId = {{ $pay->id }}" class="btn btn-ghost py-1 px-2 text-xs text-red-500 hover:bg-red-50">حذف</button>
-                        @endif
+    <div class="overflow-x-auto [-webkit-overflow-scrolling:touch]">
+        <table class="data-table">
+            <thead><tr><th>التاريخ</th><th>المورد</th><th>طريقة الدفع</th><th>المرجع</th><th class="text-left" dir="ltr">المبلغ</th><th class="w-24"></th></tr></thead>
+            <tbody>
+                @forelse($rows as $pay)
+                @php $methods = ['cash'=>'نقدي','bank'=>'بنكي','check'=>'شيك','transfer'=>'تحويل']; @endphp
+                <tr>
+                    <td class="text-gray-500 font-mono text-xs" dir="ltr">{{ $pay->paid_at?->format('Y-m-d') ?? '—' }}</td>
+                    <td class="font-semibold">{{ $pay->supplier?->displayName() ?? '—' }}</td>
+                    <td>
+                        <span class="badge badge-blue">{{ $pay->method ? ($methods[$pay->method] ?? $pay->method) : '—' }}</span>
+                    </td>
+                    <td class="text-gray-500 font-mono text-xs" dir="ltr">{{ $pay->bank_reference ?? '—' }}</td>
+                    <td class="font-mono font-semibold text-xs text-purple-700" dir="ltr">
+                        {{ number_format((float)$pay->amount,2) }}
+                        <span class="text-gray-400 font-normal">{{ $pay->currency_code }}</span>
+                    </td>
+                    <td>
+                        <div class="flex items-center gap-1 justify-end">
+                            <a href="{{ route('supplier-payments.show', $pay->id) }}" wire:navigate class="btn btn-ghost py-1 px-2 text-xs text-gray-500 hover:bg-gray-50" style="text-decoration:none;">عرض</a>
+                            <x-document-export-buttons
+                                :print-url="route('supplier-payments.print', $pay->id)"
+                                :pdf-url="route('supplier-payments.pdf', $pay->id)"
+                            />
+                            @if(auth()->user()->isAccountant())
+                            <a href="{{ route('supplier-payments.edit', $pay->id) }}" wire:navigate class="btn btn-ghost py-1 px-2 text-xs text-blue-600 hover:bg-blue-50" style="text-decoration:none;">تعديل</a>
+                            @endif
+                            @if(auth()->user()->isManager())
+                            <button type="button" @click="deletingId = {{ $pay->id }}" class="btn btn-ghost py-1 px-2 text-xs text-red-500 hover:bg-red-50">حذف</button>
+                            @endif
+                        </div>
+                    </td>
+                </tr>
+                @empty
+                <tr><td colspan="6">
+                    <div class="text-center py-16 text-gray-300">
+                        <p class="text-sm">{{ $search || $this->hasActiveListFilters() ? 'لا توجد نتائج للبحث أو الفلتر' : 'لا توجد دفعات بعد — تظهر هنا بعد استيراد XML أو التسجيل اليدوي' }}</p>
                     </div>
-                </td>
-            </tr>
-            @empty
-            <tr><td colspan="6">
-                <div class="text-center py-16 text-gray-300">
-                    <p class="text-sm">{{ $search || $this->hasActiveListFilters() ? 'لا توجد نتائج للبحث أو الفلتر' : 'لا توجد دفعات بعد — تظهر هنا بعد استيراد XML أو التسجيل اليدوي' }}</p>
-                </div>
-            </td></tr>
-            @endforelse
-        </tbody>
-    </table>
+                </td></tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
 
     <x-list-pagination :paginator="$rows" />
 </div>

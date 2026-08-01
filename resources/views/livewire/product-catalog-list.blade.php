@@ -18,37 +18,39 @@
 
 <div class="card overflow-hidden">
     <div wire:loading.delay class="h-0.5 bg-[#1B6CA8]/20 relative overflow-hidden"><div class="absolute inset-y-0 right-0 w-1/3 bg-[#1B6CA8] animate-pulse"></div></div>
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th class="w-16">#</th>
-                <th>الاسم</th>
-                <th>الكود</th>
-                <th class="text-left" dir="ltr">سعر البيع</th>
-                <th class="text-left" dir="ltr">سعر الشراء</th>
-                <th>التصنيف</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($rows as $row)
-            @php $f = $row->flat(); @endphp
-            <tr>
-                <td class="text-gray-400 font-mono text-xs">{{ $row->id }}</td>
-                <td class="font-semibold">{{ $row->displayName() }}</td>
-                <td class="font-mono text-xs" dir="ltr">{{ $row->productCode() }}</td>
-                <td class="font-mono text-xs" dir="ltr">{{ $f['UnitPrice'] ?? '—' }}</td>
-                <td class="font-mono text-xs" dir="ltr">{{ $f['BuyPrice'] ?? '—' }}</td>
-                <td class="text-sm text-gray-500">{{ trim((string) ($f['Category'] ?? '')) !== '' ? $f['Category'] : '—' }}</td>
-            </tr>
-            @empty
-            <tr><td colspan="6">
-                <div class="text-center py-16 text-gray-300">
-                    <p class="text-sm">{{ $search ? 'لا توجد نتائج' : 'لا توجد خدمات في الأرشيف' }}</p>
-                </div>
-            </td></tr>
-            @endforelse
-        </tbody>
-    </table>
+    <div class="overflow-x-auto [-webkit-overflow-scrolling:touch]">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th class="w-16">#</th>
+                    <th>الاسم</th>
+                    <th>الكود</th>
+                    <th class="text-left" dir="ltr">سعر البيع</th>
+                    <th class="text-left" dir="ltr">سعر الشراء</th>
+                    <th>التصنيف</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($rows as $row)
+                @php $f = $row->flat(); @endphp
+                <tr>
+                    <td class="text-gray-400 font-mono text-xs">{{ $row->id }}</td>
+                    <td class="font-semibold">{{ $row->displayName() }}</td>
+                    <td class="font-mono text-xs" dir="ltr">{{ $row->productCode() }}</td>
+                    <td class="font-mono text-xs" dir="ltr">{{ $f['UnitPrice'] ?? '—' }}</td>
+                    <td class="font-mono text-xs" dir="ltr">{{ $f['BuyPrice'] ?? '—' }}</td>
+                    <td class="text-sm text-gray-500">{{ trim((string) ($f['Category'] ?? '')) !== '' ? $f['Category'] : '—' }}</td>
+                </tr>
+                @empty
+                <tr><td colspan="6">
+                    <div class="text-center py-16 text-gray-300">
+                        <p class="text-sm">{{ $search ? 'لا توجد نتائج' : 'لا توجد خدمات في الأرشيف' }}</p>
+                    </div>
+                </td></tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
 
     <x-list-pagination :paginator="$rows" />
 </div>

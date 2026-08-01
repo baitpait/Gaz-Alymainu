@@ -36,41 +36,43 @@
 
 <div class="card overflow-hidden">
     <div class="px-4 py-3 border-b border-[#E2E8F0] font-bold text-sm">سجل الرواتب</div>
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th>الشهر</th>
-                <th>أيام العمل</th>
-                <th>أساسي</th>
-                <th>صافي</th>
-                <th>الحالة</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($employee->salaryPayments as $pay)
-            <tr>
-                <td dir="ltr">{{ $pay->periodLabel() }}</td>
-                <td class="text-sm text-center">
-                    @if($pay->worked_days !== null)
-                        {{ $pay->worked_days }} <span class="text-gray-400 text-xs" dir="ltr">× {{ number_format((float) $pay->daily_rate, 2) }}</span>
-                    @else
-                        <span class="text-gray-300">—</span>
-                    @endif
-                </td>
-                <td class="font-mono text-sm" dir="ltr">{{ number_format((float)$pay->base_amount, 2) }} {{ $pay->currency_code }}</td>
-                <td class="font-mono font-semibold text-sm text-[#1B6CA8]" dir="ltr">{{ number_format((float)$pay->net_amount, 2) }}</td>
-                <td>{{ App\Models\SalaryPayment::statusLabel($pay->status) }}</td>
-                <td>
-                    @can('update', $pay)
-                    <a href="{{ route('salary-payments.edit', $pay) }}" wire:navigate class="text-xs text-blue-600">تعديل</a>
-                    @endcan
-                </td>
-            </tr>
-            @empty
-            <tr><td colspan="6" class="text-center py-8 text-gray-400">لا توجد رواتب مسجّلة</td></tr>
-            @endforelse
-        </tbody>
-    </table>
+    <div class="overflow-x-auto [-webkit-overflow-scrolling:touch]">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>الشهر</th>
+                    <th>أيام العمل</th>
+                    <th>أساسي</th>
+                    <th>صافي</th>
+                    <th>الحالة</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($employee->salaryPayments as $pay)
+                <tr>
+                    <td dir="ltr">{{ $pay->periodLabel() }}</td>
+                    <td class="text-sm text-center">
+                        @if($pay->worked_days !== null)
+                            {{ $pay->worked_days }} <span class="text-gray-400 text-xs" dir="ltr">× {{ number_format((float) $pay->daily_rate, 2) }}</span>
+                        @else
+                            <span class="text-gray-300">—</span>
+                        @endif
+                    </td>
+                    <td class="font-mono text-sm" dir="ltr">{{ number_format((float)$pay->base_amount, 2) }} {{ $pay->currency_code }}</td>
+                    <td class="font-mono font-semibold text-sm text-[#1B6CA8]" dir="ltr">{{ number_format((float)$pay->net_amount, 2) }}</td>
+                    <td>{{ App\Models\SalaryPayment::statusLabel($pay->status) }}</td>
+                    <td>
+                        @can('update', $pay)
+                        <a href="{{ route('salary-payments.edit', $pay) }}" wire:navigate class="text-xs text-blue-600">تعديل</a>
+                        @endcan
+                    </td>
+                </tr>
+                @empty
+                <tr><td colspan="6" class="text-center py-8 text-gray-400">لا توجد رواتب مسجّلة</td></tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
 </div>
 </div>

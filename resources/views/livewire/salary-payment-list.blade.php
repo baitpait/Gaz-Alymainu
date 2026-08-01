@@ -48,41 +48,43 @@
 </form>
 
 <div class="card overflow-hidden">
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th>الموظف</th>
-                <th>الشهر</th>
-                <th>الصافي</th>
-                <th>الحالة</th>
-                <th class="w-32"></th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($rows as $pay)
-            <tr>
-                <td>
-                    <div class="font-medium">{{ $pay->employee?->displayName() ?? '—' }}</div>
-                    @if($pay->employee?->department)<div class="text-xs text-gray-400">{{ $pay->employee->department }}</div>@endif
-                </td>
-                <td class="font-mono text-sm" dir="ltr">{{ $pay->periodLabel() }}</td>
-                <td class="font-mono font-semibold text-sm text-[#1B6CA8]" dir="ltr">{{ number_format((float)$pay->net_amount, 2) }} {{ $pay->currency_code }}</td>
-                <td>{{ App\Models\SalaryPayment::statusLabel($pay->status) }}</td>
-                <td>
-                    <div class="flex items-center gap-1 justify-end">
-                        <a href="{{ route('salary-payments.show', $pay) }}" wire:navigate class="btn btn-ghost py-1 px-2 text-xs">عرض</a>
-                        @can('update', $pay)
-                        <a href="{{ route('salary-payments.edit', $pay) }}" wire:navigate class="btn btn-ghost py-1 px-2 text-xs text-blue-600">تعديل</a>
-                        <button type="button" wire:click="confirmDelete({{ $pay->id }})" class="btn btn-ghost py-1 px-2 text-xs text-red-500">حذف</button>
-                        @endcan
-                    </div>
-                </td>
-            </tr>
-            @empty
-            <tr><td colspan="5" class="text-center py-16 text-gray-300">لا توجد سجلات رواتب</td></tr>
-            @endforelse
-        </tbody>
-    </table>
+    <div class="overflow-x-auto [-webkit-overflow-scrolling:touch]">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>الموظف</th>
+                    <th>الشهر</th>
+                    <th>الصافي</th>
+                    <th>الحالة</th>
+                    <th class="w-32"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($rows as $pay)
+                <tr>
+                    <td>
+                        <div class="font-medium">{{ $pay->employee?->displayName() ?? '—' }}</div>
+                        @if($pay->employee?->department)<div class="text-xs text-gray-400">{{ $pay->employee->department }}</div>@endif
+                    </td>
+                    <td class="font-mono text-sm" dir="ltr">{{ $pay->periodLabel() }}</td>
+                    <td class="font-mono font-semibold text-sm text-[#1B6CA8]" dir="ltr">{{ number_format((float)$pay->net_amount, 2) }} {{ $pay->currency_code }}</td>
+                    <td>{{ App\Models\SalaryPayment::statusLabel($pay->status) }}</td>
+                    <td>
+                        <div class="flex items-center gap-1 justify-end">
+                            <a href="{{ route('salary-payments.show', $pay) }}" wire:navigate class="btn btn-ghost py-1 px-2 text-xs">عرض</a>
+                            @can('update', $pay)
+                            <a href="{{ route('salary-payments.edit', $pay) }}" wire:navigate class="btn btn-ghost py-1 px-2 text-xs text-blue-600">تعديل</a>
+                            <button type="button" wire:click="confirmDelete({{ $pay->id }})" class="btn btn-ghost py-1 px-2 text-xs text-red-500">حذف</button>
+                            @endcan
+                        </div>
+                    </td>
+                </tr>
+                @empty
+                <tr><td colspan="5" class="text-center py-16 text-gray-300">لا توجد سجلات رواتب</td></tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
     <div class="p-4 border-t border-[#E2E8F0]"><x-list-pagination :paginator="$rows" /></div>
 </div>
 

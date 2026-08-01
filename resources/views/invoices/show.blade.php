@@ -90,37 +90,39 @@
 
             {{-- بنود الفاتورة --}}
             @if($invoice->lines->isNotEmpty())
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>البند</th>
-                        <th class="w-24 text-center">الكمية</th>
-                        <th class="w-28 text-left" dir="ltr">سعر الوحدة</th>
-                        <th class="w-28 text-left" dir="ltr">المجموع</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($invoice->lines as $line)
-                    <tr>
-                        <td>
-                            <div class="font-semibold text-[#1E293B]">{{ $line->title }}</div>
-                            @if($line->description)
-                            <div class="text-xs text-gray-400 mt-0.5">{{ $line->description }}</div>
-                            @endif
-                        </td>
-                        <td class="text-center text-gray-500">
-                            {{ rtrim(rtrim(number_format((float)$line->quantity, 2), '0'), '.') }}
-                        </td>
-                        <td class="font-mono text-sm" dir="ltr">
-                            {{ number_format((float)$line->unit_price, 2) }}
-                        </td>
-                        <td class="font-mono font-semibold text-sm" dir="ltr">
-                            {{ number_format((float)$line->line_total, 2) }}
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+            <div class="overflow-x-auto [-webkit-overflow-scrolling:touch]">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>البند</th>
+                            <th class="w-24 text-center">الكمية</th>
+                            <th class="w-28 text-left" dir="ltr">سعر الوحدة</th>
+                            <th class="w-28 text-left" dir="ltr">المجموع</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($invoice->lines as $line)
+                        <tr>
+                            <td>
+                                <div class="font-semibold text-[#1E293B]">{{ $line->title }}</div>
+                                @if($line->description)
+                                <div class="text-xs text-gray-400 mt-0.5">{{ $line->description }}</div>
+                                @endif
+                            </td>
+                            <td class="text-center text-gray-500">
+                                {{ rtrim(rtrim(number_format((float)$line->quantity, 2), '0'), '.') }}
+                            </td>
+                            <td class="font-mono text-sm" dir="ltr">
+                                {{ number_format((float)$line->unit_price, 2) }}
+                            </td>
+                            <td class="font-mono font-semibold text-sm" dir="ltr">
+                                {{ number_format((float)$line->line_total, 2) }}
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
             @else
             <div class="text-center py-16 text-gray-300">
                 <p class="text-sm">لا توجد بنود</p>

@@ -54,41 +54,43 @@
             <h2 class="text-sm font-bold text-[#1E293B]">آخر النسخ على الخادم</h2>
             <p class="text-xs text-gray-400 mt-0.5">احتفظ بنسخة على قرص خارجي أو سحابة — لا تُرفع لـ GitHub.</p>
         </div>
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>الملف</th>
-                    <th>النوع</th>
-                    <th>الحجم</th>
-                    <th>التاريخ</th>
-                    <th class="w-28"></th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($backups as $item)
-                <tr>
-                    <td class="font-mono text-xs" dir="ltr">{{ $item['filename'] }}</td>
-                    <td class="text-gray-500 text-xs">
-                        @if($item['type'] === 'sqlite') SQLite
-                        @elseif($item['type'] === 'mysql_full') MySQL كامل
-                        @else INSERT فقط
-                        @endif
-                    </td>
-                    <td class="text-gray-500 text-xs" dir="ltr">{{ $item['size_human'] }}</td>
-                    <td class="text-gray-500 text-xs" dir="ltr">{{ $item['created_at'] }}</td>
-                    <td>
-                        <a href="{{ route('database-backup.download', $item['filename']) }}"
-                           class="btn btn-ghost py-1 px-2 text-xs text-[#1B6CA8] hover:bg-amber-50"
-                           style="text-decoration:none;">تنزيل</a>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="5" class="text-center py-12 text-gray-300 text-sm">لا توجد نسخ بعد — أنشئ نسخة من الأزرار أعلاه.</td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
+        <div class="overflow-x-auto [-webkit-overflow-scrolling:touch]">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>الملف</th>
+                        <th>النوع</th>
+                        <th>الحجم</th>
+                        <th>التاريخ</th>
+                        <th class="w-28"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($backups as $item)
+                    <tr>
+                        <td class="font-mono text-xs" dir="ltr">{{ $item['filename'] }}</td>
+                        <td class="text-gray-500 text-xs">
+                            @if($item['type'] === 'sqlite') SQLite
+                            @elseif($item['type'] === 'mysql_full') MySQL كامل
+                            @else INSERT فقط
+                            @endif
+                        </td>
+                        <td class="text-gray-500 text-xs" dir="ltr">{{ $item['size_human'] }}</td>
+                        <td class="text-gray-500 text-xs" dir="ltr">{{ $item['created_at'] }}</td>
+                        <td>
+                            <a href="{{ route('database-backup.download', $item['filename']) }}"
+                               class="btn btn-ghost py-1 px-2 text-xs text-[#1B6CA8] hover:bg-amber-50"
+                               style="text-decoration:none;">تنزيل</a>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="5" class="text-center py-12 text-gray-300 text-sm">لا توجد نسخ بعد — أنشئ نسخة من الأزرار أعلاه.</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <div class="mt-5 text-xs text-gray-400 leading-relaxed">

@@ -75,57 +75,59 @@
     <div wire:loading.delay class="h-0.5 bg-[#1B6CA8]/20 relative overflow-hidden">
         <div class="absolute inset-y-0 right-0 w-1/3 bg-[#1B6CA8] animate-pulse"></div>
     </div>
-    <table class="data-table">
-        <thead><tr>
-            <th>التاريخ</th><th>رقم الفاتورة</th><th>العميل</th><th>المستند</th><th>الدفع</th><th>المبلغ</th><th class="w-28"></th>
-        </tr></thead>
-        <tbody>
-            @forelse($rows as $inv)
-            <tr>
-                <td class="text-gray-500 font-mono text-xs" dir="ltr">{{ $inv->document_date?->format('Y-m-d') ?? '—' }}</td>
-                <td class="font-medium">{{ $inv->legacy_invoice_no ?? '#'.$inv->id }}</td>
-                <td>{{ $inv->client?->displayName() ?? '—' }}</td>
-                <td>
-                    @php $s = $inv->status; @endphp
-                    <span class="badge {{ $s==='issued' ? 'badge-green' : ($s==='draft' ? 'badge-yellow' : 'badge-red') }}">
-                        {{ $s==='issued' ? 'صادرة' : ($s==='draft' ? 'مسودة' : 'ملغاة') }}
-                    </span>
-                </td>
-                <td>
-                    @include('livewire.partials.invoice-payment-status-badge', [
-                        'paymentStatus' => $paymentStatuses[$inv->id] ?? null,
-                    ])
-                </td>
-                <td class="font-mono font-semibold text-xs" dir="ltr">
-                    {{ number_format((float)$inv->total_amount,2) }}
-                    <span class="text-gray-400 font-normal">{{ $inv->currency_code }}</span>
-                </td>
-                <td>
-                    <div class="flex items-center gap-1 justify-end">
-                        <a href="{{ route('invoices.show', $inv->id) }}" wire:navigate class="btn btn-ghost py-1 px-2 text-xs text-gray-500 hover:bg-gray-50" style="text-decoration:none;">عرض</a>
-                        <x-document-export-buttons
-                            :print-url="route('invoices.print', $inv->id)"
-                            :pdf-url="route('invoices.pdf', $inv->id)"
-                        />
-                        @if(auth()->user()->isAccountant())
-                        <a href="{{ route('invoices.edit', $inv->id) }}" wire:navigate class="btn btn-ghost py-1 px-2 text-xs text-blue-600 hover:bg-blue-50" style="text-decoration:none;">تعديل</a>
-                        @endif
-                        @if(auth()->user()->isManager())
-                        <button wire:click="confirmDelete({{ $inv->id }})" class="btn btn-ghost py-1 px-2 text-xs text-red-500 hover:bg-red-50">حذف</button>
-                        @endif
+    <div class="overflow-x-auto [-webkit-overflow-scrolling:touch]">
+        <table class="data-table">
+            <thead><tr>
+                <th>التاريخ</th><th>رقم الفاتورة</th><th>العميل</th><th>المستند</th><th>الدفع</th><th>المبلغ</th><th class="w-28"></th>
+            </tr></thead>
+            <tbody>
+                @forelse($rows as $inv)
+                <tr>
+                    <td class="text-gray-500 font-mono text-xs" dir="ltr">{{ $inv->document_date?->format('Y-m-d') ?? '—' }}</td>
+                    <td class="font-medium">{{ $inv->legacy_invoice_no ?? '#'.$inv->id }}</td>
+                    <td>{{ $inv->client?->displayName() ?? '—' }}</td>
+                    <td>
+                        @php $s = $inv->status; @endphp
+                        <span class="badge {{ $s==='issued' ? 'badge-green' : ($s==='draft' ? 'badge-yellow' : 'badge-red') }}">
+                            {{ $s==='issued' ? 'صادرة' : ($s==='draft' ? 'مسودة' : 'ملغاة') }}
+                        </span>
+                    </td>
+                    <td>
+                        @include('livewire.partials.invoice-payment-status-badge', [
+                            'paymentStatus' => $paymentStatuses[$inv->id] ?? null,
+                        ])
+                    </td>
+                    <td class="font-mono font-semibold text-xs" dir="ltr">
+                        {{ number_format((float)$inv->total_amount,2) }}
+                        <span class="text-gray-400 font-normal">{{ $inv->currency_code }}</span>
+                    </td>
+                    <td>
+                        <div class="flex items-center gap-1 justify-end">
+                            <a href="{{ route('invoices.show', $inv->id) }}" wire:navigate class="btn btn-ghost py-1 px-2 text-xs text-gray-500 hover:bg-gray-50" style="text-decoration:none;">عرض</a>
+                            <x-document-export-buttons
+                                :print-url="route('invoices.print', $inv->id)"
+                                :pdf-url="route('invoices.pdf', $inv->id)"
+                            />
+                            @if(auth()->user()->isAccountant())
+                            <a href="{{ route('invoices.edit', $inv->id) }}" wire:navigate class="btn btn-ghost py-1 px-2 text-xs text-blue-600 hover:bg-blue-50" style="text-decoration:none;">تعديل</a>
+                            @endif
+                            @if(auth()->user()->isManager())
+                            <button wire:click="confirmDelete({{ $inv->id }})" class="btn btn-ghost py-1 px-2 text-xs text-red-500 hover:bg-red-50">حذف</button>
+                            @endif
+                        </div>
+                    </td>
+                </tr>
+                @empty
+                <tr><td colspan="7">
+                    <div class="text-center py-16 text-gray-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        <p class="text-sm">{{ $search ? 'لا توجد نتائج' : 'لا توجد فواتير بعد' }}</p>
                     </div>
-                </td>
-            </tr>
-            @empty
-            <tr><td colspan="7">
-                <div class="text-center py-16 text-gray-300">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                    <p class="text-sm">{{ $search ? 'لا توجد نتائج' : 'لا توجد فواتير بعد' }}</p>
-                </div>
-            </td></tr>
-            @endforelse
-        </tbody>
-    </table>
+                </td></tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
 
     <x-list-pagination :paginator="$rows" />
 </div>
