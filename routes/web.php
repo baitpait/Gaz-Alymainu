@@ -40,6 +40,11 @@ Route::middleware(['auth', 'driver.sales', 'block.sales'])->group(function () {
     Route::get('/dashboard', fn () => view('dashboard'))->name('dashboard');
     Route::get('/profile', fn () => view('profile.show'))->name('profile');
     Route::get('/financial-summary', fn () => view('financial-summary'))->name('financial-summary');
+    Route::get('/market-debt', function () {
+        abort_unless(auth()->user()->isAccountant(), 403);
+
+        return view('market-debt.index');
+    })->name('market-debt.index');
 
     Route::get('/clients', fn () => view('clients.index'))->name('clients.index');
     Route::get('/clients/{client}/statement', [ClientStatementController::class, 'show'])->name('clients.statement');
