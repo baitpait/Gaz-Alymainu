@@ -7,6 +7,7 @@
     @php $appName = config('app.name', 'غاز اليمني'); @endphp
     <title>{{ ($title ?? '') ? $title . ' — ' . $appName : $appName }}</title>
     <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
+    @include('partials.pwa-head')
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -217,6 +218,8 @@
 @endcan
 
 @include('components.layouts.footer')
+
+@include('partials.pwa-install-banner', ['variant' => 'app'])
 
 {{-- ═══ نظام الإشعارات (Toast) ═══ --}}
 <div x-data="toastManager"

@@ -1,6 +1,9 @@
 import './bootstrap';
 import './driver-native-bridge';
+import { registerPwa } from './pwa';
 import { Livewire, Alpine } from '../../vendor/livewire/livewire/dist/livewire.esm';
+
+registerPwa();
 
 Alpine.data('toastManager', () => ({
     toasts: [],

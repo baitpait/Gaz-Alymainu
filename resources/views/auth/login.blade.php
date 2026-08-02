@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     @php $appName = config('app.name', 'غاز اليمني'); @endphp
     <title>تسجيل الدخول — {{ $appName }}</title>
+    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
+    @include('partials.pwa-head')
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -126,6 +128,8 @@
         <p class="text-center text-xs mt-6" style="color:rgba(255,255,255,0.2);">
             © {{ date('Y') }} {{ config('app.company_display_name', 'Gaz Al-Yamani') }} — جميع الحقوق محفوظة
         </p>
+
+        @include('partials.pwa-install-banner', ['variant' => 'login'])
 
     </div>
 </div>
