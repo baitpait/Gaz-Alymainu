@@ -8,12 +8,15 @@ use App\Livewire\Concerns\WithPerPagePagination;
 use App\Models\PurchaseOrder;
 use App\Models\Supplier;
 use App\Services\PurchaseOrderPaymentAllocationService;
+use App\Services\PurchaseOrderStockService;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
+use RuntimeException;
 
 class PurchaseOrderList extends Component
 {
@@ -96,15 +99,31 @@ class PurchaseOrderList extends Component
         $this->confirmDeleteId = null;
     }
 
-    public function delete(): void
+    /**
+     * Business Purpose: حذف فاتورة المشتريات مع عكس أي مخزون سبق ترحيله منها.
+     */
+    public function delete(PurchaseOrderStockService $stockService): void
     {
-        if ($this->confirmDeleteId) {
-            $po = PurchaseOrder::findOrFail($this->confirmDeleteId);
-            Gate::authorize('delete', $po);
-            $po->delete();
-            $this->confirmDeleteId = null;
-            $this->dispatch('toast', message: 'تم حذف فاتورة المشتريات');
+        if (! $this->confirmDeleteId) {
+            return;
         }
+
+        $po = PurchaseOrder::with(['lines.product', 'receivingWarehouse'])->findOrFail($this->confirmDeleteId);
+        Gate::authorize('delete', $po);
+
+        try {
+            DB::transaction(function () use ($po, $stockService) {
+                $stockService->reversePostedInventory($po, auth()->id());
+                $po->delete();
+            });
+        } catch (RuntimeException $e) {
+            $this->dispatch('toast', message: $e->getMessage(), type: 'error');
+
+            return;
+        }
+
+        $this->confirmDeleteId = null;
+        $this->dispatch('toast', message: 'تم حذف فاتورة المشتريات وإرجاع أثر المخزون');
     }
 
     public function render()

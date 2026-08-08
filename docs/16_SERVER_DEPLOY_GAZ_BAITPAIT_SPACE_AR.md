@@ -20,7 +20,8 @@ cp .env.example .env
 php artisan key:generate --force
 php artisan migrate --force
 php artisan storage:link
-npm ci && npm run build
+# بناء Vite كـ sarfesak — لا تشغّل npm كـ root (انظر docs/20 و docs/08)
+su -s /bin/bash sarfesak -c 'cd /home/sarfesak/public_html/gaz && export PUPPETEER_SKIP_DOWNLOAD=true && npm ci --ignore-scripts && npm run build'
 php artisan config:cache && php artisan route:cache && php artisan view:cache
 chown -R sarfesak:sarfesak storage bootstrap/cache
 chmod -R ug+rwx storage bootstrap/cache
@@ -37,9 +38,9 @@ chmod -R ug+rwx storage bootstrap/cache
 cd /home/sarfesak/public_html/gaz && git pull origin main && \
   composer install --no-dev --optimize-autoloader && \
   php artisan migrate --force && \
-  npm ci && npm run build && \
+  su -s /bin/bash sarfesak -c 'cd /home/sarfesak/public_html/gaz && export PUPPETEER_SKIP_DOWNLOAD=true && npm ci --ignore-scripts && npm run build' && \
   php artisan optimize:clear && \
   php artisan config:cache && php artisan route:cache && php artisan view:cache
 ```
 
-التفاصيل: `docs/08_DEPLOYMENT_AND_OPERATIONS_AR.md`
+التفاصيل: `docs/08_DEPLOYMENT_AND_OPERATIONS_AR.md` — PWA: `docs/20_PWA_BROWSER_INSTALL_AR.md`

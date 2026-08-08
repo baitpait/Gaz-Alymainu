@@ -1,16 +1,24 @@
 <?php
 
+use App\Enums\SalePaymentType;
+use App\Enums\WarehouseType;
+use App\Livewire\Reports\ProfitLossReport;
 use App\Models\Client;
+use App\Models\Collection;
 use App\Models\Employee;
 use App\Models\ExchangeRate;
 use App\Models\Expense;
 use App\Models\Invoice;
+use App\Models\Product;
 use App\Models\PurchaseOrder;
 use App\Models\SalaryPayment;
+use App\Models\Sale;
 use App\Models\Supplier;
 use App\Models\User;
+use App\Models\Warehouse;
 use App\Services\Reports\ProfitLossReportService;
 use App\Services\Reports\ReportPeriodFilters;
+use Livewire\Livewire;
 
 beforeEach(function () {
     $this->manager = User::factory()->create(['role' => 'manager', 'is_active' => true]);
@@ -166,6 +174,126 @@ test('ils consolidated report uses stored exchange rates', function () {
 
     expect($totals['sales'])->toBe(35.0)
         ->and($totals['rates']['USD'])->toBe(3.5);
+});
+
+test('accrual profit loss includes driver sales', function () {
+    $driver = User::factory()->create(['role' => 'driver', 'is_active' => true]);
+    $warehouse = Warehouse::query()->create([
+        'name' => 'سيارة P&L '.uniqid(),
+        'type' => WarehouseType::Vehicle,
+        'assigned_user_id' => $driver->id,
+        'is_active' => true,
+    ]);
+    $product = Product::factory()->withIlsPricing()->create();
+
+    Sale::query()->create([
+        'warehouse_id' => $warehouse->id,
+        'product_id' => $product->id,
+        'driver_user_id' => $driver->id,
+        'payment_type' => SalePaymentType::Cash,
+        'quantity' => 2,
+        'unit_price' => 100,
+        'total_amount' => 200,
+        'currency_code' => 'ILS',
+        'sale_date' => '2025-05-12',
+        'sold_at' => '2025-05-12 10:00:00',
+        'recorded_by_user_id' => $this->accountant->id,
+    ]);
+
+    Sale::query()->create([
+        'warehouse_id' => $warehouse->id,
+        'product_id' => $product->id,
+        'driver_user_id' => $driver->id,
+        'payment_type' => SalePaymentType::Credit,
+        'quantity' => 1,
+        'unit_price' => 50,
+        'total_amount' => 50,
+        'currency_code' => 'ILS',
+        'sale_date' => '2025-05-13',
+        'sold_at' => '2025-05-13 10:00:00',
+        'recorded_by_user_id' => $this->accountant->id,
+        'notes' => 'على الحساب',
+    ]);
+
+    $filters = ReportPeriodFilters::fromArray([
+        'date_from' => '2025-05-01',
+        'date_to' => '2025-05-31',
+        'currency' => 'ILS',
+    ]);
+
+    $rows = (new ProfitLossReportService)->byCurrency($filters, ProfitLossReportService::MODE_ACCRUAL);
+
+    expect($rows['ILS']['sales'])->toBe(250.0)
+        ->and($rows['ILS']['driver_sale_count'])->toBe(2);
+});
+
+test('cash profit loss includes cash driver sales and collections only', function () {
+    $driver = User::factory()->create(['role' => 'driver', 'is_active' => true]);
+    $warehouse = Warehouse::query()->create([
+        'name' => 'سيارة نقدي P&L '.uniqid(),
+        'type' => WarehouseType::Vehicle,
+        'assigned_user_id' => $driver->id,
+        'is_active' => true,
+    ]);
+    $product = Product::factory()->withIlsPricing()->create();
+
+    Sale::query()->create([
+        'warehouse_id' => $warehouse->id,
+        'product_id' => $product->id,
+        'driver_user_id' => $driver->id,
+        'payment_type' => SalePaymentType::Cash,
+        'quantity' => 1,
+        'unit_price' => 80,
+        'total_amount' => 80,
+        'currency_code' => 'ILS',
+        'sale_date' => '2025-05-12',
+        'sold_at' => '2025-05-12 10:00:00',
+        'recorded_by_user_id' => $this->accountant->id,
+    ]);
+
+    Sale::query()->create([
+        'warehouse_id' => $warehouse->id,
+        'product_id' => $product->id,
+        'driver_user_id' => $driver->id,
+        'payment_type' => SalePaymentType::Credit,
+        'quantity' => 1,
+        'unit_price' => 90,
+        'total_amount' => 90,
+        'currency_code' => 'ILS',
+        'sale_date' => '2025-05-12',
+        'sold_at' => '2025-05-12 11:00:00',
+        'recorded_by_user_id' => $this->accountant->id,
+        'notes' => 'دين',
+    ]);
+
+    Collection::query()->create([
+        'driver_user_id' => $driver->id,
+        'warehouse_id' => $warehouse->id,
+        'method' => 'cash',
+        'amount' => 40,
+        'currency_code' => 'ILS',
+        'collection_date' => '2025-05-14',
+        'collected_at' => '2025-05-14 12:00:00',
+        'recorded_by_user_id' => $this->accountant->id,
+    ]);
+
+    $filters = ReportPeriodFilters::fromArray([
+        'date_from' => '2025-05-01',
+        'date_to' => '2025-05-31',
+        'currency' => 'ILS',
+    ]);
+
+    $rows = (new ProfitLossReportService)->byCurrency($filters, ProfitLossReportService::MODE_CASH);
+
+    expect($rows['ILS']['sales'])->toBe(120.0)
+        ->and($rows['ILS']['collection_count'])->toBe(1);
+});
+
+test('profit loss page defaults currency to ILS', function () {
+    $this->actingAs($this->viewer);
+
+    Livewire::test(ProfitLossReport::class)
+        ->assertSet('currency', 'ILS');
 });
 
 test('viewer can open profit loss report page', function () {

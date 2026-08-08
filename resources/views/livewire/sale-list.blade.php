@@ -87,6 +87,7 @@
                 <th>الصنف</th>
                 <th>السيارة / السائق</th>
                 <th>النوع</th>
+                <th>ملاحظات</th>
                 <th class="text-left" dir="ltr">الكمية</th>
                 <th class="text-left" dir="ltr">السعر</th>
                 <th class="text-left" dir="ltr">الإجمالي</th>
@@ -107,6 +108,7 @@
                             <span class="rounded px-2 py-0.5 bg-[#1B6CA8]/10 text-[#1B6CA8] text-xs">{{ $s->payment_type->label() }}</span>
                         @endif
                     </td>
+                    <td class="text-sm text-gray-600 max-w-[12rem]">{{ $s->notes ?: '—' }}</td>
                     <td class="text-left font-mono text-sm" dir="ltr">{{ rtrim(rtrim(number_format((float) $s->quantity, 4), '0'), '.') }}</td>
                     <td class="text-left font-mono text-sm" dir="ltr">{{ number_format((float) $s->unit_price, 2) }}</td>
                     <td class="text-left font-mono text-sm font-semibold" dir="ltr">{{ number_format((float) $s->total_amount, 2) }}</td>
@@ -123,7 +125,7 @@
                     @endcan
                 </tr>
                 @empty
-                <tr><td colspan="{{ auth()->user()->can('delete-sales') ? 8 : 7 }}">
+                <tr><td colspan="{{ auth()->user()->can('delete-sales') ? 9 : 8 }}">
                     <div class="text-center py-16 text-gray-300"><p class="text-sm">لا توجد مبيعات</p></div>
                 </td></tr>
                 @endforelse

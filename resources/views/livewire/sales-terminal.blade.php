@@ -113,13 +113,38 @@
                 بيع نقدي
             </button>
             <button type="button"
-                    wire:click="sell({{ $p->id }}, 'credit')"
+                    wire:click="beginCreditSale({{ $p->id }})"
                     wire:loading.attr="disabled"
                     @disabled($stock <= 0)
-                    class="btn btn-primary bg-[#1B6CA8] hover:bg-[#b3901f] border-[#1B6CA8] justify-center h-12 text-base disabled:opacity-40 disabled:cursor-not-allowed">
+                    class="btn btn-primary bg-[#1B6CA8] hover:bg-[#155a8a] border-[#1B6CA8] justify-center h-12 text-base disabled:opacity-40 disabled:cursor-not-allowed">
                 على الحساب
             </button>
         </div>
+
+        @if($awaitingCreditNotesFor === $p->id)
+        <div class="mt-3 rounded-xl border border-[#1B6CA8]/25 bg-[#1B6CA8]/5 p-3 space-y-2">
+            <label class="label mb-0">ملاحظات البيع على الحساب</label>
+            <textarea wire:model="creditNotes.{{ $p->id }}"
+                      rows="2"
+                      maxlength="2000"
+                      class="input w-full text-sm"
+                      placeholder="مثال: اسم الزبون / الحي / تفاصيل الدين"
+                      autofocus></textarea>
+            <div class="grid grid-cols-2 gap-2">
+                <button type="button"
+                        wire:click="cancelCreditNotes"
+                        class="btn btn-secondary justify-center h-11 text-sm">
+                    إلغاء
+                </button>
+                <button type="button"
+                        wire:click="sell({{ $p->id }}, 'credit')"
+                        wire:loading.attr="disabled"
+                        class="btn btn-primary bg-[#1B6CA8] hover:bg-[#155a8a] border-[#1B6CA8] justify-center h-11 text-sm">
+                    تأكيد على الحساب
+                </button>
+            </div>
+        </div>
+        @endif
     </div>
     @endforeach
 </div>

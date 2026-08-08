@@ -78,8 +78,15 @@ composer install --no-dev --optimize-autoloader
 # 3) لو وُجدت migrations جديدة:
 php artisan migrate --force
 
-# 4) إن تغيّرت أصول Vite (CSS/JS):
-npm ci && npm run build
+# 4) إن تغيّرت أصول Vite (CSS/JS) — **كمستخدم الموقع وليس root**:
+#    (تجنّب EACCES على /root/.config/puppeteer مع حزمة puppeteer)
+su -s /bin/bash sarfesak -c '
+  cd /home/sarfesak/public_html/gaz && \
+  export PUPPETEER_SKIP_DOWNLOAD=true && \
+  npm ci --ignore-scripts && \
+  npm run build
+'
+# تفاصيل PWA: docs/20_PWA_BROWSER_INSTALL_AR.md
 
 # 5) دائماً بعد أي pull:
 php artisan view:clear && php artisan view:cache

@@ -26,6 +26,9 @@ class ProfitLossReport extends Component
 
         $this->mode = $mode;
         $this->mountPeriodReportFilters();
+        if ($this->currency === '') {
+            $this->currency = ProfitLossReportService::DEFAULT_CURRENCY;
+        }
         $this->currencyOptions = (new ProfitLossReportService)->currencyOptions();
         $this->loadReport();
     }
@@ -39,7 +42,7 @@ class ProfitLossReport extends Component
     {
         $this->dateFrom = now()->startOfMonth()->format('Y-m-d');
         $this->dateTo = now()->format('Y-m-d');
-        $this->currency = '';
+        $this->currency = ProfitLossReportService::DEFAULT_CURRENCY;
         $this->loadReport();
     }
 

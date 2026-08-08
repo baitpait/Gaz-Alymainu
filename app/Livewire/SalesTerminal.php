@@ -16,6 +16,7 @@ use Livewire\Component;
 /**
  * نقطة بيع مبسّطة: عدّاد تنازلي للمخزون + زرّان (نقدي / على الحساب).
  * بلا اسم زبون — مجرّد توثيق بيع يخصم من مخزون السيارة بسعر اليوم.
+ * البيع على الحساب يطلب ملاحظة من السائق وتُحفظ في sales.notes.
  */
 class SalesTerminal extends Component
 {
@@ -27,6 +28,12 @@ class SalesTerminal extends Component
     /** @var array<int, string> سعر البيع القابل للتعديل لكل صنف (product_id => price) */
     public array $price = [];
 
+    /** @var array<int, string> ملاحظات البيع على الحساب لكل صنف */
+    public array $creditNotes = [];
+
+    /** صنف بانتظار إدخال ملاحظة قبل تأكيد البيع على الحساب */
+    public ?int $awaitingCreditNotesFor = null;
+
     public function mount(): void
     {
         abort_unless(Gate::allows('record-sales'), 403);
@@ -35,6 +42,24 @@ class SalesTerminal extends Component
         if ($user->isDriver()) {
             $this->warehouseId = $user->assignedVehicle?->id;
         }
+    }
+
+    /**
+     * Business Purpose: فتح خانة الملاحظات قبل توثيق بيع على الحساب.
+     */
+    public function beginCreditSale(int $productId): void
+    {
+        abort_unless(Gate::allows('record-sales'), 403);
+        $this->awaitingCreditNotesFor = $productId;
+        $this->creditNotes[$productId] = $this->creditNotes[$productId] ?? '';
+    }
+
+    /**
+     * Business Purpose: إغلاق خانة ملاحظات الآجل دون بيع.
+     */
+    public function cancelCreditNotes(): void
+    {
+        $this->awaitingCreditNotesFor = null;
     }
 
     /**
@@ -74,9 +99,34 @@ class SalesTerminal extends Component
         }
 
         $type = SalePaymentType::from($paymentType);
+        $notes = null;
+
+        if ($type === SalePaymentType::Credit) {
+            $notes = trim((string) ($this->creditNotes[$productId] ?? ''));
+            if ($notes === '') {
+                $this->awaitingCreditNotesFor = $productId;
+                $this->dispatch('toast', message: 'اكتب ملاحظة للبيع على الحساب', type: 'error');
+
+                return;
+            }
+            if (mb_strlen($notes) > 2000) {
+                $this->dispatch('toast', message: 'الملاحظة طويلة جداً', type: 'error');
+
+                return;
+            }
+        }
 
         try {
-            $sale = $sales->recordSale($warehouse, $product, $quantity, $type, auth()->id(), null, $unitPrice);
+            $sale = $sales->recordSale(
+                $warehouse,
+                $product,
+                $quantity,
+                $type,
+                auth()->id(),
+                null,
+                $unitPrice,
+                $notes,
+            );
         } catch (\RuntimeException $e) {
             $this->dispatch('toast', message: $e->getMessage(), type: 'error');
 
@@ -84,6 +134,8 @@ class SalesTerminal extends Component
         }
 
         $this->qty[$productId] = '0';
+        $this->creditNotes[$productId] = '';
+        $this->awaitingCreditNotesFor = null;
         $this->dispatch('sold', productId: $productId);
         $this->dispatch('toast', message: "تم توثيق بيع {$type->label()} — {$sale->total_amount} ش");
     }

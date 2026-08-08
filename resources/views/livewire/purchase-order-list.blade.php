@@ -254,7 +254,9 @@
             <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
         </div>
         <h3 class="text-base font-bold text-center mb-1">حذف فاتورة المشتريات</h3>
-        <p class="text-sm text-gray-400 text-center mb-5">هل أنت متأكد؟ لا يمكن التراجع.</p>
+        <p class="text-sm text-gray-400 text-center mb-5">
+            سيُحذف السجل ويُخصم من المخزن أي كميات دخلت بهذه الفاتورة (إن وُجدت). إن كانت الكمية قد بُيعت ولن تكفي، سيُرفض الحذف.
+        </p>
         <div class="flex gap-2">
             <button type="button" wire:click="cancelDelete" class="btn btn-secondary flex-1">إلغاء</button>
             <button type="button" wire:click="delete" class="btn btn-danger flex-1">حذف</button>

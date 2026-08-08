@@ -35,6 +35,7 @@ class SalesService
         ?int $recordedByUserId = null,
         ?string $date = null,
         ?float $unitPriceOverride = null,
+        ?string $notes = null,
     ): Sale {
         if ($quantity <= 0) {
             throw new RuntimeException('الكمية يجب أن تكون أكبر من صفر.');
@@ -50,7 +51,12 @@ class SalesService
             throw new RuntimeException('أدخل سعر بيع صحيحًا لهذا الصنف.');
         }
 
-        return DB::transaction(function () use ($warehouse, $product, $quantity, $paymentType, $recordedByUserId, $saleDate, $unitPrice) {
+        $notes = $notes !== null ? trim($notes) : null;
+        if ($notes === '') {
+            $notes = null;
+        }
+
+        return DB::transaction(function () use ($warehouse, $product, $quantity, $paymentType, $recordedByUserId, $saleDate, $unitPrice, $notes) {
             // يخصم من المخزون ويكتب حركة (سيفشل إن كانت الكمية غير كافية).
             $this->inventory->saleOut($warehouse, $product, $quantity, $recordedByUserId, Carbon::now(), 'بيع '.$paymentType->label());
 
@@ -66,6 +72,7 @@ class SalesService
                 'sale_date' => $saleDate,
                 'sold_at' => Carbon::now(),
                 'recorded_by_user_id' => $recordedByUserId,
+                'notes' => $notes,
             ]);
         });
     }

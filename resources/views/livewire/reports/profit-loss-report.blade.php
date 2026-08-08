@@ -30,7 +30,13 @@
             <p class="text-xs font-bold text-gray-400 mb-4 uppercase tracking-widest" dir="ltr">{{ $cur }}</p>
             <div class="space-y-2 text-sm">
                 <div class="flex justify-between">
-                    <span class="text-gray-500">{{ $isCash ? 'دفعات العملاء' : 'مبيعات ('.$row['invoice_count'].' فاتورة)' }}</span>
+                    <span class="text-gray-500">
+                        @if($isCash)
+                            نقدي (دفعات {{ $row['client_payment_count'] }} + تحصيل {{ $row['collection_count'] }} + مبيعات نقدية)
+                        @else
+                            مبيعات ({{ $row['invoice_count'] }} فاتورة + {{ $row['driver_sale_count'] }} بيع سائق)
+                        @endif
+                    </span>
                     <span class="font-mono text-blue-600" dir="ltr">{{ number_format($row['sales'], 2) }}</span>
                 </div>
                 <div class="flex justify-between">
@@ -55,6 +61,6 @@
         </div>
         @endforeach
     </div>
-  <p class="text-xs text-gray-400 mt-4">المعادلة: {{ $isCash ? 'دفعات عملاء − دفعات موردين − مصروفات − رواتب' : 'مبيعات − مشتريات − مصروفات − رواتب' }} — لكل عملة منفصلة.</p>
+  <p class="text-xs text-gray-400 mt-4">المعادلة: {{ $isCash ? 'دفعات عملاء + تحصيلات + مبيعات نقدية − دفعات موردين − مصروفات − رواتب' : 'فواتير + مبيعات سائقين − مشتريات − مصروفات − رواتب' }} — لكل عملة منفصلة. العملة الافتراضية: شيكل (ILS).</p>
     @endif
 </div>

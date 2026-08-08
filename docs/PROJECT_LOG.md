@@ -10,10 +10,17 @@
 ---
 -->
 
+## [2026-08-02 11:52] - PWA على الإنتاج + أوامر npm الآمنة (مكتمل ✅)
+- **الهدف:** توثيق نشر PWA على `gaz.baitpait.space` وحل فشل `npm ci` كـ root.
+- **التغييرات:** تحديث `docs/20_PWA_BROWSER_INSTALL_AR.md` و`docs/08_DEPLOYMENT_AND_OPERATIONS_AR.md` بأمر `su sarfesak` + `PUPPETEER_SKIP_DOWNLOAD` + `npm ci --ignore-scripts`.
+- **تنبيه:** `git pull` يجلب manifest/sw؛ تسجيل SW من الحزمة يحتاج `npm run build` تحت `sarfesak`.
+
+---
+
 ## [2026-08-02 11:45] - PWA تثبيت من المتصفح (مكتمل ✅)
 - **الهدف:** اختصار تطبيق على الشاشة الرئيسية بدون متاجر (Android/iOS جزئياً).
 - **التغييرات:** `manifest.webmanifest` + `sw.js` + أيقونات + بانر تثبيت في الدخول والتطبيق؛ توثيق `docs/20_PWA_BROWSER_INSTALL_AR.md`.
-- **تنبيه:** PWA لا يستبدل APK لتتبّع الموقع في الخلفية. بعد النشر: `npm run build` + HTTPS.
+- **تنبيه:** PWA لا يستبدل APK لتتبّع الموقع في الخلفية. بعد النشر: ابنِ الأصول كـ `sarfesak` (انظر إدخال 11:52) + HTTPS.
 
 ---
 

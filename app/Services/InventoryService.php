@@ -190,6 +190,34 @@ class InventoryService
     }
 
     /**
+     * عكس إدخال مشتريات: خصم الكمية من المخزن مع حركة تسوية في السجل.
+     */
+    public function reversePurchaseIn(
+        Warehouse $warehouse,
+        Product $product,
+        float $quantity,
+        ?int $recordedByUserId = null,
+        ?string $notes = null,
+    ): StockMovement {
+        $this->assertPositive($quantity);
+
+        return DB::transaction(function () use ($warehouse, $product, $quantity, $recordedByUserId, $notes) {
+            $this->applyDelta($warehouse->id, $product->id, -$quantity);
+
+            return StockMovement::create([
+                'type' => StockMovementType::Adjustment,
+                'from_warehouse_id' => $warehouse->id,
+                'product_id' => $product->id,
+                'quantity' => $quantity,
+                'moved_at' => Carbon::now(),
+                'driver_user_id' => $warehouse->assigned_user_id,
+                'recorded_by_user_id' => $recordedByUserId,
+                'notes' => $notes,
+            ]);
+        });
+    }
+
+    /**
      * إرجاع كمية بيع ملغى إلى المخزن/السيارة مع حركة تسوية في السجل.
      */
     public function restoreForVoidedSale(

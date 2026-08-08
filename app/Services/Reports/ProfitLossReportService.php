@@ -2,24 +2,29 @@
 
 namespace App\Services\Reports;
 
+use App\Enums\SalePaymentType;
 use App\Models\ClientPayment;
+use App\Models\Collection;
+use App\Models\DriverExpense;
 use App\Models\Expense;
 use App\Models\Invoice;
 use App\Models\Product;
 use App\Models\PurchaseOrder;
 use App\Models\SalaryPayment;
+use App\Models\Sale;
 use App\Models\SupplierPayment;
 use App\Services\Finance\BoiExchangeRateService;
-use Carbon\Carbon;
 
 /**
- * Business Purpose: Profit & loss per currency — accrual (invoices) or cash (payments), no COGS.
+ * Business Purpose: Profit & loss per currency — accrual (invoices + driver sales) or cash (payments + cash sales + collections), no COGS.
  */
 class ProfitLossReportService
 {
     public const MODE_ACCRUAL = 'accrual';
 
     public const MODE_CASH = 'cash';
+
+    public const DEFAULT_CURRENCY = 'ILS';
 
     /**
      * @return array<string, array{
@@ -29,8 +34,10 @@ class ProfitLossReportService
      *   salaries: float,
      *   net_profit: float,
      *   invoice_count: int,
+     *   driver_sale_count: int,
      *   po_count: int,
      *   client_payment_count: int,
+     *   collection_count: int,
      *   supplier_payment_count: int,
      *   salary_count: int
      * }>
@@ -48,6 +55,13 @@ class ProfitLossReportService
             ->when($filters->currency, fn ($q) => $q->where('currency_code', $filters->currency))
             ->get(['currency_code', 'total_amount']);
 
+        $driverSales = Sale::query()
+            ->whereNull('deleted_at')
+            ->whereDate('sale_date', '>=', $from)
+            ->whereDate('sale_date', '<=', $to)
+            ->when($filters->currency, fn ($q) => $q->where('currency_code', $filters->currency))
+            ->get(['currency_code', 'total_amount', 'payment_type']);
+
         $purchaseOrders = PurchaseOrder::query()
             ->where('status', 'issued')
             ->whereNull('deleted_at')
@@ -60,6 +74,13 @@ class ProfitLossReportService
             ->whereNull('deleted_at')
             ->whereDate('paid_at', '>=', $from)
             ->whereDate('paid_at', '<=', $to)
+            ->when($filters->currency, fn ($q) => $q->where('currency_code', $filters->currency))
+            ->get(['currency_code', 'amount']);
+
+        $collections = Collection::query()
+            ->whereNull('deleted_at')
+            ->whereDate('collection_date', '>=', $from)
+            ->whereDate('collection_date', '<=', $to)
             ->when($filters->currency, fn ($q) => $q->where('currency_code', $filters->currency))
             ->get(['currency_code', 'amount']);
 
@@ -77,6 +98,13 @@ class ProfitLossReportService
             ->when($filters->currency, fn ($q) => $q->where('currency_code', $filters->currency))
             ->get(['currency_code', 'amount']);
 
+        $driverExpenses = DriverExpense::query()
+            ->whereNull('deleted_at')
+            ->whereDate('expense_date', '>=', $from)
+            ->whereDate('expense_date', '<=', $to)
+            ->when($filters->currency, fn ($q) => $q->where('currency_code', $filters->currency))
+            ->get(['currency_code', 'amount']);
+
         $salaries = SalaryPayment::query()
             ->where('status', SalaryPayment::STATUS_PAID)
             ->whereNull('deleted_at')
@@ -87,10 +115,13 @@ class ProfitLossReportService
 
         $currencies = collect()
             ->merge($invoices->pluck('currency_code'))
+            ->merge($driverSales->pluck('currency_code'))
             ->merge($purchaseOrders->pluck('currency_code'))
             ->merge($clientPayments->pluck('currency_code'))
+            ->merge($collections->pluck('currency_code'))
             ->merge($supplierPayments->pluck('currency_code'))
             ->merge($expenses->pluck('currency_code'))
+            ->merge($driverExpenses->pluck('currency_code'))
             ->merge($salaries->pluck('currency_code'))
             ->unique()
             ->sort()
@@ -103,18 +134,25 @@ class ProfitLossReportService
         $result = [];
 
         foreach ($currencies as $cur) {
-            $sales = (float) $invoices->where('currency_code', $cur)->sum('total_amount');
+            $invoiceSales = (float) $invoices->where('currency_code', $cur)->sum('total_amount');
+            $gasSalesAll = (float) $driverSales->where('currency_code', $cur)->sum('total_amount');
+            $gasSalesCash = (float) $driverSales
+                ->where('currency_code', $cur)
+                ->filter(fn (Sale $sale) => $sale->payment_type === SalePaymentType::Cash)
+                ->sum('total_amount');
             $purchases = (float) $purchaseOrders->where('currency_code', $cur)->sum('total_amount');
             $clientPaid = (float) $clientPayments->where('currency_code', $cur)->sum('amount');
+            $collectionsPaid = (float) $collections->where('currency_code', $cur)->sum('amount');
             $supplierPaid = (float) $supplierPayments->where('currency_code', $cur)->sum('amount');
-            $expenseTotal = (float) $expenses->where('currency_code', $cur)->sum('amount');
+            $expenseTotal = (float) $expenses->where('currency_code', $cur)->sum('amount')
+                + (float) $driverExpenses->where('currency_code', $cur)->sum('amount');
             $salaryTotal = (float) $salaries->where('currency_code', $cur)->sum('net_amount');
 
             if ($mode === self::MODE_CASH) {
-                $revenue = $clientPaid;
+                $revenue = $clientPaid + $collectionsPaid + $gasSalesCash;
                 $costPurchases = $supplierPaid;
             } else {
-                $revenue = $sales;
+                $revenue = $invoiceSales + $gasSalesAll;
                 $costPurchases = $purchases;
             }
 
@@ -127,8 +165,10 @@ class ProfitLossReportService
                 'salaries' => round($salaryTotal, 2),
                 'net_profit' => $net,
                 'invoice_count' => $invoices->where('currency_code', $cur)->count(),
+                'driver_sale_count' => $driverSales->where('currency_code', $cur)->count(),
                 'po_count' => $purchaseOrders->where('currency_code', $cur)->count(),
                 'client_payment_count' => $clientPayments->where('currency_code', $cur)->count(),
+                'collection_count' => $collections->where('currency_code', $cur)->count(),
                 'supplier_payment_count' => $supplierPayments->where('currency_code', $cur)->count(),
                 'salary_count' => $salaries->where('currency_code', $cur)->count(),
             ];
