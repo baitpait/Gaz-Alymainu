@@ -59,9 +59,11 @@ test('accrual profit loss calculates per currency independently', function () {
 
     $rows = (new ProfitLossReportService)->byCurrency($filters, ProfitLossReportService::MODE_ACCRUAL);
 
+    // Net uses COGS (none here), not purchase invoices — operational PO is reference only.
     expect($rows['USD']['sales'])->toBe(10.0)
-        ->and($rows['USD']['purchases'])->toBe(9.0)
-        ->and($rows['USD']['net_profit'])->toBe(1.0);
+        ->and($rows['USD']['cogs'])->toBe(0.0)
+        ->and($rows['USD']['operational_purchases'])->toBe(9.0)
+        ->and($rows['USD']['net_profit'])->toBe(10.0);
 });
 
 test('cash profit loss uses payments not invoices', function () {
@@ -104,9 +106,10 @@ test('cash profit loss uses payments not invoices', function () {
 
     $rows = (new ProfitLossReportService)->byCurrency($filters, ProfitLossReportService::MODE_CASH);
 
+    // Cash revenue only; COGS of cash sales (none) — supplier payments do not reduce net profit.
     expect($rows['USD']['sales'])->toBe(8.0)
-        ->and($rows['USD']['purchases'])->toBe(9.0)
-        ->and($rows['USD']['net_profit'])->toBe(-1.0);
+        ->and($rows['USD']['cogs'])->toBe(0.0)
+        ->and($rows['USD']['net_profit'])->toBe(8.0);
 });
 
 test('profit loss includes paid salaries from hr module', function () {
@@ -223,8 +226,11 @@ test('accrual profit loss includes driver sales', function () {
 
     $rows = (new ProfitLossReportService)->byCurrency($filters, ProfitLossReportService::MODE_ACCRUAL);
 
+    // withIlsPricing cost=50 → COGS = (2+1)×50 = 150; net = 250−150 = 100
     expect($rows['ILS']['sales'])->toBe(250.0)
-        ->and($rows['ILS']['driver_sale_count'])->toBe(2);
+        ->and($rows['ILS']['driver_sale_count'])->toBe(2)
+        ->and($rows['ILS']['cogs'])->toBe(150.0)
+        ->and($rows['ILS']['net_profit'])->toBe(100.0);
 });
 
 test('cash profit loss includes cash driver sales and collections only', function () {
@@ -285,8 +291,102 @@ test('cash profit loss includes cash driver sales and collections only', functio
 
     $rows = (new ProfitLossReportService)->byCurrency($filters, ProfitLossReportService::MODE_CASH);
 
+    // Revenue 80+40=120; COGS cash only 1×50=50; net=70
     expect($rows['ILS']['sales'])->toBe(120.0)
-        ->and($rows['ILS']['collection_count'])->toBe(1);
+        ->and($rows['ILS']['collection_count'])->toBe(1)
+        ->and($rows['ILS']['cogs'])->toBe(50.0)
+        ->and($rows['ILS']['net_profit'])->toBe(70.0);
+});
+
+test('accrual profit uses cogs not full purchase invoice — 100 bought 50 sold', function () {
+    $driver = User::factory()->create(['role' => 'driver', 'is_active' => true]);
+    $warehouse = Warehouse::query()->create([
+        'name' => 'سيارة COGS '.uniqid(),
+        'type' => WarehouseType::Vehicle,
+        'assigned_user_id' => $driver->id,
+        'is_active' => true,
+    ]);
+    $product = Product::factory()->create();
+    \App\Models\ProductCurrencyPrice::query()->create([
+        'product_id' => $product->id,
+        'currency_code' => 'ILS',
+        'service_cost_price' => 80,
+        'min_sale_price' => 90,
+        'sale_price' => 100,
+    ]);
+    $supplier = Supplier::create([
+        'legacy_number' => 'pl-cogs-'.uniqid(),
+        'business_name' => 'مورد مثال',
+    ]);
+
+    PurchaseOrder::create([
+        'supplier_id' => $supplier->id,
+        'currency_code' => 'ILS',
+        'total_amount' => 8000,
+        'status' => 'issued',
+        'document_date' => '2025-06-01',
+        'discount_amount' => 0,
+        'notes' => 'شراء 100',
+        'recorded_by_user_id' => $this->accountant->id,
+        'is_inventory_valuation' => false,
+    ]);
+
+    Sale::query()->create([
+        'warehouse_id' => $warehouse->id,
+        'product_id' => $product->id,
+        'driver_user_id' => $driver->id,
+        'payment_type' => SalePaymentType::Cash,
+        'quantity' => 50,
+        'unit_price' => 100,
+        'total_amount' => 5000,
+        'currency_code' => 'ILS',
+        'sale_date' => '2025-06-10',
+        'sold_at' => '2025-06-10 10:00:00',
+        'recorded_by_user_id' => $this->accountant->id,
+    ]);
+
+    $filters = ReportPeriodFilters::fromArray([
+        'date_from' => '2025-06-01',
+        'date_to' => '2025-06-30',
+        'currency' => 'ILS',
+    ]);
+
+    $rows = (new ProfitLossReportService)->byCurrency($filters, ProfitLossReportService::MODE_ACCRUAL);
+
+    expect($rows['ILS']['sales'])->toBe(5000.0)
+        ->and($rows['ILS']['cogs'])->toBe(4000.0)
+        ->and($rows['ILS']['operational_purchases'])->toBe(8000.0)
+        ->and($rows['ILS']['net_profit'])->toBe(1000.0);
+});
+
+test('inventory valuation purchase orders are excluded from operational purchases', function () {
+    $supplier = Supplier::create([
+        'legacy_number' => 'pl-val-'.uniqid(),
+        'business_name' => 'تقييم',
+    ]);
+
+    PurchaseOrder::create([
+        'supplier_id' => $supplier->id,
+        'currency_code' => 'ILS',
+        'total_amount' => 21317.5,
+        'status' => 'issued',
+        'document_date' => '2025-06-08',
+        'discount_amount' => 0,
+        'notes' => 'تقييم مخزون موجود — بدون ترحيل مخزون',
+        'recorded_by_user_id' => $this->accountant->id,
+        'is_inventory_valuation' => true,
+    ]);
+
+    $filters = ReportPeriodFilters::fromArray([
+        'date_from' => '2025-06-01',
+        'date_to' => '2025-06-30',
+        'currency' => 'ILS',
+    ]);
+
+    $rows = (new ProfitLossReportService)->byCurrency($filters, ProfitLossReportService::MODE_ACCRUAL);
+
+    expect($rows['ILS']['operational_purchases'])->toBe(0.0)
+        ->and($rows['ILS']['cogs'])->toBe(0.0);
 });
 
 test('profit loss page defaults currency to ILS', function () {

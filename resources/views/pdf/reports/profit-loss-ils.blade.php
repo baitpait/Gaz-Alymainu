@@ -10,7 +10,7 @@
 
 <div class="summary-box">
     <div class="summary-row"><span>إيرادات/مبيعات</span><span class="positive" dir="ltr">{{ number_format($totals['sales'], 2) }} ILS</span></div>
-    <div class="summary-row"><span>مشتريات</span><span class="negative" dir="ltr">{{ number_format($totals['purchases'], 2) }} ILS</span></div>
+    <div class="summary-row"><span>تكلفة المباع</span><span class="negative" dir="ltr">{{ number_format($totals['purchases'], 2) }} ILS</span></div>
     <div class="summary-row"><span>مصروفات</span><span class="negative" dir="ltr">{{ number_format($totals['expenses'], 2) }} ILS</span></div>
     <div class="summary-row"><span>رواتب</span><span class="negative" dir="ltr">{{ number_format($totals['salaries'], 2) }} ILS</span></div>
     <div class="summary-row"><span><strong>صافي الربح/الخسارة</strong></span>

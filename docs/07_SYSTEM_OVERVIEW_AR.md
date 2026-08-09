@@ -131,7 +131,7 @@ erDiagram
 - `resources/views/financial-summary.blade.php` — صفحة «الصناديق النقدية» الكاملة.
 - `resources/views/market-debt/index.blade.php` + `MarketDebtPage` — شاشة **دين السوق** (بلا عملاء).
 - `resources/views/partials/currency-boxes-full.blade.php` — تفاصيل صناديق السائقين والصندوق الرئيسي (مطوي في اللوحة).
-- توثيق الجلسات: `docs/18_SESSION_UI_DASHBOARD_APK_2026_07_27_AR.md`، `docs/19_SESSION_MOBILE_MARKET_DEBT_SALES_VOID_2026_08_01_AR.md`.
+- توثيق الجلسات: `docs/18_…`، `docs/19_…`، `docs/21_SESSION_PNL_PO_STOCK_VALUATION_2026_08_08_AR.md`.
 
 **أقسام اللوحة (الحالية):**
 

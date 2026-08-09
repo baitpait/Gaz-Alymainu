@@ -33,7 +33,7 @@
         <p class="text-xs text-gray-400 mb-3">مجمّع بـ ILS (سعر تاريخ {{ $totals['rate_date'] ?? $dateTo }})</p>
         <div class="space-y-2 text-sm">
             <div class="flex justify-between"><span class="text-gray-500">إيرادات/مبيعات</span><span class="font-mono text-blue-600" dir="ltr">{{ number_format($totals['sales'] ?? 0, 2) }} ILS</span></div>
-            <div class="flex justify-between"><span class="text-gray-500">مشتريات</span><span class="font-mono text-purple-600" dir="ltr">{{ number_format($totals['purchases'] ?? 0, 2) }} ILS</span></div>
+            <div class="flex justify-between"><span class="text-gray-500">تكلفة المباع</span><span class="font-mono text-purple-600" dir="ltr">{{ number_format($totals['purchases'] ?? 0, 2) }} ILS</span></div>
             <div class="flex justify-between"><span class="text-gray-500">مصروفات</span><span class="font-mono text-red-500" dir="ltr">{{ number_format($totals['expenses'] ?? 0, 2) }} ILS</span></div>
             <div class="flex justify-between"><span class="text-gray-500">رواتب</span><span class="font-mono text-red-500" dir="ltr">{{ number_format($totals['salaries'] ?? 0, 2) }} ILS</span></div>
             <div class="flex justify-between pt-2 border-t font-bold text-lg">
@@ -41,6 +41,10 @@
                 <span class="font-mono {{ ($totals['net_profit'] ?? 0) >= 0 ? 'text-green-600' : 'text-red-600' }}" dir="ltr">
                     {{ ($totals['net_profit'] ?? 0) >= 0 ? '+' : '' }}{{ number_format($totals['net_profit'] ?? 0, 2) }} ILS
                 </span>
+            </div>
+            <div class="flex justify-between pt-2 border-t border-dashed mt-1">
+                <span class="text-gray-400 text-xs">أصل المخزون (خارج الربح)</span>
+                <span class="font-mono text-[#1B6CA8]" dir="ltr">{{ number_format($totals['inventory_asset'] ?? 0, 2) }} ILS</span>
             </div>
         </div>
     </div>
@@ -64,7 +68,7 @@
                     <tr>
                         <th dir="ltr">عملة</th>
                         <th>مبيعات/إيراد</th>
-                        <th>مشتريات</th>
+                        <th>تكلفة المباع</th>
                         <th>صافي أصلي</th>
                     </tr>
                 </thead>

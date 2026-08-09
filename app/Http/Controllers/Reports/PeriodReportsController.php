@@ -251,8 +251,8 @@ class PeriodReportsController extends Controller
             'rows' => collect($rows),
             'filterLabels' => $filters->describeActive(),
             'reportTitle' => 'قائمة الربح والخسارة — كامل (فواتير)',
-            'salesLabel' => 'مبيعات (فواتير)',
-            'purchaseLabel' => 'مشتريات (أوامر)',
+            'salesLabel' => 'مبيعات',
+            'purchaseLabel' => 'تكلفة المباع',
         ], 'profit-loss-'.now()->format('Ymd-His').'.pdf', 'قائمة الربح والخسارة');
     }
 
@@ -268,8 +268,8 @@ class PeriodReportsController extends Controller
             'rows' => collect($rows),
             'filterLabels' => $filters->describeActive(),
             'reportTitle' => 'قائمة الربح والخسارة — بدون دين',
-            'salesLabel' => 'دفعات العملاء',
-            'purchaseLabel' => 'دفعات الموردين',
+            'salesLabel' => 'إيراد نقدي',
+            'purchaseLabel' => 'تكلفة المباع (نقدي)',
         ], 'profit-loss-cash-'.now()->format('Ymd-His').'.pdf', 'الربح والخسارة بدون دين');
     }
 

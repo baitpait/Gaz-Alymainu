@@ -62,10 +62,15 @@
 ## 3. الخدمات (Business Logic — `app/Services`)
 
 - **`InventoryService`** — كل تعديلات المخزون داخل `DB::transaction` (ACID):
-  - `transfer()` — تحويل كميات بين مخزنين (يشمل التحميل من مخزن ثابت إلى سيارة، والإرجاع).
+  - `transfer()` / `load()` / `returnToWarehouse()` — بين مخزن ثابت وسيارة.
+  - `purchaseIn()` — إدخال من فاتورة مشتريات إلى مخزن استلام.
   - `saleOut()` — خصم الكمية المباعة من مخزن السائق.
+  - `adjustToQuantity()` — تسوية جرد إلى رصيد مطلق + حركة `adjustment`.
+  - `reversePurchaseIn()` — خصم عند إلغاء فاتورة مشتريات مرحّلة.
+  - `restoreForVoidedSale()` — إرجاع كمية عند إلغاء بيع.
+- **`PurchaseOrderStockService`** — عند حذف فاتورة مرحّلة: عكس كميات الأصناف `is_stock_tracked` ثم soft-delete؛ يرفض إن لم يكف الرصيد. الأصناف بلا تتبع مخزون تُتخطى.
 - **`DailyPriceService`** — `priceFor($productId, $date, $currency)`؛ العملة الافتراضية `ILS`.
-- **`SalesService`** — `recordSale(..., ?float $unitPriceOverride = null)`: يستخدم السعر المُدخل في POS، ويرجع لسعر اليوم كافتراضي. يرفض البيع بسعر ≤ 0.
+- **`SalesService`** — `recordSale(..., ?float $unitPriceOverride = null, ?string $notes = null)`: سعر POS أو سعر اليوم؛ ملاحظات الآجل في `sales.notes`. `voidSale()` يعيد المخزون ثم يحذف منطقياً.
 - **`CashBoxService`** — صندوق كل سائق حسب العملة:
   - `balance()` = مبيعات نقدية + تحصيلات نقدية − كاش مُسلّم − مصروفات السائق.
   - `chequeBalance()` — رصيد الشيكات لدى السائق.
@@ -128,6 +133,11 @@
 ### إلغاء بيع
 - `SalesService::voidSale()` داخل معاملة: إرجاع كمية عبر `InventoryService::restoreForVoidedSale()` ثم soft-delete.
 - يظهر في واجهة `/sales` للمحاسب فقط.
+
+### حذف فاتورة مشتريات مرحّلة
+- من `/purchase-orders` (مدير): عكس مخزون عبر `PurchaseOrderStockService` ثم soft-delete.
+- حركة التسوية: `إلغاء فاتورة مشتريات #…`.
+- **تقييم مخزون بلا ترحيل:** يمكن إنشاء فاتورة `issued` مع تعبئة `inventory_posted_at` فوراً (بدون استدعاء `purchaseIn`) لتوثيق التكلفة فقط — انظر `docs/21_SESSION_PNL_PO_STOCK_VALUATION_2026_08_08_AR.md`.
 
 ### الوسائط (Middleware)
 - **`RestrictDriverToSales`** (`driver.sales`): يحصر السائق في `pos.index`, `collections.index`, `driver-expenses.index`, `location.share`, `profile`, `logout` فقط.
