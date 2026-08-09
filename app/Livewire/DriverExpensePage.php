@@ -117,6 +117,19 @@ class DriverExpensePage extends Component
         $this->dispatch('toast', message: 'تم تسجيل المصروف بنجاح');
     }
 
+    /**
+     * Business Purpose: إلغاء مصروف سائق بالخذف المنطقي ليعود المبلغ لرصيد صندوق السائق.
+     */
+    public function deleteRecord(int $id): void
+    {
+        abort_unless(Gate::allows('delete-driver-expenses'), 403);
+
+        $expense = DriverExpense::query()->findOrFail($id);
+        $expense->delete();
+
+        $this->dispatch('toast', message: 'تم حذف المصروف وإرجاع المبلغ لرصيد السائق');
+    }
+
     public function render(CashBoxService $cashBox)
     {
         $user = auth()->user();

@@ -1,4 +1,4 @@
-<div>
+<div @can('delete-driver-expenses') x-data="{ deletingId: null }" @else x-data @endcan>
 
 <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
     <div>
@@ -92,6 +92,9 @@
                 <th class="text-left" dir="ltr">المبلغ</th>
                 <th>سجّلها</th>
                 <th>ملاحظات</th>
+                @can('delete-driver-expenses')
+                <th class="w-28"></th>
+                @endcan
             </tr></thead>
             <tbody>
                 @forelse($history as $h)
@@ -104,9 +107,20 @@
                     <td class="text-left font-mono text-sm font-semibold text-red-600" dir="ltr">{{ number_format((float) $h->amount, 2) }} ش</td>
                     <td class="text-sm text-gray-500">{{ $h->recordedBy?->full_name ?? '—' }}</td>
                     <td class="text-sm text-gray-500">{{ $h->notes ?? '—' }}</td>
+                    @can('delete-driver-expenses')
+                    <td>
+                        <div class="flex items-center justify-end">
+                            <button type="button"
+                                    @click="deletingId = {{ $h->id }}"
+                                    class="btn btn-ghost py-1 px-2 text-xs text-red-500 hover:bg-red-50">
+                                حذف
+                            </button>
+                        </div>
+                    </td>
+                    @endcan
                 </tr>
                 @empty
-                <tr><td colspan="{{ $showAll ? 6 : 5 }}">
+                <tr><td colspan="{{ ($showAll ? 6 : 5) + (auth()->user()->can('delete-driver-expenses') ? 1 : 0) }}">
                     <div class="text-center py-12 text-gray-300"><p class="text-sm">لا توجد مصروفات بعد</p></div>
                 </td></tr>
                 @endforelse
@@ -120,5 +134,23 @@
     <p class="text-sm">اختر سائقًا أو «كل السائقين» لعرض المصروفات.</p>
 </div>
 @endif
+
+@can('delete-driver-expenses')
+<div x-show="deletingId !== null" x-cloak
+     class="fixed inset-0 z-[60] flex items-center justify-center">
+    <div class="fixed inset-0 bg-black/40 backdrop-blur-[2px]" @click="deletingId = null"></div>
+    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4 z-10 p-6">
+        <h3 class="text-center font-bold text-[#1E293B] mb-2">حذف المصروف؟</h3>
+        <p class="text-center text-sm text-gray-500 mb-6">
+            سيُحذف السجل ويعود المبلغ إلى الرصيد النقدي لصندوق السائق.
+        </p>
+        <div class="flex gap-2">
+            <button type="button" @click="deletingId = null" class="btn btn-secondary flex-1">إلغاء</button>
+            <button type="button" class="btn btn-primary flex-1 bg-red-600 hover:bg-red-700 border-red-600"
+                    x-on:click="$wire.deleteRecord(deletingId); deletingId = null">حذف</button>
+        </div>
+    </div>
+</div>
+@endcan
 
 </div>

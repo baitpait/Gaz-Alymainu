@@ -85,6 +85,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('delete-sales', fn (User $user): bool => $user->is_active && $user->isAccountant());
         Gate::define('manage-cash-handover', fn (User $user): bool => $user->is_active && ($user->isDriver() || $user->isAccountant()));
         Gate::define('manage-driver-expenses', fn (User $user): bool => $user->is_active && ($user->isDriver() || $user->isAccountant()));
+        Gate::define('delete-driver-expenses', fn (User $user): bool => $user->is_active && $user->isAccountant());
 
         Gate::define('view-client-receivables-aging', fn (User $user): bool => (bool) $user->is_active);
         Gate::define('export-client-receivables-aging-csv', fn (User $user): bool => $user->isAccountant());

@@ -1,9 +1,15 @@
 <?php
 
 use App\Enums\DriverExpenseCategory;
+use App\Enums\SalePaymentType;
+use App\Enums\WarehouseType;
 use App\Livewire\DriverExpensePage;
 use App\Models\DriverExpense;
+use App\Models\Product;
+use App\Models\Sale;
 use App\Models\User;
+use App\Models\Warehouse;
+use App\Services\CashBoxService;
 use Livewire\Livewire;
 
 test('driver expenses page shows all-drivers option for accountant', function () {
@@ -66,4 +72,75 @@ test('specific driver still shows form and balance cards', function () {
         ->assertSee('تسجيل مصروف')
         ->assertSee('الرصيد النقدي المتاح')
         ->assertDontSee('إجمالي مصروفات كل السائقين');
+});
+
+test('accountant can soft-delete driver expense and cash balance is restored', function () {
+    $accountant = User::factory()->create(['role' => 'accountant', 'is_active' => true]);
+    $driver = User::factory()->create(['role' => 'driver', 'is_active' => true]);
+    $warehouse = Warehouse::query()->create([
+        'name' => 'سيارة مصروف '.uniqid(),
+        'type' => WarehouseType::Vehicle,
+        'assigned_user_id' => $driver->id,
+        'is_active' => true,
+    ]);
+    $product = Product::factory()->withIlsPricing()->create();
+
+    Sale::query()->create([
+        'warehouse_id' => $warehouse->id,
+        'product_id' => $product->id,
+        'driver_user_id' => $driver->id,
+        'payment_type' => SalePaymentType::Cash,
+        'quantity' => 1,
+        'unit_price' => 100,
+        'total_amount' => 100,
+        'currency_code' => 'ILS',
+        'sale_date' => now()->toDateString(),
+        'sold_at' => now(),
+        'recorded_by_user_id' => $accountant->id,
+    ]);
+
+    $expense = DriverExpense::query()->create([
+        'driver_user_id' => $driver->id,
+        'warehouse_id' => $warehouse->id,
+        'amount' => 30,
+        'currency_code' => 'ILS',
+        'category' => DriverExpenseCategory::Fuel,
+        'expense_date' => now()->toDateString(),
+        'spent_at' => now(),
+        'recorded_by_user_id' => $accountant->id,
+        'notes' => 'بنزين',
+    ]);
+
+    $cash = app(CashBoxService::class);
+    expect($cash->balance($driver->id))->toBe(70.0);
+
+    Livewire::actingAs($accountant)
+        ->test(DriverExpensePage::class)
+        ->set('driverUserId', (string) $driver->id)
+        ->call('deleteRecord', $expense->id)
+        ->assertDispatched('toast');
+
+    expect(DriverExpense::query()->find($expense->id))->toBeNull()
+        ->and(DriverExpense::withTrashed()->find($expense->id)?->trashed())->toBeTrue()
+        ->and($cash->balance($driver->id))->toBe(100.0);
+});
+
+test('driver cannot delete driver expenses', function () {
+    $driver = User::factory()->create(['role' => 'driver', 'is_active' => true]);
+    $expense = DriverExpense::query()->create([
+        'driver_user_id' => $driver->id,
+        'amount' => 10,
+        'currency_code' => 'ILS',
+        'category' => DriverExpenseCategory::Other,
+        'expense_date' => now()->toDateString(),
+        'spent_at' => now(),
+        'recorded_by_user_id' => $driver->id,
+    ]);
+
+    Livewire::actingAs($driver)
+        ->test(DriverExpensePage::class)
+        ->call('deleteRecord', $expense->id)
+        ->assertForbidden();
+
+    expect(DriverExpense::query()->find($expense->id))->not->toBeNull();
 });
