@@ -19,7 +19,21 @@
 {{-- ═══ صف اليوم ═══ --}}
 <section class="mb-7">
     <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-widest mb-3">اليوم — توزيع الغاز</h2>
-    <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
+    <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3">
+        <a href="{{ route('reports.profit-loss', ['date_from' => $dash['date'], 'date_to' => $dash['date'], 'currency' => 'ILS']) }}"
+           wire:navigate
+           class="card p-4 hover:shadow-md transition block border-r-4 {{ ($today['profit'] ?? 0) >= 0 ? 'border-green-500' : 'border-red-500' }}"
+           style="text-decoration:none;">
+            <div class="text-xs text-gray-400 mb-1">أرباح اليوم</div>
+            <div class="text-2xl font-bold {{ ($today['profit'] ?? 0) >= 0 ? 'text-green-600' : 'text-red-600' }}" dir="ltr">
+                {{ ($today['profit'] ?? 0) >= 0 ? '+' : '' }}{{ $fmt($today['profit'] ?? 0) }}
+            </div>
+            <div class="text-[11px] text-gray-400 mt-1" dir="ltr">
+                مبيعات {{ $fmt($today['pnl_sales'] ?? $today['sales_total']) }}
+                − تكلفة {{ $fmt($today['cogs'] ?? 0) }}
+                − مصروف {{ $fmt($today['expenses_total'] ?? 0) }}
+            </div>
+        </a>
         <a href="{{ route('sales.index') }}" wire:navigate class="card p-4 hover:shadow-md transition block" style="text-decoration:none;">
             <div class="text-xs text-gray-400 mb-1">مبيعات اليوم</div>
             <div class="text-2xl font-bold text-[#1E293B]" dir="ltr">{{ $fmt($today['sales_total']) }}</div>

@@ -18,6 +18,8 @@ use App\Models\StockBalance;
 use App\Models\StockMovement;
 use App\Models\SupplierPayment;
 use App\Models\User;
+use App\Services\Reports\ProfitLossReportService;
+use App\Services\Reports\ReportPeriodFilters;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -33,6 +35,7 @@ class DashboardSummaryService
         private readonly CashBoxService $cashBoxes,
         private readonly DriverLocationService $locations,
         private readonly DailyPriceService $prices,
+        private readonly ProfitLossReportService $profitLoss,
     ) {}
 
     /**
@@ -84,6 +87,11 @@ class DashboardSummaryService
                 'driver_expenses' => 0.0,
                 'drivers_cash_held' => 0.0,
                 'drivers_cheque_held' => 0.0,
+                'cogs' => 0.0,
+                'expenses_total' => 0.0,
+                'salaries' => 0.0,
+                'profit' => 0.0,
+                'pnl_sales' => 0.0,
             ],
             'fleet' => [
                 'zero_vehicle_stock' => 0,
@@ -144,6 +152,23 @@ class DashboardSummaryService
             $driversChequeHeld += $this->cashBoxes->chequeBalance($driver->id);
         }
 
+        // أرباح اليوم = نفس معادلة قائمة الربح والخسارة (كامل) لفترة يوم واحد.
+        $pnl = $this->profitLoss->byCurrency(
+            ReportPeriodFilters::fromArray([
+                'date_from' => $day,
+                'date_to' => $day,
+                'currency' => ProfitLossReportService::DEFAULT_CURRENCY,
+            ]),
+            ProfitLossReportService::MODE_ACCRUAL,
+        );
+        $dayPnl = $pnl[ProfitLossReportService::DEFAULT_CURRENCY] ?? [
+            'cogs' => 0.0,
+            'expenses' => 0.0,
+            'salaries' => 0.0,
+            'net_profit' => 0.0,
+            'sales' => 0.0,
+        ];
+
         return [
             'sales_count' => $salesCount,
             'sales_qty' => $salesQty,
@@ -156,6 +181,11 @@ class DashboardSummaryService
             'driver_expenses' => round($driverExpenses, 2),
             'drivers_cash_held' => round($driversCashHeld, 2),
             'drivers_cheque_held' => round($driversChequeHeld, 2),
+            'cogs' => round((float) ($dayPnl['cogs'] ?? 0), 2),
+            'expenses_total' => round((float) ($dayPnl['expenses'] ?? 0), 2),
+            'salaries' => round((float) ($dayPnl['salaries'] ?? 0), 2),
+            'profit' => round((float) ($dayPnl['net_profit'] ?? 0), 2),
+            'pnl_sales' => round((float) ($dayPnl['sales'] ?? 0), 2),
         ];
     }
 
