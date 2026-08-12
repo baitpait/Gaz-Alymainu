@@ -39,7 +39,7 @@
 | المسار (أمثلة) | الاسم (`route()`) | ملاحظات صلاحية |
 |------------------|-------------------|------------------|
 | `/` | إعادة توجيه إلى `dashboard` | — |
-| `/dashboard` | `dashboard` | لوحة تشغيل غاز: اليوم + مخزون/أسطول + ملخص ILS مختصر + صناديق مطوية (`DashboardSummaryService`) |
+| `/dashboard` | `dashboard` | لوحة تشغيل غاز: **أرباح اليوم** (P&L/COGS لليوم) + مبيعات/تحصيل/مصروف + مخزون/أسطول + ملخص ILS + صناديق مطوية (`DashboardSummaryService`) |
 | `/profile` | `profile` | الملف الشخصي وتغيير كلمة المرور (كل الأدوار بما فيها السائق) |
 | `/financial-summary` | `financial-summary` | **صفحة مستقلة** لصناديق العملات (عرض دائم للمجاميع حسب العملة) |
 | `/clients` … | `clients.*` | إنشاء/تعديل: محاسب؛ حذف: مدير؛ كشف/PDF: سياسة العميل |
@@ -126,7 +126,8 @@ erDiagram
 
 **الملفات:**
 
-- `app/Services/DashboardSummaryService.php` — تجميع مؤشرات اليوم والمخزون والذمم المختصرة (ILS) مع حماية من الأعطال.
+- `app/Services/DashboardSummaryService.php` — تجميع مؤشرات اليوم (يشمل `profit` عبر `ProfitLossReportService` لنفس اليوم) والمخزون والذمم المختصرة (ILS) مع حماية من الأعطال.
+- توثيق جلسة الربح/اللوحة: `docs/23_SESSION_COGS_DASHBOARD_PROFIT_2026_08_09_AR.md`.
 - `resources/views/dashboard.blade.php` — عرض اللوحة.
 - `resources/views/financial-summary.blade.php` — صفحة «الصناديق النقدية» الكاملة.
 - `resources/views/market-debt/index.blade.php` + `MarketDebtPage` — شاشة **دين السوق** (بلا عملاء).
@@ -146,7 +147,7 @@ erDiagram
 
 **من القائمة الجانبية:** بند **«الصناديق النقدية»** → `/financial-summary`.
 
-**تجميع الصناديق التفصيلي** ما زال في الجزئية `currency-boxes-full` عبر `CashBoxService` (رئيسي حسب العملة + صناديق السائقين + شيكات + مصروفات حديثة).
+**تجميع الصناديق التفصيلي** في الجزئية `currency-boxes-full` عبر `CashBoxService`: رصيد رئيسي بعد دخول/خروج (كاش/شيك) + صناديق السائقين + دفتر حركات الصندوق الرئيسي + مصروفات السائقين.
 
 **مهم:** لا تُجمَع عملات مختلفة في رقم واحد (دستور المشروع).
 

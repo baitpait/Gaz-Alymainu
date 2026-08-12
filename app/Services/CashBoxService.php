@@ -6,17 +6,28 @@ use App\Enums\CollectionMethod;
 use App\Enums\DriverExpenseCategory;
 use App\Enums\SalePaymentType;
 use App\Models\CashHandover;
+use App\Models\ClientPayment;
 use App\Models\Collection;
 use App\Models\DriverExpense;
+use App\Models\Expense;
 use App\Models\Sale;
+use App\Models\SalaryPayment;
+use App\Models\SupplierPayment;
+use App\Services\Finance\PaymentMethod;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection as SupportCollection;
 use RuntimeException;
 
 /**
  * صندوق السائق: يتجمّع من المبيعات النقدية والتحصيل النقدي، ويُسحب منه (للصندوق الرئيسي)
  * وتُخصم منه مصروفات السائق النقدية.
  * الرصيد النقدي = (مبيعات نقدية + تحصيل نقدي) − سحب نقدي − مصروفات السائق.
- * الشيكات تُوثَّق منفصلة ولا تدخل الرصيد النقدي.
+ * الشيكات تُوثَّق منفصلة ولا تدخل الرصيد النقدي للسائق.
+ *
+ * الصندوق الرئيسي (أدمن): دفتر فعلي للكاش والشيكات —
+ * دخول = سحوبات السائقين + دفعات العملاء (كاش/شيك)
+ * خروج = دفعات موردين + رواتب مدفوعة (كاش/شيك) + مصروفات الشركة (نقد افتراضياً).
+ * bank/transfer لا يدخلان صندوق الكاش/الشيك المادي.
  */
 class CashBoxService
 {
@@ -259,24 +270,186 @@ class CashBoxService
     }
 
     /**
-     * رصيد الصندوق الرئيسي حسب العملة (كل ما سُحب من السائقين).
-     * يُعيد مصفوفة: ['ILS' => ['cash' => .., 'cheque' => ..]].
+     * رصيد الصندوق الرئيسي حسب العملة (كاش/شيك بعد الدخول والخروج).
+     * يُعيد: ['ILS' => ['cash' => .., 'cheque' => ..]].
+     *
+     * @return array<string, array{cash: float, cheque: float}>
      */
     public function mainBoxByCurrency(): array
     {
-        $rows = CashHandover::query()
-            ->selectRaw('currency_code, method, SUM(amount) as total')
-            ->groupBy('currency_code', 'method')
-            ->get();
-
         $out = [];
-        foreach ($rows as $row) {
-            $cur = $row->currency_code;
-            $method = $row->method instanceof CollectionMethod ? $row->method->value : (string) $row->method;
+
+        foreach ($this->mainBoxLedger() as $event) {
+            $cur = $event['currency'];
+            $bucket = $event['bucket'];
+            if ($bucket === null) {
+                continue;
+            }
             $out[$cur] ??= ['cash' => 0.0, 'cheque' => 0.0];
-            $out[$cur][$method] = (float) $row->total;
+            $out[$cur][$bucket] = round($out[$cur][$bucket] + $event['signed_amount'], 4);
+        }
+
+        foreach ($out as $cur => $buckets) {
+            $out[$cur]['cash'] = round($buckets['cash'], 4);
+            $out[$cur]['cheque'] = round($buckets['cheque'], 4);
         }
 
         return $out;
+    }
+
+    /**
+     * دفتر حركات الصندوق الرئيسي (دخول/خروج) مرتّب زمنياً تنازلياً.
+     *
+     * @return SupportCollection<int, array{
+     *   sort: string,
+     *   at: ?\Illuminate\Support\Carbon,
+     *   type: string,
+     *   type_label: string,
+     *   party: string,
+     *   currency: string,
+     *   method: ?string,
+     *   bucket: ?string,
+     *   amount: float,
+     *   signed_amount: float,
+     *   reference: string,
+     *   notes: ?string
+     * }>
+     */
+    public function mainBoxLedger(?int $limit = null): SupportCollection
+    {
+        $events = collect();
+
+        foreach (CashHandover::query()->with('driver')->get() as $row) {
+            $bucket = $this->boxBucketFromGasMethod($row->method);
+            $events->push([
+                'sort' => ($row->handed_at?->format('Y-m-d H:i:s') ?? $row->handover_date.' 00:00:00').'_handover_'.$row->id,
+                'at' => $row->handed_at ?? Carbon::parse($row->handover_date),
+                'type' => 'driver_handover',
+                'type_label' => $bucket === 'cheque' ? 'سحب شيك من سائق' : 'سحب نقد من سائق',
+                'party' => $row->driver?->full_name ?? '—',
+                'currency' => $row->currency_code,
+                'method' => $bucket === 'cheque' ? PaymentMethod::CHECK : PaymentMethod::CASH,
+                'bucket' => $bucket,
+                'amount' => (float) $row->amount,
+                'signed_amount' => (float) $row->amount,
+                'reference' => '#'.$row->id.($row->cheque_number ? ' / '.$row->cheque_number : ''),
+                'notes' => $row->notes,
+            ]);
+        }
+
+        foreach (ClientPayment::query()->with('client')->get() as $row) {
+            $bucket = $this->boxBucketFromErpMethod($row->method);
+            if ($bucket === null) {
+                continue;
+            }
+            $events->push([
+                'sort' => ($row->paid_at?->format('Y-m-d H:i:s') ?? '1970-01-01 00:00:00').'_client_'.$row->id,
+                'at' => $row->paid_at,
+                'type' => 'client_payment',
+                'type_label' => $bucket === 'cheque' ? 'دفعة عميل (شيك)' : 'دفعة عميل (نقد)',
+                'party' => $row->client?->displayName() ?? '—',
+                'currency' => $row->currency_code,
+                'method' => PaymentMethod::normalize($row->method),
+                'bucket' => $bucket,
+                'amount' => (float) $row->amount,
+                'signed_amount' => (float) $row->amount,
+                'reference' => $row->bank_reference ?: '#'.$row->id,
+                'notes' => $row->notes,
+            ]);
+        }
+
+        foreach (SupplierPayment::query()->with('supplier')->get() as $row) {
+            $bucket = $this->boxBucketFromErpMethod($row->method);
+            if ($bucket === null) {
+                continue;
+            }
+            $events->push([
+                'sort' => ($row->paid_at?->format('Y-m-d H:i:s') ?? '1970-01-01 00:00:00').'_supplier_'.$row->id,
+                'at' => $row->paid_at,
+                'type' => 'supplier_payment',
+                'type_label' => $bucket === 'cheque' ? 'دفع مورد (شيك)' : 'دفع مورد (نقد)',
+                'party' => $row->supplier?->displayName() ?? '—',
+                'currency' => $row->currency_code,
+                'method' => PaymentMethod::normalize($row->method),
+                'bucket' => $bucket,
+                'amount' => (float) $row->amount,
+                'signed_amount' => -1 * (float) $row->amount,
+                'reference' => $row->bank_reference ?: '#'.$row->id,
+                'notes' => $row->notes,
+            ]);
+        }
+
+        foreach (
+            SalaryPayment::query()
+                ->with('employee')
+                ->where('status', SalaryPayment::STATUS_PAID)
+                ->get() as $row
+        ) {
+            $bucket = $this->boxBucketFromErpMethod($row->method);
+            if ($bucket === null) {
+                continue;
+            }
+            $events->push([
+                'sort' => ($row->paid_at?->format('Y-m-d').' 12:00:00' ?? '1970-01-01 00:00:00').'_salary_'.$row->id,
+                'at' => $row->paid_at?->copy()->setTime(12, 0),
+                'type' => 'salary_payment',
+                'type_label' => $bucket === 'cheque' ? 'راتب (شيك)' : 'راتب (نقد)',
+                'party' => $row->employee?->full_name ?? '—',
+                'currency' => $row->currency_code,
+                'method' => PaymentMethod::normalize($row->method),
+                'bucket' => $bucket,
+                'amount' => (float) $row->net_amount,
+                'signed_amount' => -1 * (float) $row->net_amount,
+                'reference' => $row->bank_reference ?: '#'.$row->id,
+                'notes' => $row->notes,
+            ]);
+        }
+
+        foreach (Expense::query()->get() as $row) {
+            $events->push([
+                'sort' => ($row->expense_date?->format('Y-m-d') ?? '1970-01-01').' 08:00:00_expense_'.$row->id,
+                'at' => $row->expense_date?->copy()->setTime(8, 0),
+                'type' => 'company_expense',
+                'type_label' => 'مصروف شركة (نقد)',
+                'party' => $row->description,
+                'currency' => $row->currency_code,
+                'method' => PaymentMethod::CASH,
+                'bucket' => 'cash',
+                'amount' => (float) $row->amount,
+                'signed_amount' => -1 * (float) $row->amount,
+                'reference' => '#'.$row->id,
+                'notes' => $row->notes,
+            ]);
+        }
+
+        $sorted = $events->sortByDesc('sort')->values();
+
+        if ($limit !== null) {
+            return $sorted->take($limit)->values();
+        }
+
+        return $sorted;
+    }
+
+    /**
+     * Map gas handover/collection method (cash|cheque) to main-box bucket.
+     */
+    private function boxBucketFromGasMethod(mixed $method): string
+    {
+        $value = $method instanceof CollectionMethod ? $method->value : (string) $method;
+
+        return $value === CollectionMethod::Cheque->value ? 'cheque' : 'cash';
+    }
+
+    /**
+     * Map ERP payment method to main-box bucket; bank/transfer ignored.
+     */
+    private function boxBucketFromErpMethod(?string $method): ?string
+    {
+        return match (PaymentMethod::normalize($method)) {
+            PaymentMethod::CASH => 'cash',
+            PaymentMethod::CHECK => 'cheque',
+            default => null,
+        };
     }
 }

@@ -8,7 +8,8 @@ test('financial summary page renders for authenticated user', function () {
     $this->actingAs($user)
         ->get(route('financial-summary'))
         ->assertOk()
-        ->assertSee('صناديق العملات');
+        ->assertSee('الصناديق النقدية', false)
+        ->assertSee('حركات الصندوق الرئيسي', false);
 });
 
 test('financial summary page requires authentication', function () {
