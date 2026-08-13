@@ -9,7 +9,6 @@ use App\Models\Warehouse;
 use App\Services\CashBoxService;
 use App\Services\DailyPriceService;
 use App\Services\SalesService;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Component;
 
@@ -162,7 +161,7 @@ class SalesTerminal extends Component
     public function render(CashBoxService $cashBox, DailyPriceService $prices)
     {
         $user = auth()->user();
-        $today = Carbon::now()->toDateString();
+        $today = \App\Support\AppDateTime::today();
 
         $vehicles = collect();
         if (! $user->isDriver()) {

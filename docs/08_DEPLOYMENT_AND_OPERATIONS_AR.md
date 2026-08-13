@@ -14,8 +14,10 @@
 | **جذر Laravel (artisan + composer)** | `/home/sarfesak/public_html/gaz` |
 | قاعدة بيانات Laravel | `sarfesak_gaz` (MySQL/MariaDB) — عدّل الاسم من لوحة الاستضافة إن اختلف |
 | مستودع GitHub | [`baitpait/Gaz-Alymainu`](https://github.com/baitpait/Gaz-Alymainu) |
+| توقيت العرض | `APP_DISPLAY_TIMEZONE=Asia/Jerusalem` (التخزين UTC) |
 
 > ملاحظة: قاعدة ERP القديمة (`legacy-erp:import`) اختيارية وغير مطلوبة لنشر غاز اليمين النظيف.
+> بعد ضبط التوقيت على السيرفر: أضف السطر في `.env` ثم `php artisan config:clear && php artisan view:cache`.
 
 ---
 

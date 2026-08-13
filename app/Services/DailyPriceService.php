@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Models\ProductDailyPrice;
-use Illuminate\Support\Carbon;
+use App\Support\AppDateTime;
 
 /**
  * إدارة سعر البيع اليومي للأصناف (بالشيكل افتراضيًا).
@@ -51,6 +51,6 @@ class DailyPriceService
 
     public function today(): string
     {
-        return Carbon::now()->toDateString();
+        return AppDateTime::today();
     }
 }

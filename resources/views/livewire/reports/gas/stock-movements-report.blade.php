@@ -62,7 +62,7 @@
             <tbody>
                 @foreach($rows as $r)
                 <tr>
-                    <td dir="ltr" class="text-sm text-gray-500">{{ $r->moved_at?->format('Y-m-d H:i') }}</td>
+                    <td dir="ltr" class="text-sm text-gray-500">{{ \App\Support\AppDateTime::format($r->moved_at) }}</td>
                     <td class="text-sm font-semibold">{{ $r->type->label() }}</td>
                     <td class="text-sm text-gray-500">{{ $r->fromWarehouse?->name ?? '—' }}</td>
                     <td class="text-sm text-gray-500">{{ $r->toWarehouse?->name ?? '—' }}</td>

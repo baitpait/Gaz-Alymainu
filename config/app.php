@@ -91,6 +91,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Display Timezone (UI / business calendar day)
+    |--------------------------------------------------------------------------
+    |
+    | Storage and app.timezone stay UTC. Screens and “today” ops use this zone
+    | (Palestine — Jerusalem/Hebron). Override via APP_DISPLAY_TIMEZONE.
+    |
+    */
+
+    'display_timezone' => env('APP_DISPLAY_TIMEZONE', 'Asia/Jerusalem'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Locale Configuration
     |--------------------------------------------------------------------------
     |

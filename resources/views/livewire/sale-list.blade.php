@@ -98,7 +98,7 @@
             <tbody>
                 @forelse($rows as $s)
                 <tr>
-                    <td class="text-sm text-gray-500" dir="ltr">{{ $s->sold_at?->format('Y-m-d H:i') }}</td>
+                    <td class="text-sm text-gray-500" dir="ltr">{{ \App\Support\AppDateTime::format($s->sold_at) }}</td>
                     <td class="font-semibold text-sm">{{ $s->product?->name ?? '—' }}</td>
                     <td class="text-sm text-gray-500">{{ $s->warehouse?->name ?? '—' }}@if($s->driver) — {{ $s->driver->full_name }}@endif</td>
                     <td>

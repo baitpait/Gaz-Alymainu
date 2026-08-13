@@ -14,6 +14,7 @@ use App\Models\Sale;
 use App\Models\SalaryPayment;
 use App\Models\SupplierPayment;
 use App\Services\Finance\PaymentMethod;
+use App\Support\AppDateTime;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection as SupportCollection;
 use RuntimeException;
@@ -103,7 +104,7 @@ class CashBoxService
             'amount' => $amount,
             'currency_code' => self::CURRENCY,
             'cheque_number' => $method === CollectionMethod::Cheque ? $chequeNumber : null,
-            'collection_date' => Carbon::now()->toDateString(),
+            'collection_date' => AppDateTime::today(),
             'collected_at' => Carbon::now(),
             'recorded_by_user_id' => $recordedByUserId,
             'notes' => $notes,
@@ -191,7 +192,7 @@ class CashBoxService
             'amount' => $amount,
             'currency_code' => self::CURRENCY,
             'category' => $category,
-            'expense_date' => Carbon::now()->toDateString(),
+            'expense_date' => AppDateTime::today(),
             'spent_at' => Carbon::now(),
             'recorded_by_user_id' => $recordedByUserId,
             'notes' => $notes,
@@ -262,7 +263,7 @@ class CashBoxService
             'currency_code' => self::CURRENCY,
             'method' => $method,
             'cheque_number' => $method === CollectionMethod::Cheque ? $chequeNumber : null,
-            'handover_date' => Carbon::now()->toDateString(),
+            'handover_date' => AppDateTime::today(),
             'handed_at' => Carbon::now(),
             'received_by_user_id' => $receivedByUserId,
             'notes' => $notes,

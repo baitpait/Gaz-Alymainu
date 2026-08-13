@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Support\AppDateTime;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Carbon;
 
 /**
  * إعداد دين السوق للشركة (سجل واحد): مبلغ افتتاحي + تاريخ بداية الاحتساب.
@@ -41,7 +41,7 @@ class MarketDebtSetting extends Model
 
         return static::query()->create([
             'opening_amount' => 0,
-            'as_of_date' => Carbon::today()->toDateString(),
+            'as_of_date' => AppDateTime::today(),
             'currency_code' => 'ILS',
         ]);
     }

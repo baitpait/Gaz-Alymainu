@@ -99,7 +99,7 @@
             <tbody>
                 @forelse($history as $h)
                 <tr>
-                    <td class="text-sm text-gray-500" dir="ltr">{{ $h->spent_at?->format('Y-m-d H:i') }}</td>
+                    <td class="text-sm text-gray-500" dir="ltr">{{ \App\Support\AppDateTime::format($h->spent_at) }}</td>
                     @if($showAll)
                     <td class="font-semibold text-sm">{{ $h->driver?->full_name ?? '—' }}</td>
                     @endif

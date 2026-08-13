@@ -4,7 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Product;
 use App\Services\DailyPriceService;
-use Illuminate\Support\Carbon;
+use App\Support\AppDateTime;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Url;
 use Livewire\Component;
@@ -25,7 +25,7 @@ class DailyPriceBoard extends Component
         abort_unless(Gate::allows('view-inventory'), 403);
 
         if ($this->date === '') {
-            $this->date = Carbon::now()->toDateString();
+            $this->date = AppDateTime::today();
         }
 
         $this->loadPrices();

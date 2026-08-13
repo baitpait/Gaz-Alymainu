@@ -6,6 +6,7 @@ use App\Enums\SalePaymentType;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Models\Warehouse;
+use App\Support\AppDateTime;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
@@ -41,7 +42,7 @@ class SalesService
             throw new RuntimeException('الكمية يجب أن تكون أكبر من صفر.');
         }
 
-        $saleDate = $date ?? Carbon::now()->toDateString();
+        $saleDate = $date ?? AppDateTime::today();
 
         // سعر البيع = السعر المُدخَل إن وُجد، وإلا سعر اليوم الافتراضي.
         $unitPrice = $unitPriceOverride

@@ -7,7 +7,7 @@ use App\Enums\WarehouseType;
 use App\Models\Product;
 use App\Models\Warehouse;
 use App\Services\InventoryService;
-use Illuminate\Support\Carbon;
+use App\Support\AppDateTime;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
@@ -34,7 +34,7 @@ class StockMovementForm extends Component
     public function mount(): void
     {
         abort_unless(Gate::allows('manage-inventory'), 403);
-        $this->moved_at = Carbon::now()->toDateString();
+        $this->moved_at = AppDateTime::today();
     }
 
     public function save(InventoryService $inventory): void

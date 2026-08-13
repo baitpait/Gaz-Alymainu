@@ -128,7 +128,7 @@
                 <tbody>
                     @forelse($ledger as $m)
                     <tr>
-                        <td class="text-sm text-gray-500" dir="ltr">{{ $m['at']?->format('Y-m-d H:i') ?? '—' }}</td>
+                        <td class="text-sm text-gray-500" dir="ltr">{{ \App\Support\AppDateTime::format($m['at'] ?? null) }}</td>
                         <td><span class="badge {{ $m['signed_amount'] >= 0 ? 'badge-green' : 'badge-yellow' }}">{{ $m['type_label'] }}</span></td>
                         <td class="text-sm">{{ $m['party'] }}</td>
                         <td class="text-xs font-mono text-gray-400" dir="ltr">{{ $m['currency'] }}</td>
@@ -163,7 +163,7 @@
                 <tbody>
                     @forelse($recentExpenses as $ex)
                     <tr>
-                        <td class="text-sm text-gray-500" dir="ltr">{{ $ex->spent_at?->format('Y-m-d H:i') }}</td>
+                        <td class="text-sm text-gray-500" dir="ltr">{{ \App\Support\AppDateTime::format($ex->spent_at) }}</td>
                         <td class="text-sm">{{ $ex->driver?->full_name ?? '—' }}</td>
                         <td><span class="badge badge-yellow">{{ $ex->category?->label() ?? '—' }}</span></td>
                         <td class="text-left font-mono text-sm font-semibold text-red-600" dir="ltr">{{ number_format((float) $ex->amount, 2) }}</td>

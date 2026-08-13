@@ -10,7 +10,7 @@ use App\Models\Sale;
 use App\Models\User;
 use App\Models\Warehouse;
 use App\Services\DashboardSummaryService;
-use Illuminate\Support\Carbon;
+use App\Support\AppDateTime;
 
 test('dashboard page shows gas ops sections for manager', function () {
     $user = User::factory()->create(['role' => 'manager', 'is_active' => true]);
@@ -39,7 +39,7 @@ test('dashboard summary includes today cash sales', function () {
         'is_active' => true,
     ]);
 
-    $today = Carbon::now()->toDateString();
+    $today = AppDateTime::today();
 
     Sale::query()->create([
         'warehouse_id' => $warehouse->id,
@@ -80,7 +80,7 @@ test('dashboard today profit uses full pnl equation for the day', function () {
         'is_active' => true,
     ]);
 
-    $today = Carbon::now()->toDateString();
+    $today = AppDateTime::today();
 
     Sale::query()->create([
         'warehouse_id' => $warehouse->id,

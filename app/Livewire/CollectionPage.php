@@ -89,7 +89,7 @@ class CollectionPage extends Component
     public function render(CashBoxService $cashBox)
     {
         $user = auth()->user();
-        $today = now()->toDateString();
+        $today = \App\Support\AppDateTime::today();
 
         $drivers = collect();
         if (! $user->isDriver()) {

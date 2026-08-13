@@ -88,7 +88,7 @@
             <tbody>
                 @forelse($history as $h)
                 <tr>
-                    <td class="text-sm text-gray-500" dir="ltr">{{ $h->handed_at?->format('Y-m-d H:i') }}</td>
+                    <td class="text-sm text-gray-500" dir="ltr">{{ \App\Support\AppDateTime::format($h->handed_at) }}</td>
                     <td>
                         <span class="badge {{ $h->method === \App\Enums\CollectionMethod::Cheque ? 'badge-blue' : 'badge-green' }}">
                             {{ $h->method?->label() ?? 'نقدي' }}

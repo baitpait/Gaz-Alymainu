@@ -20,6 +20,7 @@ use App\Models\SupplierPayment;
 use App\Models\User;
 use App\Services\Reports\ProfitLossReportService;
 use App\Services\Reports\ReportPeriodFilters;
+use App\Support\AppDateTime;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -39,8 +40,9 @@ class DashboardSummaryService
     ) {}
 
     /**
-     * Business Purpose: Aggregate all dashboard sections for a given calendar day (app timezone).
-     * Failures in optional subsections are logged and replaced with zeros so login never 500s.
+     * Business Purpose: Aggregate all dashboard sections for a given calendar day
+     * (Palestine display timezone). Failures in optional subsections are logged
+     * and replaced with zeros so login never 500s.
      *
      * @return array<string, mixed>
      */
@@ -48,8 +50,7 @@ class DashboardSummaryService
     {
         try {
             $day = $date ?? $this->prices->today();
-            $dayStart = Carbon::parse($day)->startOfDay();
-            $dayEnd = Carbon::parse($day)->endOfDay();
+            [$dayStart, $dayEnd] = AppDateTime::utcDayBounds($day);
 
             return [
                 'date' => $day,
@@ -64,7 +65,7 @@ class DashboardSummaryService
                 'line' => $e->getLine(),
             ]);
 
-            return $this->emptySnapshot($date ?? Carbon::now()->toDateString());
+            return $this->emptySnapshot($date ?? AppDateTime::today());
         }
     }
 

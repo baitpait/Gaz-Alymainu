@@ -222,7 +222,7 @@ tfoot td { background: #F5F5F5; font-weight: bold; }
 @endforeach
 
 <div class="footer">
-    <p>وثيقة داخلية — {{ config('app.name', 'غاز اليمني') }} · توزيع الغاز &bull; صدر بتاريخ {{ now()->format('Y-m-d H:i') }} UTC</p>
+    <p>وثيقة داخلية — {{ config('app.name', 'غاز اليمني') }} · توزيع الغاز &bull; صدر بتاريخ {{ \App\Support\AppDateTime::format(now()) }}</p>
 </div>
 
 </body>

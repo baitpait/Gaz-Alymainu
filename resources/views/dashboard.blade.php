@@ -11,7 +11,7 @@
 <div class="mb-6 flex flex-wrap items-end justify-between gap-3">
     <div>
         <h1 class="text-2xl font-bold text-[#1E293B]">لوحة التحكم</h1>
-        <p class="text-sm text-gray-400 mt-0.5">{{ now()->translatedFormat('l، d F Y') }}</p>
+        <p class="text-sm text-gray-400 mt-0.5">{{ \App\Support\AppDateTime::translatedDate() }}</p>
     </div>
     <p class="text-xs text-gray-400" dir="ltr">{{ $dash['date'] }}</p>
 </div>
