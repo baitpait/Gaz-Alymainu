@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\Warehouse;
 use App\Services\InventoryService;
 use App\Support\AppDateTime;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
