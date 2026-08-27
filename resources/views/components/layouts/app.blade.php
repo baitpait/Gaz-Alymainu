@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" @auth @can('record-sales') class="has-mobile-bottom-nav" @endcan @endauth>
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @php $appName = config('app.name', 'غاز اليمني'); @endphp
     <title>{{ ($title ?? '') ? $title . ' — ' . $appName : $appName }}</title>
@@ -15,7 +15,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
 </head>
-<body class="min-h-screen font-sans antialiased flex flex-col"
+<body class="app-shell font-sans antialiased flex flex-col"
       @auth
       @if(auth()->user()->isDriver())
       data-driver-native-bridge="1"
@@ -29,7 +29,7 @@
       @endauth>
 
 {{-- ═══ شريط التنقل العلوي ═══ --}}
-<header class="bg-white border-b border-[#E2E8F0] h-14 flex items-center px-5 sticky top-0 z-30 shadow-sm">
+<header class="bg-white border-b border-[#E2E8F0] h-14 flex items-center px-5 shrink-0 z-30 shadow-sm">
     <div class="flex items-center gap-3 flex-1 min-w-0">
         @auth
         @unless(auth()->user()->isDriver())
@@ -159,12 +159,12 @@
 @endunless
 @endauth
 
-{{-- ═══ الهيكل الرئيسي ═══ --}}
-<div class="flex flex-1 min-h-0">
+{{-- ═══ الهيكل الرئيسي — flex-1 + min-h-0 حتى يتمرّر المحتوى داخل main فقط ═══ --}}
+<div class="flex flex-1 min-h-0 overflow-hidden">
 
     {{-- ═══ القائمة الجانبية (مخفية للسائق) ═══ --}}
     @unless(auth()->user()->isDriver())
-    <aside class="w-56 bg-white border-l border-[#E2E8F0] hidden md:flex flex-col py-3 shrink-0">
+    <aside class="w-56 bg-white border-l border-[#E2E8F0] hidden md:flex flex-col py-3 shrink-0 min-h-0">
         <nav class="flex-1 px-3 space-y-0.5 overflow-y-auto">
             @include('components.layouts.partials.sidebar-nav')
         </nav>
@@ -175,9 +175,10 @@
     </aside>
     @endunless
 
-    {{-- ═══ المحتوى الرئيسي ═══ --}}
-    <main class="flex-1 p-6 min-w-0 @can('record-sales') pb-24 md:pb-6 @endcan">
+    {{-- ═══ المحتوى الرئيسي — منطقة التمرير الوحيدة لكل الصفحات ═══ --}}
+    <main class="app-main-scroll flex-1 p-6 min-w-0">
         {{ $slot }}
+        @include('components.layouts.footer')
     </main>
 </div>
 
@@ -188,7 +189,8 @@
 
 @can('record-sales')
 {{-- ═══ شريط التنقل السفلي — يظهر على الموبايل فقط ═══ --}}
-<nav class="fixed bottom-0 inset-x-0 z-40 bg-white border-t border-[#E2E8F0] shadow-[0_-2px_10px_rgba(0,0,0,0.05)] flex items-stretch md:hidden">
+<nav class="app-bottom-nav fixed bottom-0 inset-x-0 z-40 bg-white border-t border-[#E2E8F0] shadow-[0_-2px_10px_rgba(0,0,0,0.05)] flex items-stretch md:hidden"
+     aria-label="التنقل السريع">
     <a href="{{ route('pos.index') }}" wire:navigate
        class="flex-1 flex flex-col items-center justify-center gap-1 py-2.5 transition {{ request()->routeIs('pos.*') ? 'text-[#1B6CA8]' : 'text-gray-400' }}">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -217,14 +219,12 @@
 </nav>
 @endcan
 
-@include('components.layouts.footer')
-
 @include('partials.pwa-install-banner', ['variant' => 'app'])
 
 {{-- ═══ نظام الإشعارات (Toast) ═══ --}}
 <div x-data="toastManager"
      @toast.window="add($event.detail.message, $event.detail.type ?? 'success')"
-     class="fixed bottom-5 left-5 z-[200] flex flex-col gap-2 w-80">
+     class="fixed z-[200] flex flex-col gap-2 w-[min(20rem,calc(100vw-2.5rem))] left-5 @can('record-sales') bottom-24 md:bottom-5 @else bottom-5 @endcan">
     <template x-for="toast in toasts" :key="toast.id">
         <div x-show="toast.show"
              x-transition:enter="transition ease-out duration-300"

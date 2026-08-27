@@ -1,4 +1,10 @@
-<div @can('delete-driver-expenses') x-data="{ deletingId: null }" @else x-data @endcan>
+<div
+    @if(auth()->user()->can('delete-driver-expenses') || auth()->user()->can('update-driver-expenses'))
+        x-data="{ deletingId: null }"
+    @else
+        x-data
+    @endif
+>
 
 <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
     <div>
@@ -32,7 +38,7 @@
     @if($showAll)
     <div class="grid grid-cols-1 gap-3 mb-6 sm:grid-cols-2 sm:max-w-lg">
         <div class="card p-4 border-r-4 border-red-500">
-            <p class="text-xs text-gray-400">إجمالي مصروفات كل السائقين</p>
+            <p class="text-xs text-gray-400">إجمالي المصروفات (حسب الفلتر)</p>
             <p class="text-2xl font-black text-red-600 mt-1" dir="ltr">{{ number_format($totalExpenses, 2) }} ش</p>
         </div>
     </div>
@@ -46,7 +52,7 @@
             <p class="text-2xl font-black text-green-600 mt-1" dir="ltr">{{ number_format($balance, 2) }} ش</p>
         </div>
         <div class="card p-4 border-r-4 border-red-500">
-            <p class="text-xs text-gray-400">إجمالي المصروفات</p>
+            <p class="text-xs text-gray-400">إجمالي المصروفات (حسب الفلتر)</p>
             <p class="text-2xl font-black text-red-600 mt-1" dir="ltr">{{ number_format($totalExpenses, 2) }} ش</p>
         </div>
     </div>
@@ -77,9 +83,45 @@
     </div>
     @endif
 
+<form wire:submit.prevent="applyExpenseFilters" class="card p-4 mb-5">
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between lg:gap-6">
+        <div class="flex min-w-0 flex-1 flex-col gap-3">
+            <div class="min-w-0 w-full">
+                <label class="label">بحث</label>
+                <input type="search" wire:model="filterSearch" class="input w-full text-sm"
+                       placeholder="بحث بالملاحظات أو اسم السائق..." autocomplete="off">
+            </div>
+            <div class="grid min-w-0 w-full grid-cols-1 gap-3 sm:grid-cols-3">
+                <div class="min-w-0">
+                    <label class="label">التصنيف</label>
+                    <select wire:model="filterCategory" class="input w-full">
+                        <option value="">الكل</option>
+                        @foreach($categories as $value => $label)
+                            <option value="{{ $value }}">{{ $label }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="min-w-0">
+                    <label class="label">من تاريخ</label>
+                    <input wire:model="filterDateFrom" type="date" class="input w-full" dir="ltr">
+                </div>
+                <div class="min-w-0">
+                    <label class="label">إلى تاريخ</label>
+                    <input wire:model="filterDateTo" type="date" class="input w-full" dir="ltr">
+                </div>
+            </div>
+        </div>
+        @include('livewire.partials.list-filter-actions', [
+            'applyMethod' => 'applyExpenseFilters',
+            'clearMethod' => 'clearExpenseFilters',
+            'showClear' => $this->hasActiveExpenseFilters(),
+        ])
+    </div>
+</form>
+
 <div class="card overflow-hidden">
     <div class="px-5 py-3 border-b border-[#E2E8F0] bg-[#F9F9FB]">
-        <p class="text-sm font-bold text-[#1E293B]">{{ $showAll ? 'آخر مصروفات كل السائقين' : 'آخر المصروفات' }}</p>
+        <p class="text-sm font-bold text-[#1E293B]">{{ $showAll ? 'مصروفات كل السائقين' : 'المصروفات' }}</p>
     </div>
     <div class="overflow-x-auto [-webkit-overflow-scrolling:touch]">
         <table class="data-table">
@@ -92,9 +134,9 @@
                 <th class="text-left" dir="ltr">المبلغ</th>
                 <th>سجّلها</th>
                 <th>ملاحظات</th>
-                @can('delete-driver-expenses')
-                <th class="w-28"></th>
-                @endcan
+                @if(auth()->user()->can('update-driver-expenses') || auth()->user()->can('delete-driver-expenses'))
+                <th class="w-36"></th>
+                @endif
             </tr></thead>
             <tbody>
                 @forelse($history as $h)
@@ -107,21 +149,30 @@
                     <td class="text-left font-mono text-sm font-semibold text-red-600" dir="ltr">{{ number_format((float) $h->amount, 2) }} ش</td>
                     <td class="text-sm text-gray-500">{{ $h->recordedBy?->full_name ?? '—' }}</td>
                     <td class="text-sm text-gray-500">{{ $h->notes ?? '—' }}</td>
-                    @can('delete-driver-expenses')
+                    @if(auth()->user()->can('update-driver-expenses') || auth()->user()->can('delete-driver-expenses'))
                     <td>
-                        <div class="flex items-center justify-end">
+                        <div class="flex items-center justify-end gap-1">
+                            @can('update-driver-expenses')
+                            <button type="button"
+                                    wire:click="startEdit({{ $h->id }})"
+                                    class="btn btn-ghost py-1 px-2 text-xs text-[#1B6CA8] hover:bg-[#1B6CA8]/10">
+                                تعديل
+                            </button>
+                            @endcan
+                            @can('delete-driver-expenses')
                             <button type="button"
                                     @click="deletingId = {{ $h->id }}"
                                     class="btn btn-ghost py-1 px-2 text-xs text-red-500 hover:bg-red-50">
                                 حذف
                             </button>
+                            @endcan
                         </div>
                     </td>
-                    @endcan
+                    @endif
                 </tr>
                 @empty
-                <tr><td colspan="{{ ($showAll ? 6 : 5) + (auth()->user()->can('delete-driver-expenses') ? 1 : 0) }}">
-                    <div class="text-center py-12 text-gray-300"><p class="text-sm">لا توجد مصروفات بعد</p></div>
+                <tr><td colspan="{{ ($showAll ? 6 : 5) + ((auth()->user()->can('update-driver-expenses') || auth()->user()->can('delete-driver-expenses')) ? 1 : 0) }}">
+                    <div class="text-center py-12 text-gray-300"><p class="text-sm">لا توجد مصروفات</p></div>
                 </td></tr>
                 @endforelse
             </tbody>
@@ -134,6 +185,45 @@
     <p class="text-sm">اختر سائقًا أو «كل السائقين» لعرض المصروفات.</p>
 </div>
 @endif
+
+@can('update-driver-expenses')
+@if($editingId !== null)
+<div class="fixed inset-0 z-[60] flex items-center justify-center">
+    <div class="fixed inset-0 bg-black/40 backdrop-blur-[2px]" wire:click="cancelEdit"></div>
+    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 z-10 p-6">
+        <h3 class="text-center font-bold text-[#1E293B] mb-1">تعديل المصروف</h3>
+        <p class="text-center text-xs text-gray-400 mb-5">تعديل المبلغ والتصنيف والملاحظات. الزيادة مشروطة برصيد كاش السائق.</p>
+
+        <div class="space-y-4">
+            <div>
+                <label class="label">التصنيف</label>
+                <select wire:model="editCategory" class="input w-full">
+                    @foreach($categories as $value => $label)
+                        <option value="{{ $value }}">{{ $label }}</option>
+                    @endforeach
+                </select>
+                @error('editCategory') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
+            </div>
+            <div>
+                <label class="label">المبلغ (ش)</label>
+                <input type="number" step="0.01" min="0.01" wire:model="editAmount" class="input w-full font-mono" dir="ltr">
+                @error('editAmount') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
+            </div>
+            <div>
+                <label class="label">الملاحظات</label>
+                <textarea wire:model="editNotes" rows="3" class="input w-full" placeholder="اختياري"></textarea>
+                @error('editNotes') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
+            </div>
+        </div>
+
+        <div class="flex gap-2 mt-6">
+            <button type="button" wire:click="cancelEdit" class="btn btn-secondary flex-1">إلغاء</button>
+            <button type="button" wire:click="saveEdit" class="btn btn-primary flex-1" wire:loading.attr="disabled">حفظ</button>
+        </div>
+    </div>
+</div>
+@endif
+@endcan
 
 @can('delete-driver-expenses')
 <div x-show="deletingId !== null" x-cloak

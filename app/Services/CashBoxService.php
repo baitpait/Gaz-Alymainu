@@ -199,6 +199,45 @@ class CashBoxService
         ]);
     }
 
+    /**
+     * Business Purpose: Correct amount/category/notes on a driver expense.
+     * Increasing the amount is allowed only within the driver’s remaining cash balance.
+     */
+    public function updateExpense(
+        DriverExpense $expense,
+        float $amount,
+        DriverExpenseCategory $category,
+        ?string $notes = null,
+    ): DriverExpense {
+        if ($expense->trashed()) {
+            throw new RuntimeException('هذا المصروف محذوف ولا يمكن تعديله.');
+        }
+
+        if ($amount <= 0) {
+            throw new RuntimeException('المبلغ يجب أن يكون أكبر من صفر.');
+        }
+
+        $notes = $notes !== null ? trim($notes) : null;
+        if ($notes === '') {
+            $notes = null;
+        }
+
+        $increase = round($amount - (float) $expense->amount, 4);
+        if ($increase > 0.0001) {
+            $available = $this->balance((int) $expense->driver_user_id);
+            if ($increase > $available + 0.0001) {
+                throw new RuntimeException('الزيادة أكبر من الرصيد النقدي المتاح لدى السائق.');
+            }
+        }
+
+        $expense->amount = $amount;
+        $expense->category = $category;
+        $expense->notes = $notes;
+        $expense->save();
+
+        return $expense->refresh();
+    }
+
     /** رصيد الشيكات الحالي لدى السائق (محصّلة ولم تُسحب بعد). */
     public function chequeBalance(int $driverUserId): float
     {

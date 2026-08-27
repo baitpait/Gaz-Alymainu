@@ -47,9 +47,79 @@ class SaleList extends Component
     #[Url(as: 'sale_to')]
     public string $filterDateTo = '';
 
+    public ?int $editingId = null;
+
+    public string $editUnitPrice = '';
+
+    public string $editQuantity = '';
+
+    public string $editNotes = '';
+
     public function mount(): void
     {
         abort_unless(Gate::allows('view-sales'), 403);
+    }
+
+    /**
+     * Business Purpose: Open inline edit for quantity, price and notes (accountant).
+     */
+    public function startEdit(int $id): void
+    {
+        abort_unless(Gate::allows('update-sales'), 403);
+
+        $sale = Sale::query()->findOrFail($id);
+        $this->editingId = $sale->id;
+        $this->editQuantity = rtrim(rtrim(number_format((float) $sale->quantity, 4, '.', ''), '0'), '.') ?: '0';
+        $this->editUnitPrice = (string) $sale->unit_price;
+        $this->editNotes = (string) ($sale->notes ?? '');
+        $this->resetValidation();
+    }
+
+    public function cancelEdit(): void
+    {
+        $this->editingId = null;
+        $this->editQuantity = '';
+        $this->editUnitPrice = '';
+        $this->editNotes = '';
+        $this->resetValidation();
+    }
+
+    /**
+     * Business Purpose: Persist corrected quantity, unit price and notes with stock adjustment.
+     */
+    public function saveEdit(\App\Services\SalesService $sales): void
+    {
+        abort_unless(Gate::allows('update-sales'), 403);
+
+        $this->validate([
+            'editingId' => 'required|integer',
+            'editQuantity' => 'required|numeric|gt:0',
+            'editUnitPrice' => 'required|numeric|gt:0',
+            'editNotes' => 'nullable|string|max:2000',
+        ], [], [
+            'editQuantity' => 'الكمية',
+            'editUnitPrice' => 'السعر',
+            'editNotes' => 'الملاحظات',
+        ]);
+
+        $sale = Sale::query()->findOrFail((int) $this->editingId);
+
+        try {
+            $sales->updateSale(
+                $sale,
+                (float) $this->editQuantity,
+                (float) $this->editUnitPrice,
+                $this->editNotes,
+                auth()->id(),
+            );
+        } catch (\RuntimeException $e) {
+            $this->addError('editQuantity', $e->getMessage());
+
+            return;
+        }
+
+        $this->cancelEdit();
+        $this->dispatch('toast', message: 'تم تحديث البيع');
     }
 
     /**

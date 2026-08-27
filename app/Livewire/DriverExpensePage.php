@@ -7,12 +7,14 @@ use App\Models\DriverExpense;
 use App\Models\User;
 use App\Models\Warehouse;
 use App\Services\CashBoxService;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Component;
 
 /**
  * مصروفات السائق/السيارة: تسجيل مصروف يُخصم من الرصيد النقدي لصندوق السائق.
  * للمحاسب/المدير: يمكن عرض كل السائقين أو سائق واحد؛ التسجيل يبقى لسائق محدد فقط.
+ * فلترة السجل (تصنيف/تواريخ/بحث) وتعديل للمحاسب.
  */
 class DriverExpensePage extends Component
 {
@@ -24,6 +26,22 @@ class DriverExpensePage extends Component
     public string $category = 'fuel';
 
     public string $notes = '';
+
+    public string $filterCategory = '';
+
+    public string $filterDateFrom = '';
+
+    public string $filterDateTo = '';
+
+    public string $filterSearch = '';
+
+    public ?int $editingId = null;
+
+    public string $editAmount = '';
+
+    public string $editCategory = 'fuel';
+
+    public string $editNotes = '';
 
     public function mount(): void
     {
@@ -39,20 +57,15 @@ class DriverExpensePage extends Component
     {
         $this->amount = '';
         $this->notes = '';
+        $this->cancelEdit();
         $this->resetErrorBag();
     }
 
-    /**
-     * هل العرض الحالي لكل السائقين؟
-     */
     public function showingAllDrivers(): bool
     {
         return $this->driverUserId === 'all';
     }
 
-    /**
-     * معرف السائق المختار للتسجيل/الرصيد الفردي، أو null.
-     */
     public function selectedDriverId(): ?int
     {
         if ($this->driverUserId === '' || $this->driverUserId === 'all') {
@@ -60,6 +73,29 @@ class DriverExpensePage extends Component
         }
 
         return ctype_digit($this->driverUserId) ? (int) $this->driverUserId : null;
+    }
+
+    public function applyExpenseFilters(): void
+    {
+        // Filters are applied from bound properties on next render.
+        $this->cancelEdit();
+    }
+
+    public function clearExpenseFilters(): void
+    {
+        $this->filterCategory = '';
+        $this->filterDateFrom = '';
+        $this->filterDateTo = '';
+        $this->filterSearch = '';
+        $this->cancelEdit();
+    }
+
+    public function hasActiveExpenseFilters(): bool
+    {
+        return $this->filterCategory !== ''
+            || $this->filterDateFrom !== ''
+            || $this->filterDateTo !== ''
+            || trim($this->filterSearch) !== '';
     }
 
     public function save(CashBoxService $cashBox): void
@@ -90,7 +126,6 @@ class DriverExpensePage extends Component
 
         $driverId = (int) $this->driverUserId;
 
-        // السيارة المسندة للسائق (إن وُجدت) لربط المصروف بها.
         $vehicleId = Warehouse::query()
             ->where('type', 'vehicle')
             ->where('assigned_user_id', $driverId)
@@ -115,6 +150,67 @@ class DriverExpensePage extends Component
         $this->notes = '';
         $this->category = 'fuel';
         $this->dispatch('toast', message: 'تم تسجيل المصروف بنجاح');
+    }
+
+    /**
+     * Business Purpose: Open edit modal for amount/category/notes (accountant).
+     */
+    public function startEdit(int $id): void
+    {
+        abort_unless(Gate::allows('update-driver-expenses'), 403);
+
+        $expense = DriverExpense::query()->findOrFail($id);
+        $this->editingId = $expense->id;
+        $this->editAmount = (string) $expense->amount;
+        $this->editCategory = $expense->category?->value ?? 'other';
+        $this->editNotes = (string) ($expense->notes ?? '');
+        $this->resetValidation();
+    }
+
+    public function cancelEdit(): void
+    {
+        $this->editingId = null;
+        $this->editAmount = '';
+        $this->editCategory = 'fuel';
+        $this->editNotes = '';
+        $this->resetValidation();
+    }
+
+    /**
+     * Business Purpose: Persist expense corrections within available driver cash.
+     */
+    public function saveEdit(CashBoxService $cashBox): void
+    {
+        abort_unless(Gate::allows('update-driver-expenses'), 403);
+
+        $this->validate([
+            'editingId' => 'required|integer',
+            'editAmount' => 'required|numeric|gt:0',
+            'editCategory' => 'required|in:fuel,maintenance,other',
+            'editNotes' => 'nullable|string|max:2000',
+        ], [], [
+            'editAmount' => 'المبلغ',
+            'editCategory' => 'التصنيف',
+            'editNotes' => 'الملاحظات',
+        ]);
+
+        $expense = DriverExpense::query()->findOrFail((int) $this->editingId);
+
+        try {
+            $cashBox->updateExpense(
+                $expense,
+                (float) $this->editAmount,
+                DriverExpenseCategory::from($this->editCategory),
+                $this->editNotes,
+            );
+        } catch (\RuntimeException $e) {
+            $this->addError('editAmount', $e->getMessage());
+
+            return;
+        }
+
+        $this->cancelEdit();
+        $this->dispatch('toast', message: 'تم تحديث المصروف');
     }
 
     /**
@@ -148,22 +244,26 @@ class DriverExpensePage extends Component
         $hasSelection = $showAll || $driverId !== null;
 
         $balance = $driverId ? $cashBox->balance($driverId) : null;
-        $totalExpenses = $showAll
-            ? (float) DriverExpense::query()->sum('amount')
-            : ($driverId ? $cashBox->totalDriverExpenses($driverId) : 0.0);
 
-        $historyQuery = DriverExpense::query()
-            ->with(['recordedBy', 'driver'])
-            ->latest('spent_at')
-            ->limit($showAll ? 50 : 30);
-
+        $baseQuery = DriverExpense::query();
         if ($driverId) {
-            $historyQuery->where('driver_user_id', $driverId);
+            $baseQuery->where('driver_user_id', $driverId);
         } elseif (! $showAll) {
-            $historyQuery->whereRaw('1 = 0');
+            $baseQuery->whereRaw('1 = 0');
         }
 
-        $history = $hasSelection ? $historyQuery->get() : collect();
+        $this->applyHistoryFilters($baseQuery);
+
+        $totalExpenses = $hasSelection ? (float) (clone $baseQuery)->sum('amount') : 0.0;
+
+        $history = $hasSelection
+            ? (clone $baseQuery)
+                ->with(['recordedBy', 'driver'])
+                ->latest('spent_at')
+                ->latest('id')
+                ->limit($showAll ? 100 : 50)
+                ->get()
+            : collect();
 
         return view('livewire.driver-expense-page', [
             'drivers' => $drivers,
@@ -176,5 +276,38 @@ class DriverExpensePage extends Component
             'hasSelection' => $hasSelection,
             'driverId' => $driverId,
         ]);
+    }
+
+    /**
+     * @param  \Illuminate\Database\Eloquent\Builder<\App\Models\DriverExpense>  $query
+     */
+    private function applyHistoryFilters($query): void
+    {
+        $categoryValues = array_keys(DriverExpenseCategory::options());
+        if (in_array($this->filterCategory, $categoryValues, true)) {
+            $query->where('category', $this->filterCategory);
+        }
+
+        if ($this->filterDateFrom !== '') {
+            try {
+                $query->whereDate('expense_date', '>=', Carbon::parse($this->filterDateFrom)->toDateString());
+            } catch (\Throwable) {
+            }
+        }
+
+        if ($this->filterDateTo !== '') {
+            try {
+                $query->whereDate('expense_date', '<=', Carbon::parse($this->filterDateTo)->toDateString());
+            } catch (\Throwable) {
+            }
+        }
+
+        if (trim($this->filterSearch) !== '') {
+            $s = '%'.trim($this->filterSearch).'%';
+            $query->where(function ($q) use ($s) {
+                $q->where('notes', 'like', $s)
+                    ->orWhereHas('driver', fn ($q) => $q->where('full_name', 'like', $s));
+            });
+        }
     }
 }

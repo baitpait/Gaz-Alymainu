@@ -1,4 +1,10 @@
-<div @can('delete-sales') x-data="{ deletingId: null }" @else x-data @endcan>
+<div
+    @if(auth()->user()->can('delete-sales') || auth()->user()->can('update-sales'))
+        x-data="{ deletingId: null }"
+    @else
+        x-data
+    @endif
+>
 
 <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
     <div>
@@ -91,9 +97,9 @@
                 <th class="text-left" dir="ltr">الكمية</th>
                 <th class="text-left" dir="ltr">السعر</th>
                 <th class="text-left" dir="ltr">الإجمالي</th>
-                @can('delete-sales')
-                <th class="w-28"></th>
-                @endcan
+                @if(auth()->user()->can('update-sales') || auth()->user()->can('delete-sales'))
+                <th class="w-36"></th>
+                @endif
             </tr></thead>
             <tbody>
                 @forelse($rows as $s)
@@ -112,20 +118,29 @@
                     <td class="text-left font-mono text-sm" dir="ltr">{{ rtrim(rtrim(number_format((float) $s->quantity, 4), '0'), '.') }}</td>
                     <td class="text-left font-mono text-sm" dir="ltr">{{ number_format((float) $s->unit_price, 2) }}</td>
                     <td class="text-left font-mono text-sm font-semibold" dir="ltr">{{ number_format((float) $s->total_amount, 2) }}</td>
-                    @can('delete-sales')
+                    @if(auth()->user()->can('update-sales') || auth()->user()->can('delete-sales'))
                     <td>
-                        <div class="flex items-center justify-end">
+                        <div class="flex items-center justify-end gap-1">
+                            @can('update-sales')
+                            <button type="button"
+                                    wire:click="startEdit({{ $s->id }})"
+                                    class="btn btn-ghost py-1 px-2 text-xs text-[#1B6CA8] hover:bg-[#1B6CA8]/10">
+                                تعديل
+                            </button>
+                            @endcan
+                            @can('delete-sales')
                             <button type="button"
                                     @click="deletingId = {{ $s->id }}"
                                     class="btn btn-ghost py-1 px-2 text-xs text-red-500 hover:bg-red-50">
                                 حذف
                             </button>
+                            @endcan
                         </div>
                     </td>
-                    @endcan
+                    @endif
                 </tr>
                 @empty
-                <tr><td colspan="{{ auth()->user()->can('delete-sales') ? 9 : 8 }}">
+                <tr><td colspan="{{ (auth()->user()->can('update-sales') || auth()->user()->can('delete-sales')) ? 9 : 8 }}">
                     <div class="text-center py-16 text-gray-300"><p class="text-sm">لا توجد مبيعات</p></div>
                 </td></tr>
                 @endforelse
@@ -136,6 +151,42 @@
     <x-list-pagination :paginator="$rows" />
 </div>
 
+@can('update-sales')
+@if($editingId !== null)
+<div class="fixed inset-0 z-[60] flex items-center justify-center">
+    <div class="fixed inset-0 bg-black/40 backdrop-blur-[2px]" wire:click="cancelEdit"></div>
+    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 z-10 p-6">
+        <h3 class="text-center font-bold text-[#1E293B] mb-1">تعديل البيع</h3>
+        <p class="text-center text-xs text-gray-400 mb-5">تعديل الكمية والسعر والملاحظات — الصنف والسيارة ثابتان.</p>
+
+        <div class="space-y-4">
+            <div>
+                <label class="label">الكمية</label>
+                <input type="number" step="0.0001" min="0.0001" wire:model="editQuantity" class="input w-full" dir="ltr">
+                @error('editQuantity') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
+            </div>
+            <div>
+                <label class="label">سعر الوحدة</label>
+                <input type="number" step="0.01" min="0.01" wire:model="editUnitPrice" class="input w-full" dir="ltr">
+                @error('editUnitPrice') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
+            </div>
+            <div>
+                <label class="label">الملاحظات</label>
+                <textarea wire:model="editNotes" rows="3" class="input w-full" placeholder="ملاحظات البيع على الحساب أو أي توضيح..."></textarea>
+                @error('editNotes') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
+            </div>
+        </div>
+
+        <div class="flex gap-2 mt-6">
+            <button type="button" wire:click="cancelEdit" class="btn btn-secondary flex-1">إلغاء</button>
+            <button type="button" wire:click="saveEdit" class="btn btn-primary flex-1"
+                    wire:loading.attr="disabled">حفظ</button>
+        </div>
+    </div>
+</div>
+@endif
+@endcan
+
 @can('delete-sales')
 <div x-show="deletingId !== null" x-cloak
      class="fixed inset-0 z-[60] flex items-center justify-center">
@@ -144,6 +195,7 @@
         <h3 class="text-center font-bold text-[#1E293B] mb-2">حذف البيع؟</h3>
         <p class="text-center text-sm text-gray-500 mb-6">
             سيُحذف السجل وتُعاد الكمية إلى مخزن/سيارة البيع. يتأثر صندوق السائق ودين السوق تلقائياً.
+            البيع النقدي المُسلَّم كاشه لا يُحذف.
         </p>
         <div class="flex gap-2">
             <button type="button" @click="deletingId = null" class="btn btn-secondary flex-1">إلغاء</button>

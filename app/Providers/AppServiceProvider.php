@@ -82,9 +82,11 @@ class AppServiceProvider extends ServiceProvider
         // المبيعات وصندوق السائق: السائق يبيع من سيارته، والمحاسب فأعلى أيضًا.
         Gate::define('record-sales', fn (User $user): bool => $user->is_active && ($user->isDriver() || $user->isAccountant()));
         Gate::define('view-sales', fn (User $user): bool => (bool) $user->is_active);
+        Gate::define('update-sales', fn (User $user): bool => $user->is_active && $user->isAccountant());
         Gate::define('delete-sales', fn (User $user): bool => $user->is_active && $user->isAccountant());
         Gate::define('manage-cash-handover', fn (User $user): bool => $user->is_active && ($user->isDriver() || $user->isAccountant()));
         Gate::define('manage-driver-expenses', fn (User $user): bool => $user->is_active && ($user->isDriver() || $user->isAccountant()));
+        Gate::define('update-driver-expenses', fn (User $user): bool => $user->is_active && $user->isAccountant());
         Gate::define('delete-driver-expenses', fn (User $user): bool => $user->is_active && $user->isAccountant());
 
         Gate::define('view-client-receivables-aging', fn (User $user): bool => (bool) $user->is_active);

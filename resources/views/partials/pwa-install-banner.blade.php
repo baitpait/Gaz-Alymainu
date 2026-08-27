@@ -5,6 +5,7 @@
 <div x-data="window.GazPwaInstall ? GazPwaInstall() : { dismissed: true, canInstall: false, showIosHint: false }"
      x-cloak
      x-show="!dismissed && (canInstall || showIosHint)"
+     x-effect="typeof syncBannerSpace === 'function' && syncBannerSpace()"
      class="{{ $variant === 'login' ? '' : 'fixed bottom-20 md:bottom-4 inset-x-3 z-40 md:max-w-md md:left-auto md:right-3' }}">
     <div class="{{ $variant === 'login'
         ? 'mt-5 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white'

@@ -30,6 +30,27 @@
         direction: rtl;
         font-family: var(--font-sans);
         color: var(--color-brand-grey);
+        /*
+         * Business Purpose: Reserve space under fixed mobile chrome so every page
+         * can scroll fully (bottom nav, PWA install banner, iOS home indicator).
+         */
+        --app-safe-bottom: env(safe-area-inset-bottom, 0px);
+        --app-bottom-nav: 0px;
+        --app-pwa-banner: 0px;
+    }
+    html.has-mobile-bottom-nav {
+        --app-bottom-nav: 4.5rem;
+    }
+    html.pwa-banner-visible {
+        --app-pwa-banner: 7.25rem;
+    }
+    @media (min-width: 768px) {
+        html.has-mobile-bottom-nav {
+            --app-bottom-nav: 0px;
+        }
+        html.pwa-banner-visible {
+            --app-pwa-banner: 5.5rem;
+        }
     }
     body {
         background-color: var(--color-surface-muted);
@@ -184,4 +205,24 @@
 
     /* ── قسم تجميع الحقول ── */
     .form-group { margin-bottom: 1rem; }
+
+    /*
+     * Business Purpose: Main column is the only vertical scroll container so
+     * content is never clipped under flex min-h-0 / fixed bottom bars (browser + APK).
+     */
+    .app-shell {
+        height: 100dvh;
+        max-height: 100dvh;
+        overflow: hidden;
+    }
+    .app-main-scroll {
+        overflow-x: hidden;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-y: contain;
+        padding-bottom: calc(1.5rem + var(--app-bottom-nav) + var(--app-pwa-banner) + var(--app-safe-bottom));
+    }
+    .app-bottom-nav {
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
 }

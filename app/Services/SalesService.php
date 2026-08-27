@@ -20,6 +20,7 @@ class SalesService
     public function __construct(
         private readonly InventoryService $inventory,
         private readonly DailyPriceService $prices,
+        private readonly CashBoxService $cashBoxes,
     ) {}
 
     /**
@@ -79,8 +80,106 @@ class SalesService
     }
 
     /**
+     * Business Purpose: Correct quantity, unit price, and/or notes on an existing sale.
+     * Quantity delta adjusts warehouse stock; lowering cash total is blocked when driver
+     * cash no longer covers the reduction (handover/expense already taken).
+     */
+    public function updateSale(
+        Sale $sale,
+        float $quantity,
+        float $unitPrice,
+        ?string $notes = null,
+        ?int $updatedByUserId = null,
+    ): Sale {
+        if ($sale->trashed()) {
+            throw new RuntimeException('هذا البيع محذوف ولا يمكن تعديله.');
+        }
+
+        if ($quantity <= 0) {
+            throw new RuntimeException('الكمية يجب أن تكون أكبر من صفر.');
+        }
+
+        if ($unitPrice <= 0) {
+            throw new RuntimeException('أدخل سعر بيع صحيحًا.');
+        }
+
+        $notes = $notes !== null ? trim($notes) : null;
+        if ($notes === '') {
+            $notes = null;
+        }
+
+        $sale->loadMissing(['warehouse', 'product']);
+        $warehouse = $sale->warehouse;
+        $product = $sale->product;
+
+        if (! $warehouse || ! $product) {
+            throw new RuntimeException('تعذّر التعديل: المخزن أو الصنف غير موجود.');
+        }
+
+        $oldQty = (float) $sale->quantity;
+        $newTotal = round($unitPrice * $quantity, 4);
+        $oldTotal = (float) $sale->total_amount;
+        $reduction = round($oldTotal - $newTotal, 4);
+
+        if (
+            $sale->payment_type === SalePaymentType::Cash
+            && $reduction > 0.0001
+            && $sale->driver_user_id
+        ) {
+            $available = $this->cashBoxes->balance((int) $sale->driver_user_id);
+            if ($reduction > $available + 0.0001) {
+                throw new RuntimeException(
+                    'لا يمكن تخفيض مبلغ البيع النقدي: تم تسليم أو صرف جزء من كاش السائق.'
+                );
+            }
+        }
+
+        $qtyDelta = round($quantity - $oldQty, 4);
+
+        return DB::transaction(function () use (
+            $sale,
+            $warehouse,
+            $product,
+            $quantity,
+            $unitPrice,
+            $newTotal,
+            $notes,
+            $qtyDelta,
+            $updatedByUserId,
+        ) {
+            if ($qtyDelta > 0.0001) {
+                $this->inventory->saleOut(
+                    $warehouse,
+                    $product,
+                    $qtyDelta,
+                    $updatedByUserId,
+                    Carbon::now(),
+                    'تعديل كمية بيع #'.$sale->id.' (+)',
+                );
+            } elseif ($qtyDelta < -0.0001) {
+                $this->inventory->restoreForVoidedSale(
+                    $warehouse,
+                    $product,
+                    abs($qtyDelta),
+                    $updatedByUserId,
+                    'تعديل كمية بيع #'.$sale->id.' (−)',
+                );
+            }
+
+            $sale->quantity = $quantity;
+            $sale->unit_price = $unitPrice;
+            $sale->total_amount = $newTotal;
+            $sale->notes = $notes;
+            $sale->save();
+
+            return $sale->refresh();
+        });
+    }
+
+    /**
      * إلغاء بيع: إرجاع الكمية للمخزن/السيارة ثم حذف منطقي للسجل.
      * يؤثر تلقائياً على صندوق السائق ودين السوق لأنهما يُحسبان من المبيعات غير المحذوفة.
+     * يُرفض حذف البيع النقدي إذا لم يعد رصيد كاش السائق يغطي مبلغ البيع (بعد تسليم/صرف).
      */
     public function voidSale(Sale $sale, ?int $voidedByUserId = null): void
     {
@@ -95,6 +194,18 @@ class SalesService
 
         if (! $warehouse || ! $product) {
             throw new RuntimeException('تعذّر إلغاء البيع: المخزن أو الصنف غير موجود.');
+        }
+
+        if (
+            $sale->payment_type === SalePaymentType::Cash
+            && $sale->driver_user_id
+        ) {
+            $available = $this->cashBoxes->balance((int) $sale->driver_user_id);
+            if ((float) $sale->total_amount > $available + 0.0001) {
+                throw new RuntimeException(
+                    'لا يمكن حذف البيع النقدي بعد تسليم أو صرف الكاش المرتبط به.'
+                );
+            }
         }
 
         DB::transaction(function () use ($sale, $warehouse, $product, $voidedByUserId) {

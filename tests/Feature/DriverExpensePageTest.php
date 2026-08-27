@@ -56,10 +56,112 @@ test('all drivers filter lists expenses from every driver with names', function 
         ->assertSee('سائق باء')
         ->assertSee('مصروف ألف')
         ->assertSee('مصروف باء')
-        ->assertSee('إجمالي مصروفات كل السائقين')
+        ->assertSee('إجمالي المصروفات (حسب الفلتر)')
         ->assertSee('اختر سائقًا محددًا من القائمة')
         ->assertDontSee('الرصيد النقدي المتاح')
         ->assertDontSeeHtml('wire:click="save"');
+});
+
+test('expense filters narrow history by category and notes', function () {
+    $accountant = User::factory()->create(['role' => 'accountant', 'is_active' => true]);
+    $driver = User::factory()->create(['role' => 'driver', 'is_active' => true]);
+
+    DriverExpense::query()->create([
+        'driver_user_id' => $driver->id,
+        'amount' => 10,
+        'currency_code' => 'ILS',
+        'category' => DriverExpenseCategory::Fuel,
+        'expense_date' => now()->toDateString(),
+        'spent_at' => now(),
+        'notes' => 'بنزين طريق',
+    ]);
+
+    DriverExpense::query()->create([
+        'driver_user_id' => $driver->id,
+        'amount' => 40,
+        'currency_code' => 'ILS',
+        'category' => DriverExpenseCategory::Maintenance,
+        'expense_date' => now()->toDateString(),
+        'spent_at' => now()->subMinute(),
+        'notes' => 'صيانة فرامل',
+    ]);
+
+    Livewire::actingAs($accountant)
+        ->test(DriverExpensePage::class)
+        ->set('driverUserId', (string) $driver->id)
+        ->set('filterCategory', 'fuel')
+        ->set('filterSearch', 'بنزين')
+        ->call('applyExpenseFilters')
+        ->assertSee('بنزين طريق')
+        ->assertDontSee('صيانة فرامل');
+});
+
+test('accountant can update driver expense amount and notes', function () {
+    $accountant = User::factory()->create(['role' => 'accountant', 'is_active' => true]);
+    $driver = User::factory()->create(['role' => 'driver', 'is_active' => true]);
+    $warehouse = Warehouse::query()->create([
+        'name' => 'سيارة تعديل مصروف '.uniqid(),
+        'type' => WarehouseType::Vehicle,
+        'assigned_user_id' => $driver->id,
+        'is_active' => true,
+    ]);
+    $product = Product::factory()->withIlsPricing()->create();
+
+    Sale::query()->create([
+        'warehouse_id' => $warehouse->id,
+        'product_id' => $product->id,
+        'driver_user_id' => $driver->id,
+        'payment_type' => SalePaymentType::Cash,
+        'quantity' => 1,
+        'unit_price' => 100,
+        'total_amount' => 100,
+        'currency_code' => 'ILS',
+        'sale_date' => now()->toDateString(),
+        'sold_at' => now(),
+    ]);
+
+    $expense = DriverExpense::query()->create([
+        'driver_user_id' => $driver->id,
+        'amount' => 20,
+        'currency_code' => 'ILS',
+        'category' => DriverExpenseCategory::Fuel,
+        'expense_date' => now()->toDateString(),
+        'spent_at' => now(),
+        'notes' => 'قديم',
+    ]);
+
+    Livewire::actingAs($accountant)
+        ->test(DriverExpensePage::class)
+        ->set('driverUserId', (string) $driver->id)
+        ->call('startEdit', $expense->id)
+        ->set('editAmount', '35')
+        ->set('editCategory', 'maintenance')
+        ->set('editNotes', 'محدّث')
+        ->call('saveEdit')
+        ->assertHasNoErrors();
+
+    $expense->refresh();
+    expect((float) $expense->amount)->toBe(35.0)
+        ->and($expense->category)->toBe(DriverExpenseCategory::Maintenance)
+        ->and($expense->notes)->toBe('محدّث')
+        ->and(app(CashBoxService::class)->balance($driver->id))->toBe(65.0);
+});
+
+test('driver cannot edit driver expenses', function () {
+    $driver = User::factory()->create(['role' => 'driver', 'is_active' => true]);
+    $expense = DriverExpense::query()->create([
+        'driver_user_id' => $driver->id,
+        'amount' => 10,
+        'currency_code' => 'ILS',
+        'category' => DriverExpenseCategory::Other,
+        'expense_date' => now()->toDateString(),
+        'spent_at' => now(),
+    ]);
+
+    Livewire::actingAs($driver)
+        ->test(DriverExpensePage::class)
+        ->call('startEdit', $expense->id)
+        ->assertForbidden();
 });
 
 test('specific driver still shows form and balance cards', function () {

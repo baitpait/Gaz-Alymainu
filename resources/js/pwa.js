@@ -36,8 +36,17 @@ export function createPwaInstallController() {
         showIosHint: false,
         dismissed: false,
         deferredPrompt: null,
+        /**
+         * Business Purpose: Tell the app shell to reserve scroll padding while the
+         * fixed install banner is visible so page bottoms stay reachable.
+         */
+        syncBannerSpace() {
+            const visible = ! this.dismissed && (this.canInstall || this.showIosHint);
+            document.documentElement.classList.toggle('pwa-banner-visible', visible);
+        },
         init() {
             if (isNativeApp() || isStandaloneDisplay()) {
+                this.syncBannerSpace();
                 return;
             }
 
@@ -60,13 +69,17 @@ export function createPwaInstallController() {
                 if (! this.dismissed) {
                     this.canInstall = true;
                 }
+                this.syncBannerSpace();
             });
 
             window.addEventListener('appinstalled', () => {
                 this.canInstall = false;
                 this.deferredPrompt = null;
                 this.showIosHint = false;
+                this.syncBannerSpace();
             });
+
+            this.syncBannerSpace();
         },
         async install() {
             if (! this.deferredPrompt) {
@@ -76,12 +89,14 @@ export function createPwaInstallController() {
             await this.deferredPrompt.userChoice;
             this.deferredPrompt = null;
             this.canInstall = false;
+            this.syncBannerSpace();
         },
         dismiss() {
             this.dismissed = true;
             this.canInstall = false;
             this.showIosHint = false;
             localStorage.setItem('gaz-pwa-install-dismissed', String(Date.now()));
+            this.syncBannerSpace();
         },
     };
 }
