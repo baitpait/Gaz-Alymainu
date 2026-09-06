@@ -103,12 +103,84 @@ class CashBoxService
             'method' => $method,
             'amount' => $amount,
             'currency_code' => self::CURRENCY,
-            'cheque_number' => $method === CollectionMethod::Cheque ? $chequeNumber : null,
+            'cheque_number' => $method === CollectionMethod::Cheque ? $this->normalizeOptionalText($chequeNumber) : null,
             'collection_date' => AppDateTime::today(),
             'collected_at' => Carbon::now(),
             'recorded_by_user_id' => $recordedByUserId,
-            'notes' => $notes,
+            'notes' => $this->normalizeOptionalText($notes),
         ]);
+    }
+
+    /**
+     * Business Purpose: Correct amount/method/notes on a driver collection.
+     * Reducing cash or cheque contribution is blocked if that money was already handed over or spent.
+     */
+    public function updateCollection(
+        Collection $collection,
+        float $amount,
+        CollectionMethod $method,
+        ?string $notes = null,
+        ?string $chequeNumber = null,
+    ): Collection {
+        if ($collection->trashed()) {
+            throw new RuntimeException('هذا التحصيل محذوف ولا يمكن تعديله.');
+        }
+
+        if ($amount <= 0) {
+            throw new RuntimeException('المبلغ يجب أن يكون أكبر من صفر.');
+        }
+
+        $driverUserId = (int) $collection->driver_user_id;
+        $oldMethod = $collection->method instanceof CollectionMethod
+            ? $collection->method
+            : CollectionMethod::from((string) $collection->method);
+        $oldAmount = (float) $collection->amount;
+
+        $this->assertCollectionBoxAllowsDelta(
+            $driverUserId,
+            $this->boxDecrease(
+                $this->methodContribution($oldMethod, $oldAmount, CollectionMethod::Cash),
+                $this->methodContribution($method, $amount, CollectionMethod::Cash),
+            ),
+            $this->boxDecrease(
+                $this->methodContribution($oldMethod, $oldAmount, CollectionMethod::Cheque),
+                $this->methodContribution($method, $amount, CollectionMethod::Cheque),
+            ),
+        );
+
+        $collection->amount = $amount;
+        $collection->method = $method;
+        $collection->notes = $this->normalizeOptionalText($notes);
+        $collection->cheque_number = $method === CollectionMethod::Cheque
+            ? $this->normalizeOptionalText($chequeNumber)
+            : null;
+        $collection->save();
+
+        return $collection->refresh();
+    }
+
+    /**
+     * Business Purpose: Soft-delete a collection so driver cashbox and market debt exclude it.
+     * Blocked when the collected cash/cheque is no longer sitting in the driver’s box.
+     */
+    public function voidCollection(Collection $collection): void
+    {
+        if ($collection->trashed()) {
+            throw new RuntimeException('هذا التحصيل محذوف مسبقاً.');
+        }
+
+        $method = $collection->method instanceof CollectionMethod
+            ? $collection->method
+            : CollectionMethod::from((string) $collection->method);
+        $amount = (float) $collection->amount;
+
+        $this->assertCollectionBoxAllowsDelta(
+            (int) $collection->driver_user_id,
+            $this->methodContribution($method, $amount, CollectionMethod::Cash),
+            $this->methodContribution($method, $amount, CollectionMethod::Cheque),
+        );
+
+        $collection->delete();
     }
 
     /** إجمالي ما سُحب من السائق (كاش + شيك). */
@@ -469,6 +541,40 @@ class CashBoxService
         }
 
         return $sorted;
+    }
+
+    /**
+     * Amount this collection currently contributes to a cash or cheque box.
+     */
+    private function methodContribution(CollectionMethod $method, float $amount, CollectionMethod $bucket): float
+    {
+        return $method === $bucket ? $amount : 0.0;
+    }
+
+    private function boxDecrease(float $oldContribution, float $newContribution): float
+    {
+        return round($oldContribution - $newContribution, 4);
+    }
+
+    /**
+     * Reject an edit/void that would push driver cash or cheque balance below zero.
+     */
+    private function assertCollectionBoxAllowsDelta(int $driverUserId, float $cashDecrease, float $chequeDecrease): void
+    {
+        if ($cashDecrease > 0.0001 && $cashDecrease > $this->balance($driverUserId) + 0.0001) {
+            throw new RuntimeException('لا يمكن تخفيض التحصيل النقدي بعد تسليم أو صرف الكاش المرتبط به.');
+        }
+
+        if ($chequeDecrease > 0.0001 && $chequeDecrease > $this->chequeBalance($driverUserId) + 0.0001) {
+            throw new RuntimeException('لا يمكن تخفيض تحصيل الشيك بعد تسليم الشيك المرتبط به.');
+        }
+    }
+
+    private function normalizeOptionalText(?string $value): ?string
+    {
+        $value = $value !== null ? trim($value) : null;
+
+        return $value === '' ? null : $value;
     }
 
     /**

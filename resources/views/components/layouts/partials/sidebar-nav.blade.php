@@ -21,7 +21,7 @@
             </x-nav-link>
 
             <x-nav-group title="الغاز والمخزون" name="gas"
-                :active="request()->routeIs(['products.*','pos.*','sales.*','cash-handovers.*','driver-expenses.*','warehouses.*','stock-movements.*','daily-prices.*','drivers.*'])">
+                :active="request()->routeIs(['products.*','pos.*','sales.*','collections.*','cash-handovers.*','driver-expenses.*','warehouses.*','stock-movements.*','daily-prices.*','drivers.*'])">
 
             <x-nav-link :route="route('products.index')" label="المنتجات" :active="request()->routeIs('products.*')">
                 <x-slot name="icon">
@@ -51,6 +51,17 @@
                     </svg>
                 </x-slot>
             </x-nav-link>
+
+            @can('record-sales')
+            <x-nav-link :route="route('collections.index')" label="التحصيل" :active="request()->routeIs('collections.*')">
+                <x-slot name="icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                    </svg>
+                </x-slot>
+            </x-nav-link>
+            @endcan
 
             @can('manage-cash-handover')
             <x-nav-link :route="route('cash-handovers.index')" label="سحب الكاش" :active="request()->routeIs('cash-handovers.*')">
